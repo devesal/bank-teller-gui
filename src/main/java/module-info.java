@@ -1,6 +1,6 @@
 module Main {
     requires javafx.controls;
-    requires javafx.graphics;
+    requires transitive javafx.graphics;
     requires javafx.base;
 
     exports main;
