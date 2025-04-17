@@ -12,7 +12,6 @@
 .sidebar {
     -fx-background-color: #072B2B;
     -fx-padding: 1em;
-    -fx-spacing: 1.5em;
 }
 
 .sidebar-button {
@@ -21,9 +20,19 @@
 
 .page-header {
     -fx-background-color: white;
-    -fx-spacing: 1em;
-    -fx-padding: 2em;
+    -fx-padding: 1em 2em;
     -fx-alignment: center_left;
+    -fx-border-color: #D1D9E0;
+    -fx-border-width: 0 0 2px 0;
+}
+
+.header-left {
+    -fx-spacing: 1em;
+    -fx-alignment: center;
+}
+
+.header-right {
+    -fx-spacing: 1em;
 }
 
 .page-header Label {
@@ -32,20 +41,7 @@
 
 .active-window {
     -fx-alignment: center;
-    -fx-padding: 2em;
-}
-
-.customers-pane {
     -fx-background-color: white;
-    -fx-border-radius: 1em;
-    -fx-background-radius: 1em;
-    -fx-max-width: 1200px;
-}
-
-.customers-pane-header {
-    -fx-border-color: #D1D9E0;
-    -fx-padding: 1em 2em;
-    -fx-border-width: 0 0 2px 0;
 }
 
 .search-field {

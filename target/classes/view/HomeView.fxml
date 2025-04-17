@@ -16,18 +16,18 @@
     <center>
         <VBox>
             <HBox styleClass="page-header">
-                <Button text="Back"/>
-                <Label text="Customers"/>
+                <HBox styleClass="header-left">
+                    <Button text="Back"/>
+                    <Label text="Customers"/>
+                </HBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox styleClass="header-right">
+                    <CustomTextField fx:id="searchField" styleClass="search-field" promptText="Search"/>
+                    <Button styleClass="big-button, green-button" text="Create Account Holder"/>
+                </HBox>
             </HBox>
             <VBox styleClass="active-window" VBox.vgrow="ALWAYS">
-                <VBox styleClass="customers-pane" VBox.vgrow="ALWAYS">
-                    <HBox styleClass="customers-pane-header">
-                        <CustomTextField fx:id="searchField" styleClass="search-field" promptText="Search"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Button styleClass="big-button, green-button" text="Create Account Holder"/>
-                    </HBox>
-                    <VBox styleClass="customers-table"></VBox>
-                </VBox>
+                <VBox styleClass="customers-table" VBox.vgrow="ALWAYS"></VBox>
             </VBox>
         </VBox>
     </center>
