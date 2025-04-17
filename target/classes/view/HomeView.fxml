@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.textfield.CustomTextField?>
+
+<BorderPane styleClass="body" stylesheets="@../styles/homeview.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+
+    <left>
+        <VBox styleClass="sidebar">
+            <Button styleClass="sidebar-button, big-button" text="Customers"/>
+            <Button styleClass="sidebar-button, big-button" text="Report Generation"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox>
+            <HBox styleClass="page-header">
+                <Button text="Back"/>
+                <Label text="Customers"/>
+            </HBox>
+            <VBox styleClass="active-window" VBox.vgrow="ALWAYS">
+                <VBox styleClass="customers-pane" VBox.vgrow="ALWAYS">
+                    <HBox styleClass="customers-pane-header">
+                        <CustomTextField fx:id="searchField" styleClass="search-field" promptText="Search"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="big-button, green-button" text="Create Account Holder"/>
+                    </HBox>
+                    <VBox styleClass="customers-table"></VBox>
+                </VBox>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>
