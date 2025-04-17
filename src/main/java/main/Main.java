@@ -10,10 +10,11 @@ public class Main extends Application  {
 
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/view/HomeView.fxml"));
-        Scene scene = new Scene(root, 1440, 700);
+        Scene scene = new Scene(root, 1240, 700);
 
         stage.setTitle("CO-PALS Bank Teller System");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 
