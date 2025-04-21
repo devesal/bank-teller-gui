@@ -1,0 +1,66 @@
+@font-face {
+    font-family: "Cindie 2 N";
+    src: url("../assets/fonts/Cindie2-N.ttf");
+}
+
+@font-face {
+    font-family: "S'Pht";
+    src: url("../assets/fonts/Cindie2-N.ttf");
+}
+
+.header-left {
+    -fx-spacing: 1.5em;
+}
+
+.back-button {
+    -fx-pref-height: 40px;
+    -fx-pref-width: 60px;
+}
+
+.customer-form-pane {
+    -fx-min-width: 670px;
+    -fx-max-width: 670px;
+    -fx-pref-width: 670px;
+    -fx-min-height: 620px;
+    -fx-max-height: 620px;
+    -fx-pref-height: 620px;
+}
+
+.heading {
+    -fx-font-family: "Cindie 2 N", "JetBrains Mono ExtraBold", monospace;
+    -fx-font-size: 24px;
+}
+
+.customer-form {
+    -fx-max-width: 520;
+    -fx-min-height: 450;
+    -fx-max-height: 450;
+    -fx-spacing: 2em;
+}
+
+.customer-form Button {
+    -fx-background-color: #D1D9E0;
+    -fx-pref-width: 520px;
+    -fx-pref-height: 45px;
+    -fx-font-family: "JetBrains Mono SemiBold", monospace;
+}
+
+.customer-form Button:hover {
+    -fx-background-color: #FE1BB7;
+    -fx-text-fill: white;
+}
+
+.input-box {
+    -fx-spacing: 6px;
+}
+
+.input-box Label {
+    -fx-font-family: "JetBrains Mono", monospace;
+}
+
+.input-field {
+    -fx-background-color: transparent;
+    -fx-border-color: #D1D9E0;
+    -fx-border-width: 2px;
+    -fx-pref-height: 50px;
+}

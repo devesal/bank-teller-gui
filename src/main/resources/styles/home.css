@@ -1,0 +1,110 @@
+@font-face {
+    font-family: "Cindie 2 N";
+    src: url("../assets/fonts/Cindie2-N.ttf");
+}
+
+@font-face {
+    font-family: "S'Pht";
+    src: url("../assets/fonts/Cindie2-N.ttf");
+}
+
+Button {
+    -fx-background-radius: 0;
+}
+
+Button:hover {
+    -fx-cursor: hand;
+}
+
+.body {
+    -fx-background-color: #C4D9DA;
+    -fx-font-family: "JetBrains Mono Light", monospace;
+    -fx-font-size: 16px;
+}
+
+.big-button {
+    -fx-text-fill: white;
+}
+
+.sidebar, .header {
+    -fx-background-color: #F6F8FA;
+}
+
+.sidebar-heading {
+    -fx-pref-height: 80px;
+    -fx-background-color: #C0FE04;
+    -fx-padding: 1em;
+}
+
+.sidebar-heading-label {
+    -fx-font-family: "S'Pht";
+    -fx-font-size: 3em;
+    -fx-text-fill: #072B2B;
+}
+
+.sidebar-button {
+    -fx-pref-height: 84px;
+    -fx-pref-width: 264px;
+    -fx-background-color: transparent;
+    -fx-font-family: "Cindie 2 N";
+    -fx-text-fill: #0A3A3A;
+    -fx-alignment: BASELINE_LEFT;
+    -fx-padding: 30px 0 30px 40px;
+}
+
+#customersButton {
+    -fx-text-fill: white;
+    -fx-background-color: #0A3A3A;
+}
+
+.header {
+    -fx-padding: 0 0 0 2em;
+    -fx-min-height: 80px;
+    -fx-max-height: 80px;
+    -fx-pref-height: 80px;
+    -fx-border-color: #D1D9E0;
+    -fx-border-width: 0 0 2px 0;
+    -fx-alignment: center;
+}
+
+.header-left {
+    -fx-alignment: center_left;
+}
+
+.header Label {
+    -fx-font-family: "Cindie 2 N", "JetBrains Mono Light", monospace;
+    -fx-font-size: 1.5em;
+}
+
+.header-button {
+    -fx-pref-width: 230px;
+    -fx-background-color: #0A3A3A;
+    -fx-font-family: "Cindie 2 N", "JetBrains Mono Light", monospace;
+    -fx-pref-height: 82px;
+}
+
+.header-button:hover {
+    -fx-background-color: #FE1BB7;
+    -fx-text-fill: white;
+}
+
+.search-field {
+    -fx-pref-height: 80px;
+    -fx-pref-width: 340px;
+    -fx-background-color: #D1D9E0;
+    -fx-prompt-text-fill: #393939;
+    -fx-background-radius: 0;
+}
+
+.button-pane-2 {
+    -fx-background-color: #0A3A3A;
+}
+
+.button-pane-2 {
+    -fx-background-color: #0A3A3A;
+}
+
+.active-window {
+    -fx-background-color: white;
+    -fx-alignment: center;
+}

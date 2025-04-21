@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane fx:controller="edu.slu.cs.controller.CustomerFormController"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="body" stylesheets="@../../styles/home.css, @../../styles/customerform.css">
+
+    <left>
+        <VBox styleClass="sidebar">
+            <StackPane styleClass="sidebar-heading">
+                <Label styleClass="sidebar-heading-label"
+                       text="CBIS"/>
+            </StackPane>
+            <Button fx:id="customersButton"
+                    styleClass="big-button, sidebar-button"
+                    text="CUSTOMERS" />
+            <Button styleClass="big-button, sidebar-button"
+                    text="REPORTS" />
+        </VBox>
+    </left>
+
+    <center>
+        <VBox alignment="center">
+            <HBox styleClass="header">
+                <HBox styleClass="header-left">
+                    <Button fx:id="backButton" onAction="#handleBack" styleClass="header-button, back-button">
+                        <graphic>
+                            <ImageView fitWidth="16" fitHeight="16" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../../assets/images/back-icon.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    <Label text="CUSTOMER CREATION" />
+                </HBox>
+                <Region HBox.hgrow="ALWAYS" />
+            </HBox>
+            <StackPane styleClass="active-window, customer-form-pane">
+                <VBox styleClass="customer-form">
+                    <VBox>
+                        <Label styleClass="heading" text="FILL IN ACCOUNT INFORMATION"/>
+                        <Label text="Personal information"/>
+                    </VBox>
+                    <VBox styleClass="input-box">
+                        <Label text="First Name"/>
+                        <TextField styleClass="input-field"/>
+                    </VBox>
+                    <VBox styleClass="input-box">
+                        <Label text="Last Name"/>
+                        <TextField styleClass="input-field"/>
+                    </VBox>
+                    <VBox styleClass="input-box">
+                        <Label text="Date of Birth"/>
+                        <TextField styleClass="input-field"/>
+                    </VBox>
+                    <Button fx:id="nextButton" onAction="#handleNext" text="Next"/>
+                </VBox>
+            </StackPane>
+        </VBox>
+    </center>
+
+</BorderPane>

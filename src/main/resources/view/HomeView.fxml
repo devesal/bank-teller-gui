@@ -2,32 +2,47 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import org.controlsfx.control.textfield.CustomTextField?>
 
-<BorderPane styleClass="body" stylesheets="@../styles/homeview.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane fx:controller="edu.slu.cs.controller.HomeController"
+            styleClass="body"
+            stylesheets="@../styles/home.css"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1">
 
     <left>
         <VBox styleClass="sidebar">
-            <Button styleClass="sidebar-button, big-button" text="Customers"/>
-            <Button styleClass="sidebar-button, big-button" text="Report Generation"/>
+            <StackPane styleClass="sidebar-heading">
+                <Label styleClass="sidebar-heading-label"
+                       text="CBIS"/>
+            </StackPane>
+            <Button fx:id="customersButton"
+                    styleClass="big-button, sidebar-button"
+                    text="CUSTOMERS" />
+            <Button styleClass="big-button, sidebar-button"
+                    text="REPORTS" />
         </VBox>
     </left>
 
     <center>
         <VBox>
-            <HBox styleClass="page-header">
-                <HBox styleClass="header-left">
-                    <Button text="Back"/>
-                    <Label text="Customers"/>
-                </HBox>
+            <HBox styleClass="header">
+                <Label text="CUSTOMERS"/>
+
                 <Region HBox.hgrow="ALWAYS"/>
-                <HBox styleClass="header-right">
-                    <CustomTextField fx:id="searchField" styleClass="search-field" promptText="Search"/>
-                    <Button styleClass="big-button, green-button" text="Create Account Holder"/>
+
+                <HBox>
+                    <TextField fx:id="searchField"
+                                     promptText="Search"
+                                     styleClass="search-field"/>
+                    <Button fx:id="addCustomerButton"
+                            onAction="#handleAddCustomer"
+                            styleClass="big-button, header-button"
+                            text="ADD CUSTOMER" />
                 </HBox>
             </HBox>
-            <VBox styleClass="active-window" VBox.vgrow="ALWAYS">
-                <VBox styleClass="customers-table" VBox.vgrow="ALWAYS"></VBox>
+
+            <VBox styleClass="active-window"
+                  VBox.vgrow="ALWAYS">
             </VBox>
         </VBox>
     </center>
