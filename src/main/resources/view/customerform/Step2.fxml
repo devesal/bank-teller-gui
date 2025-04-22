@@ -42,7 +42,7 @@
             <StackPane styleClass="active-window, customer-form-pane">
                 <VBox styleClass="customer-form">
                     <VBox>
-                        <Label styleClass="heading"
+                        <Label styleClass="customer-form-heading"
                                text="FILL IN ACCOUNT INFORMATION"/>
                         <Label text="Contact information"/>
                     </VBox>
@@ -50,7 +50,9 @@
                         <Label text="Phone Number"/>
                         <TextField styleClass="input-field"/>
                     </VBox>
-                    <Button fx:id="nextButton"
+                    <Region VBox.vgrow="ALWAYS"/>
+                    <Button styleClass="next-button"
+                            fx:id="nextButton"
                             onAction="#handleNext"
                             text="Next"/>
                 </VBox>

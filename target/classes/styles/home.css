@@ -12,7 +12,7 @@ Button {
     -fx-background-radius: 0;
 }
 
-Button:hover {
+Button:hover, ToggleButton:hover {
     -fx-cursor: hand;
 }
 
@@ -72,7 +72,7 @@ Button:hover {
 }
 
 .header Label {
-    -fx-font-family: "Cindie 2 N", "JetBrains Mono Light", monospace;
+    -fx-font-family: "Cindie 2 N", "JetBrains Mono ExtraBold", monospace;
     -fx-font-size: 1.5em;
 }
 

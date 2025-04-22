@@ -42,25 +42,31 @@
             <StackPane styleClass="active-window, customer-form-pane">
                 <VBox styleClass="customer-form">
                     <VBox>
-                        <Label styleClass="customer-form-heading" text="FILL IN ACCOUNT INFORMATION"/>
-                        <Label text="Personal information"/>
+                        <Label styleClass="customer-form-heading"
+                               text="CHOOSE ACCOUNT TYPES"/>
                     </VBox>
-                    <VBox styleClass="input-box">
-                        <Label text="First Name"/>
-                        <TextField styleClass="input-field"/>
+                    <VBox styleClass="bank-account-selection">
+                        <ToggleButton fx:id="addSavingsButton"
+                                onAction="#handleAccountSelection"
+                                styleClass="select-account-button"
+                                text="Savings Account"/>
+                        <ToggleButton fx:id="addCheckingButton"
+                                onAction="#handleAccountSelection"
+                                styleClass="select-account-button"
+                                text="Checking Account"/>
+                        <ToggleButton fx:id="addInvestmentButton"
+                                onAction="#handleAccountSelection"
+                                styleClass="select-account-button"
+                                text="Investment Account"/>
+                        <ToggleButton fx:id="addCreditCardButton"
+                                onAction="#handleAccountSelection"
+                                styleClass="select-account-button"
+                                text="Credit Card Account"/>
                     </VBox>
-                    <VBox styleClass="input-box">
-                        <Label text="Last Name"/>
-                        <TextField styleClass="input-field"/>
-                    </VBox>
-                    <VBox styleClass="input-box">
-                        <Label text="Date of Birth"/>
-                        <TextField styleClass="input-field"/>
-                    </VBox>
+                    <Region VBox.vgrow="ALWAYS"/>
                     <Button styleClass="next-button"
-                            fx:id="nextButton"
-                            onAction="#handleNext"
-                            text="Next"/>
+                            onAction="#handleCreate"
+                            text="Create"/>
                 </VBox>
             </StackPane>
         </VBox>

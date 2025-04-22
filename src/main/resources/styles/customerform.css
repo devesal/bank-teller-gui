@@ -26,8 +26,8 @@
     -fx-pref-height: 620px;
 }
 
-.heading {
-    -fx-font-family: "Cindie 2 N", "JetBrains Mono ExtraBold", monospace;
+.customer-form-heading {
+    -fx-font-family: "JetBrains Mono ExtraBold", monospace;
     -fx-font-size: 24px;
 }
 
@@ -38,14 +38,14 @@
     -fx-spacing: 2em;
 }
 
-.customer-form Button {
+.customer-form Button, .customer-form ToggleButton {
     -fx-background-color: #D1D9E0;
     -fx-pref-width: 520px;
     -fx-pref-height: 45px;
     -fx-font-family: "JetBrains Mono SemiBold", monospace;
 }
 
-.customer-form Button:hover {
+.next-button:hover {
     -fx-background-color: #FE1BB7;
     -fx-text-fill: white;
 }
@@ -63,4 +63,8 @@
     -fx-border-color: #D1D9E0;
     -fx-border-width: 2px;
     -fx-pref-height: 50px;
+}
+
+.bank-account-selection {
+    -fx-spacing: 1.3em;
 }
