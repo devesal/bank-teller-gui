@@ -13,31 +13,34 @@ package edu.slu.cs.model;
  * @author Ong, Ron Miguel Cau
  * @author Ramos, Ricky Marc Salazar
  * @author Rosana, Jeaven Vincent Yojan Operia
- * @version 1.0
+ * @version 1.1
  */
 public class CheckingAccount extends BankAccount {
 
     /** The minimum balance that must be maintained in the account */
-    public final double minimumBalance;
+    private final double minimumBalance;
 
     /**
-     * Default constructor that creates a new checking account with a default minimum balance.
-     * Initializes the account with a minimum balance requirement of 500.0.
+     * Constructs a new checking account with default minimum balance of 500.0.
+     * Uses superclass constructor to generate account number and set names.
+     *
+     * @param firstName the account holder's first name
+     * @param lastName the account holder's last name
      */
-    public CheckingAccount() {
-        super();
+    public CheckingAccount(String firstName, String lastName) {
+        super(firstName, lastName);
         this.minimumBalance = 500.0;
     }
 
     /**
-     * Creates a new checking account with specified parameters.
+     * Constructs a new checking account with specified minimum balance.
      *
-     * @param accountNo The unique 9-digit account number
-     * @param accountName The name of the account holder
-     * @param minimumBalance The minimum balance requirement for this account
+     * @param firstName the account holder's first name
+     * @param lastName the account holder's last name
+     * @param minimumBalance the minimum balance requirement for this account
      */
-    public CheckingAccount(int accountNo, String accountName, double minimumBalance) {
-        super(accountNo, accountName);
+    public CheckingAccount(String firstName, String lastName, double minimumBalance) {
+        super(firstName, lastName);
         this.minimumBalance = minimumBalance;
     }
 
@@ -51,6 +54,49 @@ public class CheckingAccount extends BankAccount {
     }
 
     /**
+     * Overrides withdraw to ensure that minimum balance requirements are met.
+     *
+     * @param amount the amount to withdraw
+     */
+    @Override
+    public void withdraw(double amount) {
+        if (!"Active".equals(getStatus())) {
+            System.out.println("❌ Cannot withdraw from a closed account.");
+            return;
+        }
+        double currentBalance = inquireBalance();
+        if (amount > currentBalance) {
+            System.out.println("❌ Insufficient balance. Transaction terminated");
+            return;
+        }
+        if ((currentBalance - amount) < minimumBalance) {
+            System.out.println("❌ Withdrawal denied: Balance cannot go below ₱" + minimumBalance);
+            return;
+        }
+        super.withdraw(amount);
+    }
+
+    /**
+     * Processes a check encashment request while ensuring minimum balance requirements are met.
+     *
+     * @param amount The amount to be encashed from the check
+     */
+    public void encashCheck(double amount) {
+        // encashCheck follows same rules as withdraw but with its own messaging
+        double currentBalance = inquireBalance();
+        if (amount > currentBalance) {
+            System.out.println("❌ Insufficient funds to encash ₱" + amount);
+            return;
+        }
+        if ((currentBalance - amount) >= minimumBalance) {
+            System.out.println("Encashing ₱" + amount + " successful");
+            super.withdraw(amount);
+        } else {
+            System.out.println("❌ Encashment denied: Balance cannot go below ₱" + minimumBalance);
+        }
+    }
+
+    /**
      * Returns the type of account as a string.
      *
      * @return A string indicating this is a checking account
@@ -59,30 +105,4 @@ public class CheckingAccount extends BankAccount {
     public String displayAccountType() {
         return "Checking Account";
     }
-
-    /**
-     * Processes a check encashment request while ensuring minimum balance requirements are met.
-     * The transaction will be denied if:
-     * - The amount exceeds the current balance
-     * - The withdrawal would cause the balance to fall below the minimum requirement
-     *
-     * @param amount The amount to be encashed from the check
-     */
-    public void encashCheck(double amount) {
-        double currentBalance = super.inquireBalance();
-
-        if (amount > currentBalance) {
-            System.out.println("❌ Insufficient funds to encash ₱" + amount);
-            return;
-        }
-
-        // Check if withdrawal would violate minimum balance
-        if ((currentBalance - amount) >= minimumBalance) {
-            System.out.println("Encashing ₱" + amount + " successful");
-            super.withdraw(amount);
-        } else {
-            System.out.println("❌ Encashment denied: Balance cannot go below (₱" + minimumBalance + ")");
-        }
-    }
 }
-

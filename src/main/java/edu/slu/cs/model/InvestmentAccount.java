@@ -1,7 +1,5 @@
 package edu.slu.cs.model;
 
-import java.util.ArrayList;
-
 /**
  * Represents an investment account in the Co-Pals Bank System.
  * This account type provides investment functionality with interest accrual
@@ -11,93 +9,140 @@ import java.util.ArrayList;
  * Created on: 3/21/2025
  *
  * @author Aquino, Theo James Coroneza
- * @author Arellano, Clendrick Joshua Mangonon
+ * @author Arellano, Theo James Coroneza
  * @author Mangonon, John Cedrick Garcia
  * @author Ong, Ron Miguel Cau
  * @author Ramos, Ricky Marc Salazar
  * @author Rosana, Jeaven Vincent Yojan Operia
- * @version 1.0
+ * @version 1.1
  */
 public class InvestmentAccount extends BankAccount {
 
     /** The minimum balance that must be maintained in the account */
     private final double minimumBalance;
-    /** The annual interest rate applied to the investment (as a decimal) */
-    private final double interest;
+    /** The annual interest rate applied to the investment (as decimal) */
+    private final double interestRate;
 
     /**
-     * Default constructor that creates a new investment account.
-     * Initializes with zero minimum balance and interest rate.
-     */
-    public InvestmentAccount() {
-        minimumBalance = 0.0;
-        interest = 0.0;
-    }
-
-    /**
-     * Creates a new investment account with specified parameters.
+     * Constructs a new investment account with zero minimum balance and zero interest.
      *
-     * @param accountNo The unique 9-digit account number
-     * @param accountName The name of the account holder
-     * @param minimumBalance The minimum balance requirement
-     * @param interest The annual interest rate (as a decimal)
+     * @param firstName the account holder's first name
+     * @param lastName the account holder's last name
      */
-    public InvestmentAccount(int accountNo, String accountName, double minimumBalance, double interest) {
-        super(accountNo, accountName);
-        this.minimumBalance = minimumBalance;
-        this.interest = interest;
+    public InvestmentAccount(String firstName, String lastName) {
+        super(firstName, lastName);
+        this.minimumBalance = 0.0;
+        this.interestRate = 0.0;
     }
 
+    /**
+     * Constructs a new investment account with specified minimum balance and interest rate.
+     *
+     * @param firstName the account holder's first name
+     * @param lastName the account holder's last name
+     * @param minimumBalance the minimum balance requirement
+     * @param interestRate the annual interest rate (e.g. 0.05 for 5%)
+     */
+    public InvestmentAccount(String firstName, String lastName, double minimumBalance, double interestRate) {
+        super(firstName, lastName);
+        this.minimumBalance = minimumBalance;
+        this.interestRate = interestRate;
+    }
+
+    /**
+     * Gets the minimum balance requirement for this account.
+     *
+     * @return the minimum balance that must be maintained
+     */
     public double getMinimumBalance() {
         return minimumBalance;
     }
 
-    public double getInterest() {
-        return interest;
+    /**
+     * Gets the annual interest rate of this account.
+     *
+     * @return the interest rate as a decimal
+     */
+    public double getInterestRate() {
+        return interestRate;
     }
 
+    /**
+     * Adds funds to the investment via deposit.
+     *
+     * @param amount the amount to invest
+     */
+    public void addInvestment(double amount) {
+        if (!"Active".equals(getStatus())) {
+            System.out.println("❌ Cannot invest to a closed account.");
+            return;
+        }
+        super.deposit(amount);
+    }
+
+    /**
+     * Calculates the total value of the investment including accrued interest.
+     *
+     * @return the investment value = principal * (1 + interestRate)
+     */
+    public double inquireInvestmentValue() {
+        double principal = super.inquireBalance();
+        return principal * (1 + interestRate);
+    }
+
+    /**
+     * Calculates accrued interest on current balance.
+     *
+     * @return the amount of interest earned
+     */
+    public double calculateEarnedInterest() {
+        double principal = super.inquireBalance();
+        return principal * interestRate;
+    }
+
+    /**
+     * Closes the investment account, withdrawing principal + interest if above minimum.
+     * The account remains in list but becomes inactive.
+     */
+    @Override
+    public void closeAccount() {
+        if (!"Active".equals(getStatus())) {
+            System.out.println("❌ Account is already closed.");
+            return;
+        }
+        double principal = super.inquireBalance();
+        double total = principal * (1 + interestRate);
+        if (principal >= minimumBalance) {
+            System.out.println("Withdrawing invested amount of ₱" + String.format("%.2f", total));
+            System.out.println("Earned interest: ₱" + String.format("%.2f", calculateEarnedInterest()));
+            // empty the balance
+            super.withdraw(principal);
+            setStatus("Closed");
+            System.out.println("Investment account closed.");
+        } else {
+            System.out.println("❌ Cannot close: balance ₱" + String.format("%.2f", principal) +
+                    " is below minimum ₱" + minimumBalance);
+        }
+    }
+
+    /**
+     * Returns the type of account as a string.
+     *
+     * @return a string indicating this is an investment account
+     */
     @Override
     public String displayAccountType() {
         return "Investment Account";
     }
 
-    public void addInvestment(double amount) {
-        super.deposit(amount);
-    }
-
-    public double inquireBalance() {
-        return super.inquireBalance() + minimumBalance;
-    }
-
-    public double inquireInvestmentValue() {
-        System.out.println("Your interest rate is: " + interest * 100 + "%");
-        System.out.println("Total Earned Interest: ₱" + String.format("%.2f", inquireBalance() * interest));
-        double investmentValue = Double.parseDouble(String.format("%.2f", (inquireBalance()) * (1 + interest)));
-
-        return investmentValue;
-    }
-
-    @Override
-    public void closeAccount(ArrayList<BankAccount> bankAccounts) {
-        double finalBalance = inquireBalance() * (1 + interest);
-
-        if (finalBalance > minimumBalance * (1 + interest)) {
-            System.out.println("Investment has been withdrawn");
-            System.out.println("You have deposited ₱" + String.format("%.2f", finalBalance) + " and earned ₱" + String.format("%.2f", (finalBalance - inquireBalance())));
-        } else {
-            System.out.println("❌ You cannot withdraw the minimum balance");
-            return;
-        }
-        bankAccounts.remove(this);
-        super.setStatus("Closed");
-        System.out.println("Your account has been closed.");
-    }
-
+    /**
+     * Provides a string representation of the account details.
+     */
     @Override
     public String toString() {
-        return getAccountName() + "\n" +
-                getAccountNo() + "\n" +
-                "Interest: " + interest * 100 + "%\n" +
-                "Status: " + getStatus() + "\n";
+        return getFirstName() + " " + getLastName() + "\n#" + getAccountNo() +
+                "\nStatus: " + getStatus() +
+                "\nMinimum Balance: ₱" + minimumBalance +
+                "\nInterest Rate: " + (interestRate * 100) + "%";
     }
 }

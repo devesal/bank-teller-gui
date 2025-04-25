@@ -1,12 +1,10 @@
 package edu.slu.cs.model;
 
-import java.util.ArrayList;
-
 /**
  * Represents a credit card account in the Co-Pals Bank System.
  * This account type provides credit card functionality including charging purchases,
  * making payments, and obtaining cash advances. Extends the base BankAccount class
- * to provide specialized credit card account functionality.
+ * to provide specialized credit card account operations.
  *
  * Created on: 3/21/2025
  *
@@ -16,7 +14,7 @@ import java.util.ArrayList;
  * @author Ong, Ron Miguel Cau
  * @author Ramos, Ricky Marc Salazar
  * @author Rosana, Jeaven Vincent Yojan Operia
- * @version 1.0
+ * @version 1.1
  */
 public class CreditCardAccount extends BankAccount {
 
@@ -26,29 +24,29 @@ public class CreditCardAccount extends BankAccount {
     private double charges;
 
     /**
-     * Default constructor that creates a new credit card account.
-     * Initializes with a default credit limit of 100,000 and zero charges.
+     * Constructs a new credit card account with default credit limit of 100,000 and zero charges.
+     * Uses superclass constructor to generate account number and set names.
+     *
+     * @param firstName the account holder's first name
+     * @param lastName the account holder's last name
      */
-    public CreditCardAccount() {
-        super();
-        creditLimit = 100000;
-        charges = 0.0;
+    public CreditCardAccount(String firstName, String lastName) {
+        super(firstName, lastName);
+        this.creditLimit = 100_000;
+        this.charges = 0.0;
     }
 
     /**
-     * Creates a new credit card account with specified parameters.
+     * Constructs a new credit card account with specified credit limit.
      *
-     * @param accountNo The unique 9-digit account number
-     * @param accountName The name of the account holder
-     * @param creditLimit The maximum credit limit for this account
-     * @param charges The initial charges on the account
+     * @param firstName the account holder's first name
+     * @param lastName the account holder's last name
+     * @param creditLimit the maximum credit limit for this account
      */
-    public CreditCardAccount(int accountNo, String accountName, double creditLimit, double charges) {
-        super(accountNo, accountName);
+    public CreditCardAccount(String firstName, String lastName, double creditLimit) {
+        super(firstName, lastName);
         this.creditLimit = creditLimit;
-        this.charges = charges;
-        setAccountNo(accountNo);
-        setAccountName(accountName);
+        this.charges = 0.0;
     }
 
     /**
@@ -57,7 +55,7 @@ public class CreditCardAccount extends BankAccount {
      * @return The maximum credit limit
      */
     public double getCreditLimit() {
-        return this.creditLimit;
+        return creditLimit;
     }
 
     /**
@@ -66,7 +64,26 @@ public class CreditCardAccount extends BankAccount {
      * @return The current charges/balance
      */
     public double getCharges() {
-        return this.charges;
+        return charges;
+    }
+
+    /**
+     * Applies a new charge to the credit card if sufficient credit is available.
+     *
+     * @param amount The amount to charge
+     */
+    public void chargeToCard(double amount) {
+        if (!"Active".equals(getStatus())) {
+            System.out.println("❌ Cannot charge a closed account.");
+            return;
+        }
+        double available = creditLimit - charges;
+        if (available >= amount) {
+            charges += amount;
+            System.out.println("Charge successful! New balance: ₱" + charges);
+        } else {
+            System.out.println("❌ Not enough credit. Available: ₱" + available);
+        }
     }
 
     /**
@@ -76,12 +93,15 @@ public class CreditCardAccount extends BankAccount {
      * @param amount The amount to pay
      */
     public void payCard(double amount) {
+        if (!"Active".equals(getStatus())) {
+            System.out.println("❌ Cannot pay a closed account.");
+            return;
+        }
         if (amount > charges) {
             System.out.println("❌ Payment exceeds total charges");
-            return;
         } else {
             charges -= amount;
-            System.out.println("Payment successful! Your remaining balance is: ₱" + charges);
+            System.out.println("Payment successful! Remaining balance: ₱" + charges);
         }
     }
 
@@ -90,23 +110,8 @@ public class CreditCardAccount extends BankAccount {
      * Available credit is calculated as credit limit minus current charges.
      */
     public void inquireAvailableCredit() {
-        double availableCredit = creditLimit - charges;
-        System.out.println("Your available credit is: "+ availableCredit);
-    }
-
-    /**
-     * Charges an amount to the credit card if sufficient credit is available.
-     *
-     * @param amount The amount to charge
-     */
-    public void chargeToCard(double amount) {
-        double availableCredit = creditLimit - charges;
-        if (availableCredit >= amount) {
-            charges += amount;
-            System.out.println("Charges successful, total charges: "+ charges);
-        } else {
-            System.out.println("❌ Not enough credit");
-        }
+        double available = creditLimit - charges;
+        System.out.println("Your available credit is: ₱" + available);
     }
 
     /**
@@ -116,47 +121,54 @@ public class CreditCardAccount extends BankAccount {
      * @param amount The amount of cash advance requested
      */
     public void getCashAdvance(double amount) {
-        double availableCredit = creditLimit - charges;
-        availableCredit = availableCredit * 0.5;
-        if (amount < availableCredit) {
-            charges += amount;
-            System.out.println("Cash advance approved! You have been charged: ₱" + amount);
-        } else {
-            System.out.println("❌ Transaction declined: Requested cash advance exceeds your available credit.");
+        if (!"Active".equals(getStatus())) {
+            System.out.println("❌ Cannot advance from a closed account.");
+            return;
         }
-    }
-
-    /**
-     * Returns a string representation of the account.
-     *
-     * @return Formatted string with account details including credit limit
-     */
-    @Override
-    public String toString() {
-        return getAccountName() +
-                "\n#" + getAccountNo() +
-                "\nStatus: " + getStatus() +
-                "\nCredit Limit: " + creditLimit;
+        double available = (creditLimit - charges) * 0.5;
+        if (amount <= available) {
+            charges += amount;
+            System.out.println("Cash advance approved! Charged: ₱" + amount);
+        } else {
+            System.out.println("❌ Transaction declined: Requested advance exceeds ₱" + available);
+        }
     }
 
     /**
      * Closes the credit card account if all charges are paid.
-     * Account cannot be closed with outstanding charges.
-     *
-     * @param bankAccounts List of bank accounts to remove this account from
+     * Account remains in list but becomes inactive.
      */
     @Override
-    public void closeAccount(ArrayList<BankAccount> bankAccounts) {
-
-        if (charges == 0) {
-            System.out.println("Congratulations! You have achieved a Great Credit Score!");
-        } else {
-            System.out.println("❌ Please settle your remaining balance before closing your account");
+    public void closeAccount() {
+        if (!"Active".equals(getStatus())) {
+            System.out.println("❌ Account is already closed.");
             return;
         }
+        if (charges == 0) {
+            super.closeAccount();
+        } else {
+            System.out.println("❌ Please settle your remaining balance before closing your account");
+        }
+    }
 
-        bankAccounts.remove(this);
-        super.setStatus("Closed");
-        System.out.println("Your account has been closed.");
+    /**
+     * Returns the type of account as a string.
+     *
+     * @return A string indicating this is a credit card account
+     */
+    @Override
+    public String displayAccountType() {
+        return "Credit Card Account";
+    }
+
+    /**
+     * Provides a string representation of the account details.
+     */
+    @Override
+    public String toString() {
+        return getFirstName() + " " + getLastName() + "\n#" + getAccountNo() +
+                "\nStatus: " + getStatus() +
+                "\nCredit Limit: ₱" + creditLimit +
+                "\nCharges: ₱" + charges;
     }
 }
