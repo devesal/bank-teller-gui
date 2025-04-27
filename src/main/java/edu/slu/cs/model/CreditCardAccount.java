@@ -108,10 +108,13 @@ public class CreditCardAccount extends BankAccount {
     /**
      * Displays the available credit on the account.
      * Available credit is calculated as credit limit minus current charges.
+     *
+     * @return
      */
-    public void inquireAvailableCredit() {
+    public double inquireAvailableCredit() {
         double available = creditLimit - charges;
         System.out.println("Your available credit is: ₱" + available);
+        return available;
     }
 
     /**
