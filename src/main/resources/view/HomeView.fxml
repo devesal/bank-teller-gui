@@ -33,6 +33,7 @@
                 <HBox>
                     <TextField fx:id="searchField"
                                promptText="Search"
+                               onAction="#searchButton"
                                styleClass="search-field"/>
                     <Button fx:id="addCustomerButton"
                             onAction="#handleAddCustomer"
