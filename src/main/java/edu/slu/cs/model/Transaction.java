@@ -3,9 +3,11 @@ package edu.slu.cs.model;
 import java.time.LocalDateTime;
 
 /**
- * A unified Transaction record for the banking system.
+ * A Transaction Class by ChatGPT, di ko alam kung saan to pwede magamit pero dinagdag ko lang
+ * baka kasi usefull
  */
 public class Transaction {
+    /*
     public enum Type { DEPOSIT, WITHDRAWAL, TRANSFER }
 
     private final int fromAccount;
@@ -47,4 +49,6 @@ public class Transaction {
         return String.format("[%s] %s: from #%d to #%d amount=₱%.2f",
                 timestamp, type, fromAccount, toAccount, amount);
     }
+
+     */
 }
