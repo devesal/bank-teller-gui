@@ -1,5 +1,7 @@
 package models;
 
+import model.BankAccount;
+
 import java.util.ArrayList;
 
 public class CreditCardAccount extends BankAccount {
