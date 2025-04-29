@@ -44,7 +44,6 @@ public class MainController {
         });
     }
 
-    /** Call this from your Main.java to kick things off */
     public void start() {
         SwingUtilities.invokeLater(() -> {
             view.getFrame().setVisible(true);
