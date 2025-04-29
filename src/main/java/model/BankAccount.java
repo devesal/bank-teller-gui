@@ -53,18 +53,53 @@ public abstract class BankAccount {
     public String getAccountName() {
         return accountName;
     }
+    public void deposit(double amount) {
+        if(this.status.equals("Active")) {
+            this.balance = amount + balance;
+            System.out.println("Money has been deposited to your account");
+            System.out.println("Please check your account for safety measures");
+        } else{
+            System.out.println("Transaction terminated, the account is closed");
+        }
+    }
+
+    public void withdraw(double amount) {
+        if (balance >= amount && this.status.equals("Active")) {
+            this.balance = balance - amount;
+            System.out.println("Money withdrawn: ₱" + amount);
+        } else if(balance < amount) {
+            System.out.println("❌ Insufficient balance. Transaction terminated");
+        } else if (this.status.equals("Closed")) {
+            System.out.println("Transaction terminated, the account is closed");
+        }
+    }
 
     public double inquireBalance() {
         return balance;
     }
 
-    public void setBalance(double balance) {
-        this.balance = balance;
+    public void transferMoney(int accountNumber, double amount, ArrayList<BankAccount> bankAccounts) {
+        if (amount > balance) {
+            System.out.println("❌ Invalid amount. Transaction terminated");
+            return;
+        }
+
+        for (BankAccount recipient : bankAccounts) {
+            if (recipient.getAccountNo() == accountNumber && recipient.getStatus().equals("Active")) {
+                balance -= amount;
+                recipient.deposit(amount);
+                System.out.println("Transfer successful! ₱" + amount + " has been sent to account #" + recipient.getAccountNo());
+                return;
+            } else if (recipient.getAccountNo() == accountNumber && recipient.getStatus().equals("Closed")) {
+                System.out.println("The appointed account is currently closed");
+            }
+        }
+        System.out.println("❌ Account not found");
     }
 
     public void closeAccount(ArrayList<BankAccount> bankAccounts) {
         if (balance > 0) {
-            System.out.println("Balance must be withdrawn first");
+            withdraw(balance);
         }
         else {
             System.out.println("❌ There is no balance to withdraw");
@@ -75,7 +110,7 @@ public abstract class BankAccount {
     }
 
     public String displayAccountType() {
-        return this.getClass().toString();
+        return "Savings Account";
     }
 
     public String toString() {
