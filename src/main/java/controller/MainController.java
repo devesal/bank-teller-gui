@@ -7,16 +7,20 @@ import java.awt.event.*;
 
 public class MainController {
     private final MainView view;
+    private final CustomerFormController customerFormController;
 
     public MainController() {
         view = new MainView();
+        customerFormController = new CustomerFormController(view);
         initController();
     }
 
     private void initController() {
         // Show Customers card when sidebar button clicked
         view.getSidebar().getBtnCustomers().addActionListener(
-                e -> view.showCard(MainView.CUSTOMERS_VIEW)
+                e -> {
+                    view.showCard(MainView.CUSTOMERS_VIEW);
+                }
         );
 
         // Show Reports card
