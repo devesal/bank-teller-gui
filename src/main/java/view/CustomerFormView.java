@@ -30,7 +30,6 @@ public class CustomerFormView extends JPanel {
     // --- Step 3: Success ---
     private final JLabel lblSuccessName     = new JLabel();
     private final JLabel lblSuccessDob      = new JLabel();
-    private final JLabel lblSuccessPhone    = new JLabel();
     private final JLabel lblSuccessAccounts = new JLabel();
     private final JButton btnView           = new JButton("View");
 
@@ -66,7 +65,7 @@ public class CustomerFormView extends JPanel {
         form.add(txtFirstName);
         form.add(new JLabel("Last Name"));
         form.add(txtLastName);
-        form.add(new JLabel("Date of Birth"));
+        form.add(new JLabel("Date of Birth (eg. July 30, 2005)"));
         form.add(txtDob);
         p.add(form, BorderLayout.CENTER);
 
@@ -133,7 +132,6 @@ public class CustomerFormView extends JPanel {
         details.setBorder(new EmptyBorder(10, 50, 10, 50));
         details.add(new JLabel("Name:"));            details.add(lblSuccessName);
         details.add(new JLabel("Date of Birth:"));   details.add(lblSuccessDob);
-        details.add(new JLabel("Phone number:"));    details.add(lblSuccessPhone);
         details.add(new JLabel("Accounts:"));        details.add(lblSuccessAccounts);
         p.add(details, BorderLayout.CENTER);
 
@@ -161,7 +159,6 @@ public class CustomerFormView extends JPanel {
         // --- clear step 3 labels ---
         lblSuccessName    .setText("");
         lblSuccessDob     .setText("");
-        lblSuccessPhone   .setText("");
         lblSuccessAccounts.setText("");
 
         // --- go back to the first card ---
@@ -183,7 +180,6 @@ public class CustomerFormView extends JPanel {
 
     public JLabel     getSuccessNameLabel()      { return lblSuccessName;     }
     public JLabel     getSuccessDobLabel()       { return lblSuccessDob;      }
-    public JLabel     getSuccessPhoneLabel()     { return lblSuccessPhone;    }
     public JLabel     getSuccessAccountsLabel()  { return lblSuccessAccounts; }
     public JButton    getViewButton()            { return btnView;            }
 }
