@@ -4,12 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Sidebar extends JPanel {
-    private JButton btnReports;
-    private JButton btnCustomers;
+    private final JButton btnReports;
+    private final JButton btnCustomers;
 
     public Sidebar() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        this.setPreferredSize(new Dimension(140, 0));
 
         btnCustomers = new JButton("CUSTOMERS");
         btnCustomers.setAlignmentX(Component.CENTER_ALIGNMENT);

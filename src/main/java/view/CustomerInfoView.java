@@ -21,6 +21,7 @@ public class CustomerInfoView extends JPanel {
     private final JTable accountsTable;
 
     public CustomerInfoView() {
+        setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         setLayout(new BorderLayout(10,10));
 
         // === Top: Customer detail panel ===

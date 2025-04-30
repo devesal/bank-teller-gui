@@ -35,6 +35,7 @@ public class CustomerFormView extends JPanel {
     private final JButton btnView           = new JButton("View");
 
     public CustomerFormView() {
+        setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         cardLayout = new CardLayout();
         cardPanel  = new JPanel(cardLayout);
         cardPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -48,7 +49,7 @@ public class CustomerFormView extends JPanel {
         add(cardPanel, BorderLayout.CENTER);
     }
 
-    /** Switch to one of the four steps */
+    /** Switch to one of the three steps */
     public void showStep(String stepName) {
         cardLayout.show(cardPanel, stepName);
     }
@@ -68,6 +69,9 @@ public class CustomerFormView extends JPanel {
         form.add(new JLabel("Date of Birth"));
         form.add(txtDob);
         p.add(form, BorderLayout.CENTER);
+
+        btnNext1.setPreferredSize(new Dimension(100, 40));
+        btnBack1.setPreferredSize(new Dimension(100, 40));
 
         // --- button bar, centered ---
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
@@ -106,6 +110,9 @@ public class CustomerFormView extends JPanel {
 
         p.add(list, BorderLayout.CENTER);
 
+        btnCreate.setPreferredSize(new Dimension(100, 40));
+        btnBack2.setPreferredSize(new Dimension(100, 40));
+
         // --- button bar, centered ---
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         btnPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
@@ -129,6 +136,8 @@ public class CustomerFormView extends JPanel {
         details.add(new JLabel("Phone number:"));    details.add(lblSuccessPhone);
         details.add(new JLabel("Accounts:"));        details.add(lblSuccessAccounts);
         p.add(details, BorderLayout.CENTER);
+
+        btnView.setPreferredSize(new Dimension(100, 40));
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(btnView);
