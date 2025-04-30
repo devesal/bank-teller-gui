@@ -6,14 +6,13 @@ import java.awt.*;
 
 public class CustomerInfoView extends JPanel {
     // card names for the right‐hand panel
-    public static final String CARD_ACCOUNTS              = "CARD_ACCOUNTS";
-    public static final String CARD_TRANSACTION_HISTORY   = "CARD_TRANSACTION_HISTORY";
-    public static final String CARD_BANK_ACCOUNT          = "CARD_BANK_ACCOUNT";
+    public static final String BANK_ACCOUNTS              = "BANK_ACCOUNTS";
+    public static final String BANK_TRANSACTION_HISTORY   = "BANK_TRANSACTION_HISTORY";
+    public static final String BANK_ACCOUNT               = "BANK_ACCOUNT";
 
     private final JLabel lblId      = new JLabel();
     private final JLabel lblName    = new JLabel();
     private final JLabel lblDob     = new JLabel();
-    private final JLabel lblContact = new JLabel();
 
     private final JButton btnEdit         = new JButton("Edit Customer Info");
     private final JButton btnHistory      = new JButton("Transaction History");
@@ -43,7 +42,6 @@ public class CustomerInfoView extends JPanel {
         detailPanel.add(new JLabel("ID:"));      detailPanel.add(lblId);
         detailPanel.add(new JLabel("Name:"));    detailPanel.add(lblName);
         detailPanel.add(new JLabel("DOB:"));     detailPanel.add(lblDob);
-        detailPanel.add(new JLabel("Contact:")); detailPanel.add(lblContact);
         leftPanel.add(detailPanel, BorderLayout.NORTH);
 
         // Action buttons down the center
@@ -82,9 +80,9 @@ public class CustomerInfoView extends JPanel {
 
         // 2) Add all cards to rightPanel
         rightPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        rightPanel.add(accountsPanel,            CARD_ACCOUNTS);
-        rightPanel.add(new TransactionHistoryView(), CARD_TRANSACTION_HISTORY);
-        rightPanel.add(new BankAccountView(),        CARD_BANK_ACCOUNT);
+        rightPanel.add(accountsPanel,            BANK_ACCOUNTS);
+        rightPanel.add(new TransactionHistoryView(), BANK_TRANSACTION_HISTORY);
+        rightPanel.add(new BankAccountView(),        BANK_ACCOUNT);
 
         // assemble the two halves
         add(leftPanel,  BorderLayout.WEST);
@@ -108,5 +106,4 @@ public class CustomerInfoView extends JPanel {
     public void setCustomerId(String id)         { lblId.setText(id);      }
     public void setCustomerName(String name)     { lblName.setText(name);  }
     public void setCustomerDob(String dob)       { lblDob.setText(dob);    }
-    public void setCustomerContact(String phone) { lblContact.setText(phone);}
 }

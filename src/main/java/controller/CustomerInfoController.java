@@ -8,10 +8,10 @@ import java.awt.event.*;
 
 public class CustomerInfoController {
     private final CustomerInfoView view;
-    private final MainView         mainView;
+    private final MainView mainView;
 
     public CustomerInfoController(MainView mainView) {
-        this.view     = mainView.getCustomerInfoView();
+        this.view = mainView.getCustomerInfoView();
         this.mainView = mainView;
         initController();
     }
@@ -27,7 +27,7 @@ public class CustomerInfoController {
 
         // 1) “Transaction History” button → history card
         view.getBtnHistory().addActionListener(e -> {
-            view.showRightCard(CustomerInfoView.CARD_TRANSACTION_HISTORY);
+            view.showRightCard(CustomerInfoView.BANK_TRANSACTION_HISTORY);
             mainView.getHeader().showControls(false);
         });
 
@@ -36,7 +36,7 @@ public class CustomerInfoController {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    view.showRightCard(CustomerInfoView.CARD_BANK_ACCOUNT);
+                    view.showRightCard(CustomerInfoView.BANK_ACCOUNT);
                     mainView.getHeader().updateHeaderTitle("ACCOUNT DETAILS");
                     mainView.getHeader().showControls(false);
                 }
@@ -45,11 +45,9 @@ public class CustomerInfoController {
 
         // 3) “Add Bank Account” → flip back to accounts list (or launch wizard)
         view.getBtnAddAccount().addActionListener(e -> {
-            view.showRightCard(CustomerInfoView.CARD_ACCOUNTS);
-            mainView.getHeader().updateHeaderTitle("ACCOUNTS");
-            mainView.getHeader().showControls(true);
+            view.showRightCard(CustomerInfoView.BANK_ACCOUNTS);
+            mainView.getHeader().updateHeaderTitle("BANK ACCOUNTS");
             // or: mainView.showPage(MainView.ADD_CUSTOMERS_VIEW);
         });
-
     }
 }
