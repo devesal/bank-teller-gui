@@ -1,4 +1,4 @@
-package edu.slu.cs.implementation;
+package edu.slu.cs.model;
 
 public class TransactionLogger {
 }
