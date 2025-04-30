@@ -1,5 +1,7 @@
 package controller;
 
+import jdk.swing.interop.SwingInterOpUtils;
+import view.CustomerFormView;
 import view.CustomerInfoView;
 import view.MainView;
 
@@ -17,15 +19,9 @@ public class CustomerInfoController {
 
     private void initController() {
         // 1) “Transaction History” button -> history card
-        view.getBtnHistory().addActionListener(e -> {
-            view.showRightCard(MainView.TRANSACTION_HISTORY);
-            view.setCurrentRightCard(MainView.TRANSACTION_HISTORY);
-            mainView.setCurrentPage(MainView.TRANSACTION_HISTORY);
-
+        view.getHistoryButton().addActionListener(e -> {
+            view.showRightCard(CustomerInfoView.TRANSACTION_HISTORY);
             mainView.getHeader().showControls(false);
-            mainView.getHeader().getBackButton().addActionListener(
-                    f -> view.showRightCard(MainView.BANK_ACCOUNTS)
-            );
         });
 
         // 2) Double‐click on a row -> bank‐account card
@@ -33,9 +29,7 @@ public class CustomerInfoController {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    view.showRightCard(MainView.BANK_ACCOUNT);
-                    view.setCurrentRightCard(MainView.BANK_ACCOUNT);
-                    mainView.setCurrentPage(MainView.BANK_ACCOUNT);
+                    view.showRightCard(CustomerInfoView.BANK_ACCOUNT);
                     mainView.getHeader().updateHeaderTitle("ACCOUNT DETAILS");
                     mainView.getHeader().showControls(false);
                 }
@@ -43,11 +37,10 @@ public class CustomerInfoController {
         });
 
         // 3) “Add Bank Account” -> flip back to accounts list (or launch wizard)
-        view.getBtnAddAccount().addActionListener(e -> {
-            view.showRightCard(MainView.BANK_ACCOUNTS);
-            view.setCurrentRightCard(MainView.BANK_ACCOUNTS);
+        view.getAddAccountButton().addActionListener(e -> {
+            view.showRightCard(CustomerInfoView.BANK_ADD);
             mainView.getHeader().updateHeaderTitle("BANK ACCOUNTS");
-            // or: mainView.showPage(MainView.ADD_CUSTOMERS);
+            System.out.println(mainView.getCurrentPage());
         });
     }
 }

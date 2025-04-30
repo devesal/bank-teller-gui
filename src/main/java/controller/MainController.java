@@ -1,8 +1,7 @@
     package controller;
 
     import model.*;
-    import view.CustomerFormView;
-    import view.MainView;
+    import view.*;
 
 
     import javax.swing.*;
@@ -12,10 +11,19 @@
 
     public class MainController {
         private final MainView view;
+        private final CustomerInfoView customerInfoView;
+        private final CustomerFormView formView;
+        private final CustomersView customersView;
+        private final ReportsView reportsView;
+
         private final List<Customer> customerList;
 
         public MainController() {
             view = new MainView();
+            customerInfoView = new CustomerInfoView();
+            formView = new CustomerFormView();
+            customersView = new CustomersView();
+            reportsView = new ReportsView();
             customerList = new ArrayList<>();
             initController();
         }
@@ -122,7 +130,6 @@
             view.getHeader().getBackButton().addActionListener(e -> {
                 switch (view.getCurrentPage()) {
                     case MainView.REPORTS,
-                         MainView.CUSTOMER_INFO,
                          MainView.ADD_CUSTOMERS,
                          MainView.STEP_PERSONAL,
                          MainView.STEP_SUCCESS -> {
@@ -131,21 +138,39 @@
                             view.getHeader().updateHeaderTitle("CUSTOMERS");
                             view.getHeader().showControls(true);
                     }
+                    case MainView.CUSTOMER_INFO -> {
+                        String right = view.getCustomerInfoView().getCurrentRightCard();
+                        if (CustomerInfoView.TRANSACTION_HISTORY.equals(right)
+                                || CustomerInfoView.BANK_ADD.equals(right)
+                                || CustomerInfoView.BANK_ACCOUNT.equals(right)) {
+                            // always go back to the accounts list
+                            view.getCustomerInfoView().showRightCard(CustomerInfoView.BANK_ACCOUNTS);
+                            view.getHeader().updateHeaderTitle("BANK ACCOUNTS");
+                            view.getHeader().showControls(false);
+                        } else {
+                            // we were already on the accounts list → fall back to the customer list
+                            view.showPage(MainView.CUSTOMERS);
+                            view.setCurrentPage(MainView.CUSTOMERS);
+                            view.getHeader().updateHeaderTitle("CUSTOMERS");
+                            view.getHeader().showControls(true);
+                        }
+                    }
                     case MainView.STEP_ACCOUNTS -> {
                         // back from accounts step → personal step
                         view.getCustomerFormView().showStep(MainView.STEP_PERSONAL);
                         view.setCurrentPage(MainView.STEP_PERSONAL);
                         view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
                     }
-                    case MainView.TRANSACTION_HISTORY -> {
+                    case CustomerInfoView.TRANSACTION_HISTORY -> {
                         // sub‐page under CustomerInfo
                         view.getCustomerInfoView().showRightCard(MainView.CUSTOMER_INFO);
                         view.setCurrentPage(MainView.CUSTOMER_INFO);
                         view.getHeader().showControls(false);
                         view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
                     }
-                    case MainView.BANK_ACCOUNT -> {
-                        view.getCustomerInfoView().showRightCard(MainView.CUSTOMER_INFO);
+
+                    case CustomerInfoView.BANK_ADD -> {
+                        view.showPage(MainView.CUSTOMER_INFO);
                         view.setCurrentPage(MainView.CUSTOMER_INFO);
                         view.getHeader().showControls(false);
                         view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");

@@ -1,15 +1,19 @@
 package view;
 
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class CustomerInfoView extends JPanel {
-    private final JLabel lblId      = new JLabel();
-    private final JLabel lblName    = new JLabel();
-    private final JLabel lblDob     = new JLabel();
+    public static final String BANK_ACCOUNTS       = "BANK_ACCOUNTS";
+    public static final String TRANSACTION_HISTORY = "TRANSACTION_HISTORY";
+    public static final String BANK_ACCOUNT        = "BANK_ACCOUNT";
+    public static final String BANK_ADD            = "BANK_ADD";
+
+    private final JLabel lblId   = new JLabel();
+    private final JLabel lblName = new JLabel();
+    private final JLabel lblDob  = new JLabel();
 
     private final JToggleButton tglSavings    = new JToggleButton("Savings Account");
     private final JToggleButton tglChecking   = new JToggleButton("Checking Account");
@@ -24,7 +28,7 @@ public class CustomerInfoView extends JPanel {
     private final JButton btnAddAccount   = new JButton("Add Bank Account");
     private final JTable accountsTable;
 
-    private String currentRightCard;
+    private String currentRightCard = BANK_ACCOUNTS;
 
     // the CardLayout and its panel
     private final CardLayout rightCardLayout = new CardLayout();
@@ -84,17 +88,17 @@ public class CustomerInfoView extends JPanel {
 
         // Add all cards to rightPanel
         rightPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        rightPanel.add(accountsPanel, MainView.BANK_ACCOUNTS);
-        rightPanel.add(new TransactionHistoryView(), MainView.TRANSACTION_HISTORY);
-        rightPanel.add(new BankAccountView(), MainView.BANK_ACCOUNT);
-        rightPanel.add(buildAccountsPanel(), MainView.BANK_ACCOUNTS);
+        rightPanel.add(accountsPanel, BANK_ACCOUNTS);
+        rightPanel.add(new TransactionHistoryView(), TRANSACTION_HISTORY);
+        rightPanel.add(new BankAccountView(), BANK_ACCOUNT);
+        rightPanel.add(buildAccountAddPanel(), BANK_ADD);
 
         // assemble the two halves
         add(leftPanel,  BorderLayout.WEST);
         add(rightPanel, BorderLayout.CENTER);
     }
 
-    public JPanel buildAccountsPanel() {
+    public JPanel buildAccountAddPanel() {
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("CHOOSE ACCOUNT TYPES", SwingConstants.CENTER);
         title.setFont(new Font("SansSerif", Font.PLAIN, 20));
@@ -134,20 +138,20 @@ public class CustomerInfoView extends JPanel {
     //Controller calls this to flip the right‐hand card
     public void showRightCard(String cardName) {
         rightCardLayout.show(rightPanel, cardName);
+        this.currentRightCard = cardName;
     }
 
     // getters for controller wiring
-    public JTable getAccountsTable()          { return accountsTable;   }
-    public JButton getBtnHistory()            { return btnHistory;      }
-    public JButton getBtnAddAccount()         { return btnAddAccount;   }
-    public JButton getBtnCloseAccount()       { return btnCloseAccount; }
-    public JButton getBtnStatement()          { return btnStatement;    }
-    public JButton getBtnEdit()               { return btnEdit;         }
-    public String getCurrentRightCard()       { return currentRightCard; }
+    public JTable getAccountsTable()         { return accountsTable;    }
+    public JButton getHistoryButton()        { return btnHistory;       }
+    public JButton getAddAccountButton()     { return btnAddAccount;    }
+    public JButton getCloseAccountButton()   { return btnCloseAccount;  }
+    public JButton getStatementButton()      { return btnStatement;     }
+    public String getCurrentRightCard()      { return currentRightCard; }
+    public JButton getEditButton()           { return btnEdit;          }
 
     // setters for labels
-    public void setCustomerId(String id)         { lblId.setText(id);      }
-    public void setCustomerName(String name)     { lblName.setText(name);  }
-    public void setCustomerDob(String dob)       { lblDob.setText(dob);    }
-    public void setCurrentRightCard(String card) { currentRightCard = card; }
+    public void setCustomerId(String id)     { lblId.setText(id);       }
+    public void setCustomerName(String name) { lblName.setText(name);   }
+    public void setCustomerDob(String dob)   { lblDob.setText(dob);     }
 }

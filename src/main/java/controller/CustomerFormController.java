@@ -45,7 +45,6 @@ public class CustomerFormController {
                         JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
 
-                    mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
                     mainView.getHeader().showControls(false);
                     view.showStep(MainView.STEP_SUCCESS);
                     mainView.setCurrentPage(MainView.STEP_SUCCESS);
@@ -57,6 +56,7 @@ public class CustomerFormController {
                     new CustomerInfoController(mainView);
                     mainView.showPage(MainView.CUSTOMER_INFO);
                     mainView.setCurrentPage(MainView.CUSTOMER_INFO);
+                    mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
                 }
         );
     }

@@ -21,13 +21,10 @@ public class MainView {
     public static final String CUSTOMERS           = "CustomersView";
     public static final String REPORTS             = "ReportsView";
     public static final String ADD_CUSTOMERS       = "AddCustomersView";
-    public static final String TRANSACTION_HISTORY = "TransactionHistoryView";
     public static final String STEP_PERSONAL       = "StepPersonal";
     public static final String STEP_ACCOUNTS       = "StepAccounts";
     public static final String STEP_SUCCESS        = "StepSuccess";
     public static final String CUSTOMER_INFO       = "CustomerInfo";
-    public static final String BANK_ACCOUNTS       = "BankAccounts";
-    public static final String BANK_ACCOUNT        = "BankAccount";
 
     private String currentPage;
 
