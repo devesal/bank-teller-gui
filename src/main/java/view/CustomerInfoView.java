@@ -6,18 +6,15 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class CustomerInfoView extends JPanel {
-    // components you’ll need to update at runtime:
     private final JLabel lblId      = new JLabel();
     private final JLabel lblName    = new JLabel();
     private final JLabel lblDob     = new JLabel();
     private final JLabel lblContact = new JLabel();
 
-    // buttons for your controller to hook
     private final JButton btnEdit       = new JButton("Edit Customer Info");
     private final JButton btnHistory    = new JButton("View Transaction History");
     private final JButton btnAddAccount = new JButton("Add New Bank Account");
 
-    // the table whose double-click you want to handle in your controller
     private final JTable accountsTable;
 
     public CustomerInfoView() {
