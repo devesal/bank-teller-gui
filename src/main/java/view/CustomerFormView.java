@@ -56,7 +56,7 @@ public class CustomerFormView extends JPanel {
     private JPanel buildPersonalPanel() {
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("FILL IN ACCOUNT INFORMATION", SwingConstants.CENTER);
-        title.setFont(new Font("SansSerif", Font.BOLD, 20));
+        title.setFont(new Font("SansSerif", Font.PLAIN, 20));
         p.add(title, BorderLayout.NORTH);
 
         JPanel form = new JPanel(new GridLayout(6, 1, 0, 10));
@@ -85,7 +85,7 @@ public class CustomerFormView extends JPanel {
     private JPanel buildAccountsPanel() {
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("CHOOSE ACCOUNT TYPES", SwingConstants.CENTER);
-        title.setFont(new Font("SansSerif", Font.BOLD, 20));
+        title.setFont(new Font("SansSerif", Font.PLAIN, 20));
         p.add(title, BorderLayout.NORTH);
 
         // --- toggle-button list panel ---
@@ -125,7 +125,7 @@ public class CustomerFormView extends JPanel {
     private JPanel buildSuccessPanel() {
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("ACCOUNT CREATED SUCCESSFULLY", SwingConstants.CENTER);
-        title.setFont(new Font("SansSerif", Font.BOLD, 20));
+        title.setFont(new Font("SansSerif", Font.PLAIN, 20));
         p.add(title, BorderLayout.NORTH);
 
         JPanel details = new JPanel(new GridLayout(0, 2, 10, 10));

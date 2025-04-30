@@ -27,11 +27,10 @@ public class CustomerInfoView extends JPanel {
     private final JPanel     rightPanel      = new JPanel(rightCardLayout);
 
     public CustomerInfoView() {
-        // Main split
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.GRAY, 1),
-                BorderFactory.createEmptyBorder(10,10,10,10)
+            BorderFactory.createLineBorder(Color.GRAY, 1),
+            BorderFactory.createEmptyBorder(10,10,10,10)
         ));
 
         // === LEFT PANEL ===

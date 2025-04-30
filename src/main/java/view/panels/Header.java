@@ -1,12 +1,12 @@
 package view.panels;
 
-import view.CustomerInfoView;
 import view.MainView;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class Header extends JPanel {
+    private JButton btnBack;
     private JButton btnAdd;
     private JButton btnSearch;
     private JTextField searchField;
@@ -16,14 +16,20 @@ public class Header extends JPanel {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        // Logo
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel logo = new JLabel("\uD83C\uDFE6 CO-PALS");
         logo.setFont(new Font("SansSerif", Font.BOLD, 16));
-        add(logo, BorderLayout.WEST);
+        leftPanel.add(logo);
+
+        btnBack = new JButton("←");
+        btnBack.setFocusable(false);
+        leftPanel.add(btnBack);
+
+        add(leftPanel, BorderLayout.WEST);
 
         // Title placeholder
         JLabel titleLabel = new JLabel();
-        titleLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(titleLabel, BorderLayout.CENTER);
 
@@ -42,19 +48,22 @@ public class Header extends JPanel {
         putClientProperty("titleLabel", titleLabel);
     }
 
+    /** Show or hide the search/add controls. */
     public void showControls(boolean visible) {
         rightPanel.setVisible(visible);
         revalidate();
         repaint();
     }
 
+    /** Update the header’s central title. */
     public void updateHeaderTitle(String title) {
         JLabel titleLabel = (JLabel) this.getClientProperty("titleLabel");
         titleLabel.setText(title);
     }
 
-    // header getters for controller
-    public JButton getBtnAdd()         { return btnAdd;      }
-    public JTextField getSearchField() { return searchField; }
-    public JButton getBtnSearch()      { return btnSearch;   }
+    // Expose buttons/fields to the controller
+    public JButton getBtnBack()        { return btnBack;      }
+    public JButton getBtnAdd()         { return btnAdd;       }
+    public JTextField getSearchField() { return searchField;  }
+    public JButton getBtnSearch()      { return btnSearch;    }
 }

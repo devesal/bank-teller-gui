@@ -56,6 +56,20 @@ public class CustomerFormController {
         formView.getViewButton().addActionListener(e ->
                 mainView.showPage(MainView.CUSTOMER_INFO_VIEW)
         );
+
+        formView.getCreateButton().addActionListener(
+                e -> {
+                    mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+                    mainView.getHeader().showControls(false);
+                    formView.showStep(CustomerFormView.STEP_SUCCESS);
+                }
+        );
+        formView.getViewButton().addActionListener(
+                e -> {
+                    new CustomerInfoController(mainView);
+                    mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
+                }
+        );
     }
 
     /**
@@ -99,18 +113,5 @@ public class CustomerFormController {
         );
 
         return customer;
-        formView.getCreateButton().addActionListener(
-                e -> {
-                    mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
-                    mainView.getHeader().showControls(false);
-                    formView.showStep(CustomerFormView.STEP_SUCCESS);
-                }
-        );
-        formView.getViewButton().addActionListener(
-                e -> {
-                    new CustomerInfoController(mainView);
-                    mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
-                }
-        );
     }
 }
