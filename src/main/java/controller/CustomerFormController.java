@@ -5,9 +5,9 @@ import model.BankAccount;
 import model.CheckingAccount;
 import model.CreditCardAccount;
 import model.InvestmentAccount;
+import util.FileIO;
 import view.CustomerFormView;
 import view.MainView;
-import util.FileIO;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -17,11 +17,17 @@ public class CustomerFormController {
     private final CustomerFormView formView;
     private final MainView mainView;
     private final List<Customer> customers;
+    private final List<BankAccount> allAccounts;
 
+    /**
+     * @param mainView the root view (should expose getCustomerFormView())
+     */
     public CustomerFormController(MainView mainView) {
         this.formView = mainView.getCustomerFormView();
         this.mainView = mainView;
-        this.customers = new ArrayList<>();
+        // Load persisted data
+        this.customers = FileIO.loadAllCustomers();
+        this.allAccounts = FileIO.loadAllAccounts();
         initController();
     }
 
@@ -41,10 +47,15 @@ public class CustomerFormController {
         formView.getCreateButton().addActionListener(e -> {
             try {
                 Customer customer = accountCreation();
+                // Save to file
+                FileIO.saveAllCustomers(customers);
+                FileIO.saveAllAccounts(new ArrayList<>(allAccounts));
+
                 // populate success view
                 formView.getSuccessNameLabel().setText(
                         customer.getFirstName() + " " + customer.getLastName());
                 formView.getSuccessDobLabel().setText(customer.getBirthDate());
+
                 mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
                 mainView.getHeader().showControls(false);
                 formView.showStep(CustomerFormView.STEP_SUCCESS);
@@ -56,20 +67,6 @@ public class CustomerFormController {
         // navigate to info view
         formView.getViewButton().addActionListener(e ->
                 mainView.showPage(MainView.CUSTOMER_INFO_VIEW)
-        );
-
-        formView.getCreateButton().addActionListener(
-                e -> {
-                    mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
-                    mainView.getHeader().showControls(false);
-                    formView.showStep(CustomerFormView.STEP_SUCCESS);
-                }
-        );
-        formView.getViewButton().addActionListener(
-                e -> {
-                    new CustomerInfoController(mainView);
-                    mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
-                }
         );
     }
 
@@ -86,32 +83,31 @@ public class CustomerFormController {
         Customer customer = new Customer(first, last, dob);
         customers.add(customer);
 
-
-        // create accounts
+        // create accounts for customer
         List<String> created = new ArrayList<>();
         if (formView.getSavingsToggleButton().isSelected()) {
             BankAccount acc = new BankAccount(first, last);
             customer.addAccount(acc);
+            allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
-            util.FileIO.saveAllCustomers((customers));
         }
         if (formView.getCheckingToggleButton().isSelected()) {
             BankAccount acc = new CheckingAccount(first, last, 500.0);
             customer.addAccount(acc);
+            allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
-            util.FileIO.saveAllCustomers((customers));
         }
         if (formView.getInvestmentToggleButton().isSelected()) {
             BankAccount acc = new InvestmentAccount(first, last, 5000, 0.35);
             customer.addAccount(acc);
+            allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
-            util.FileIO.saveAllCustomers((customers));
         }
         if (formView.getCreditCardToggleButton().isSelected()) {
             BankAccount acc = new CreditCardAccount(first, last, 25000);
             customer.addAccount(acc);
+            allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
-            util.FileIO.saveAllCustomers((customers));
         }
 
         formView.getSuccessAccountsLabel().setText(

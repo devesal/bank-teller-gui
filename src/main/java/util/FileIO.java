@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileIO {
+public class FileIO  {
 
     private static final String ACCOUNTS_DATA_FILE = "all_accounts.dat";
     private static final String CUSTOMER_DATA_FILE = "all_customers.dat";

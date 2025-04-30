@@ -14,8 +14,8 @@ package model;
  * @author Rosana, Jeaven Vincent Yojan Operia
  * @version 1.1
  */
-public class CheckingAccount extends BankAccount {
-
+import java.io.Serializable;
+public class CheckingAccount extends BankAccount implements Serializable{
     /** The minimum balance that must be maintained in the account */
     private final double minimumBalance;
 

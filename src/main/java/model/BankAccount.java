@@ -1,10 +1,10 @@
 package model;
 
-
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class BankAccount {
+public class BankAccount implements Serializable {
 
     /** Random generator for account numbers */
     private static final Random RANDOM = new Random();

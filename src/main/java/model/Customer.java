@@ -1,10 +1,11 @@
 package model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Customer {
+public class Customer implements Serializable {
     private String firstName;
     private String lastName;
     private String BirthDate;
