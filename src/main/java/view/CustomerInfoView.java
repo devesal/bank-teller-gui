@@ -5,6 +5,11 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class CustomerInfoView extends JPanel {
+    // card names for the right‐hand panel
+    public static final String CARD_ACCOUNTS              = "CARD_ACCOUNTS";
+    public static final String CARD_TRANSACTION_HISTORY   = "CARD_TRANSACTION_HISTORY";
+    public static final String CARD_BANK_ACCOUNT          = "CARD_BANK_ACCOUNT";
+
     private final JLabel lblId      = new JLabel();
     private final JLabel lblName    = new JLabel();
     private final JLabel lblDob     = new JLabel();
@@ -12,21 +17,26 @@ public class CustomerInfoView extends JPanel {
 
     private final JButton btnEdit         = new JButton("Edit Customer Info");
     private final JButton btnHistory      = new JButton("Transaction History");
-    private final JButton btnStatement   = new JButton("Account Statement");
+    private final JButton btnStatement    = new JButton("Account Statement");
     private final JButton btnCloseAccount = new JButton("Close Account");
-
-    private final JButton btnAddAccount = new JButton("Add Bank Account");
+    private final JButton btnAddAccount   = new JButton("Add Bank Account");
     private final JTable accountsTable;
+
+    // the CardLayout and its panel
+    private final CardLayout rightCardLayout = new CardLayout();
+    private final JPanel     rightPanel      = new JPanel(rightCardLayout);
 
     public CustomerInfoView() {
         // Main split
         setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 1),
+                BorderFactory.createEmptyBorder(10,10,10,10)
+        ));
 
-        // LEFT PANEL
+        // === LEFT PANEL ===
         JPanel leftPanel = new JPanel(new BorderLayout(10,10));
-        leftPanel.setPreferredSize(new Dimension(140, 0));
+        leftPanel.setPreferredSize(new Dimension(160, 0));
 
         // Customer details at top
         JPanel detailPanel = new JPanel(new GridLayout(0,2,5,5));
@@ -37,16 +47,13 @@ public class CustomerInfoView extends JPanel {
         detailPanel.add(new JLabel("Contact:")); detailPanel.add(lblContact);
         leftPanel.add(detailPanel, BorderLayout.NORTH);
 
-        // Actions vertically at center
-
+        // Action buttons down the center
         Dimension btnSize = new Dimension(120, 40);
         for (JButton b : new JButton[]{ btnEdit, btnHistory, btnStatement, btnCloseAccount }) {
             b.setPreferredSize(btnSize);
             b.setMaximumSize(btnSize);
-            b.setMinimumSize(btnSize);
             b.setAlignmentX(Component.CENTER_ALIGNMENT);
         }
-
         JPanel actionPanel = new JPanel();
         actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
         actionPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
@@ -59,36 +66,48 @@ public class CustomerInfoView extends JPanel {
         actionPanel.add(btnCloseAccount);
         leftPanel.add(actionPanel, BorderLayout.CENTER);
 
-        // === RIGHT PANEL ===
-        JPanel rightPanel = new JPanel(new BorderLayout(10,10));
-        rightPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        // === RIGHT PANEL SETUP ===
 
+        // 1) Build the “accounts” card
+        JPanel accountsPanel = new JPanel(new BorderLayout(10,10));
+        // header with “Add Account”
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         btnAddAccount.setPreferredSize(new Dimension(120, 40));
         headerPanel.add(btnAddAccount);
-        rightPanel.add(headerPanel, BorderLayout.NORTH);
-
-        // Accounts table in right panel
+        accountsPanel.add(headerPanel, BorderLayout.NORTH);
+        // the table itself
         String[] cols = {"Account No", "Type", "Status", "Balance"};
         DefaultTableModel model = new DefaultTableModel(cols, 0);
         accountsTable = new JTable(model);
-        JScrollPane tableScroll = new JScrollPane(accountsTable);
-        rightPanel.add(tableScroll, BorderLayout.CENTER);
+        accountsPanel.add(new JScrollPane(accountsTable), BorderLayout.CENTER);
 
-        // assemble main view
+        // 2) Add all cards to rightPanel
+        rightPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        rightPanel.add(accountsPanel,            CARD_ACCOUNTS);
+        rightPanel.add(new TransactionHistoryView(), CARD_TRANSACTION_HISTORY);
+        rightPanel.add(new BankAccountView(),        CARD_BANK_ACCOUNT);
+
+        // assemble the two halves
         add(leftPanel,  BorderLayout.WEST);
         add(rightPanel, BorderLayout.CENTER);
     }
-    // getters for controller
-    public JButton   getBtnEdit()        { return btnEdit;       }
-    public JButton   getBtnHistory()     { return btnHistory;    }
-    public JButton   getBtnAddAccount()  { return btnAddAccount; }
-    public JTable    getAccountsTable()  { return accountsTable; }
 
-    // and setters so controller can fill in the data:
-    public void setCustomerId(String id)         { lblId.setText(id);         }
-    public void setCustomerName(String name)     { lblName.setText(name);     }
-    public void setCustomerDob(String dob)       { lblDob.setText(dob);       }
-    public void setCustomerContact(String phone) { lblContact.setText(phone); }
+    /** Controller calls this to flip the right‐hand card */
+    public void showRightCard(String cardName) {
+        rightCardLayout.show(rightPanel, cardName);
+    }
+
+    // getters for controller wiring
+    public JTable getAccountsTable()          { return accountsTable;   }
+    public JButton getBtnHistory()            { return btnHistory;      }
+    public JButton getBtnAddAccount()         { return btnAddAccount;   }
+    public JButton getBtnCloseAccount()       { return btnCloseAccount; }
+    public JButton getBtnStatement()          { return btnStatement;    }
+    public JButton getBtnEdit()               { return btnEdit;         }
+
+    // setters for labels
+    public void setCustomerId(String id)         { lblId.setText(id);      }
+    public void setCustomerName(String name)     { lblName.setText(name);  }
+    public void setCustomerDob(String dob)       { lblDob.setText(dob);    }
+    public void setCustomerContact(String phone) { lblContact.setText(phone);}
 }

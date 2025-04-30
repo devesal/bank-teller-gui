@@ -6,10 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 
 public class BankAccountView extends Panel{
-    private JLabel lblId;
-    private JLabel lblBalance;
-    private JLabel lblStatus;
-
+    private JLabel lblId      = new JLabel();
+    private JLabel lblBalance = new JLabel();
+    private JLabel lblStatus  = new JLabel();
     public BankAccountView() {
         setLayout(new BorderLayout(10, 10));
 
@@ -19,7 +18,5 @@ public class BankAccountView extends Panel{
         detailPanel.add(new JLabel("Balance:"));             detailPanel.add(lblBalance);
         detailPanel.add(new JLabel("Status:"));              detailPanel.add(lblStatus);
         add(detailPanel, BorderLayout.NORTH);
-
-
     }
 }

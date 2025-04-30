@@ -7,33 +7,40 @@ import java.awt.event.*;
 
 public class CustomerInfoController {
     private final CustomerInfoView view;
-    private final MainView mainView;
+    private final MainView         mainView;
 
     public CustomerInfoController(MainView mainView) {
-        this.view = mainView.getCustomerInfoView();
+        this.view     = mainView.getCustomerInfoView();
         this.mainView = mainView;
         initController();
     }
 
     private void initController() {
-        // double-click on an account row → switch the main card to ACCOUNT_VIEW
+        // 1) “Transaction History” button → history card
+        view.getBtnHistory().addActionListener(e -> {
+            view.showRightCard(CustomerInfoView.CARD_TRANSACTION_HISTORY);
+            mainView.getHeader().showControls(false);
+        });
+
+        // 2) Double‐click on a row → bank‐account card
         view.getAccountsTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
+                    view.showRightCard(CustomerInfoView.CARD_BANK_ACCOUNT);
+                    mainView.getHeader().updateHeaderTitle("ACCOUNT DETAILS");
+                    mainView.getHeader().showControls(false);
                 }
             }
         });
 
-        view.getBtnEdit().addActionListener(e -> {
-            // e.g. open an edit-dialog
-        });
-        view.getBtnHistory().addActionListener(e -> {
-            // e.g. load and show transaction history
-        });
+        // 3) “Add Bank Account” → flip back to accounts list (or launch wizard)
         view.getBtnAddAccount().addActionListener(e -> {
-            // e.g. open add-account wizard
+            view.showRightCard(CustomerInfoView.CARD_ACCOUNTS);
+            mainView.getHeader().updateHeaderTitle("ACCOUNTS");
+            mainView.getHeader().showControls(true);
+            // or: mainView.showPage(MainView.ADD_CUSTOMERS_VIEW);
         });
+
     }
 }

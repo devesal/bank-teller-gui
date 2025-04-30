@@ -30,8 +30,11 @@ public class CustomerFormController {
                     formView.showStep(CustomerFormView.STEP_SUCCESS);
                 }
         );
-        formView.getViewButton().addActionListener(e ->
-                mainView.showPage(MainView.CUSTOMER_INFO_VIEW));
-
+        formView.getViewButton().addActionListener(
+                e -> {
+                    new CustomerInfoController(mainView);
+                    mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
+                }
+        );
     }
 }

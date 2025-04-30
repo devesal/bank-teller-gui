@@ -79,9 +79,4 @@ public class MainView {
     public CustomersView    getCustomersView()    { return customersView;              }
     public CustomerInfoView getCustomerInfoView() { return customerInfoView;           }
     public CustomerFormView getCustomerFormView() { return customerFormView;           }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(MainView::new);
-    }
-
 }
