@@ -1,59 +1,63 @@
 package util;
-
-import model.Customer;
 import model.BankAccount;
+import model.Customer;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileIO {
-    private static final String CUSTOMERS_FILE = "customers.dat";
-    private static final String ACCOUNTS_FILE = "accounts.dat";
+public class FileIO  {
 
-    // --- SAVE ALL CUSTOMERS ---
-    public static void saveAllCustomers(List<Customer> customers) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(CUSTOMERS_FILE))) {
-            oos.writeObject(customers);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    private static final String ACCOUNTS_DATA_FILE = "all_accounts.dat";
+    private static final String CUSTOMER_DATA_FILE = "all_customers.dat";
 
-    // --- LOAD ALL CUSTOMERS ---
-    @SuppressWarnings("unchecked")
-    public static List<Customer> loadAllCustomers() {
-        File file = new File(CUSTOMERS_FILE);
-        if (!file.exists()) return new ArrayList<>();
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            return (List<Customer>) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    // --- SAVE ALL ACCOUNTS ---
-    public static void saveAllAccounts(List<BankAccount> accounts) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ACCOUNTS_FILE))) {
+    public static void saveAllAccounts(ArrayList<BankAccount> accounts) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(ACCOUNTS_DATA_FILE))) {
             oos.writeObject(accounts);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error saving accounts: " + e.getMessage());
         }
     }
 
-    // --- LOAD ALL ACCOUNTS ---
-    @SuppressWarnings("unchecked")
-    public static List<BankAccount> loadAllAccounts() {
-        File file = new File(ACCOUNTS_FILE);
-        if (!file.exists()) return new ArrayList<>();
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            return (List<BankAccount>) ois.readObject();
+    public static ArrayList<BankAccount> loadAllAccounts() {
+        File file = new File(ACCOUNTS_DATA_FILE);
+        if (!file.exists()) {
+            return new ArrayList<>(); // Return empty list if file doesn't exist
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(ACCOUNTS_DATA_FILE))) {
+            return (ArrayList<BankAccount>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            System.out.println("Error loading accounts: " + e.getMessage());
             return new ArrayList<>();
+        }
+    }
+
+    public static ArrayList<Customer> loadAllCustomers(){
+        File file = new File(CUSTOMER_DATA_FILE);
+        if (!file.exists()) {
+            return new ArrayList<>(); // Return empty list if file doesn't exist
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(
+                new FileInputStream(CUSTOMER_DATA_FILE))) {
+            return (ArrayList<Customer>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error loading customers: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    public static void saveAllCustomers(List<Customer> customers) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(
+                new FileOutputStream(CUSTOMER_DATA_FILE))) {
+            oos.writeObject(customers);
+        } catch (IOException e) {
+            System.out.println("Error saving accounts: " + e.getMessage());
         }
     }
 }
