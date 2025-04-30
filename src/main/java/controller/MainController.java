@@ -11,12 +11,11 @@
 
     public class MainController {
         private final MainView view;
-        private final CustomerFormController customerFormController;
         private final List<Customer> customerList;
 
         public MainController() {
             view = new MainView();
-            customerFormController = new CustomerFormController(view);
+            new CustomerFormController(view);
             customerList = new ArrayList<>();
             initController();
         }
@@ -58,10 +57,11 @@
                 }
             });
 
-            view.getHeader().getBtnAdd().addActionListener(
+            view.getHeader().getAddButton().addActionListener(
                     e -> {
                         view.showPage(MainView.ADD_CUSTOMERS_VIEW);
                         view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
+                        view.getHeader().showControls(false);
                         view.getCustomerFormView().reset();
                     }
             );

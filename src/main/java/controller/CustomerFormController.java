@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerFormController {
-    private final CustomerFormView formView;
+    private final CustomerFormView view;
     private final MainView mainView;
     private final List<Customer> customers;
 
     public CustomerFormController(MainView mainView) {
-        this.formView = mainView.getCustomerFormView();
+        this.view = mainView.getCustomerFormView();
         this.mainView = mainView;
         this.customers = new ArrayList<>();
         initController();
@@ -26,45 +26,39 @@ public class CustomerFormController {
 
     private void initController() {
         // navigation buttons
-        formView.getNextButtonStep1().addActionListener(e ->
-                formView.showStep(CustomerFormView.STEP_ACCOUNTS)
-        );
-        formView.getBackButtonStep1().addActionListener(e ->
-                mainView.showPage(MainView.CUSTOMERS_VIEW)
-        );
-        formView.getBackButtonStep2().addActionListener(e ->
-                formView.showStep(CustomerFormView.STEP_PERSONAL)
+        view.getNextButtonStep1().addActionListener(e ->
+                view.showStep(CustomerFormView.STEP_ACCOUNTS)
         );
 
         // create and persist customer + accounts
-        formView.getCreateButton().addActionListener(e -> {
+        view.getCreateButton().addActionListener(e -> {
             try {
                 Customer customer = accountCreation();
                 // populate success view
-                formView.getSuccessNameLabel().setText(
+                view.getSuccessNameLabel().setText(
                         customer.getFirstName() + " " + customer.getLastName());
-                formView.getSuccessDobLabel().setText(customer.getBirthDate());
-                mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+                view.getSuccessDobLabel().setText(customer.getBirthDate());
+                mainView.getHeader().updateHeaderTitle("CUSTOMER CREATION");
                 mainView.getHeader().showControls(false);
-                formView.showStep(CustomerFormView.STEP_SUCCESS);
+                view.showStep(CustomerFormView.STEP_SUCCESS);
             } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(formView, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
         // navigate to info view
-        formView.getViewButton().addActionListener(e ->
+        view.getViewButton().addActionListener(e ->
                 mainView.showPage(MainView.CUSTOMER_INFO_VIEW)
         );
 
-        formView.getCreateButton().addActionListener(
+        view.getCreateButton().addActionListener(
                 e -> {
                     mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
                     mainView.getHeader().showControls(false);
-                    formView.showStep(CustomerFormView.STEP_SUCCESS);
+                    view.showStep(CustomerFormView.STEP_SUCCESS);
                 }
         );
-        formView.getViewButton().addActionListener(
+        view.getViewButton().addActionListener(
                 e -> {
                     new CustomerInfoController(mainView);
                     mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
@@ -77,9 +71,9 @@ public class CustomerFormController {
      * @return the created Customer
      */
     private Customer accountCreation() {
-        String first = formView.getFirstNameField().getText().trim();
-        String last  = formView.getLastNameField().getText().trim();
-        String dob   = formView.getDobField().getText().trim();
+        String first = view.getFirstNameField().getText().trim();
+        String last  = view.getLastNameField().getText().trim();
+        String dob   = view.getDobField().getText().trim();
 
         // create and store customer
         Customer customer = new Customer(first, last, dob);
@@ -87,28 +81,28 @@ public class CustomerFormController {
 
         // create accounts
         List<String> created = new ArrayList<>();
-        if (formView.getSavingsToggleButton().isSelected()) {
+        if (view.getSavingsToggleButton().isSelected()) {
             BankAccount acc = new BankAccount(first, last);
             customer.addAccount(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
         }
-        if (formView.getCheckingToggleButton().isSelected()) {
+        if (view.getCheckingToggleButton().isSelected()) {
             BankAccount acc = new CheckingAccount(first, last, 500.0);
             customer.addAccount(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
         }
-        if (formView.getInvestmentToggleButton().isSelected()) {
+        if (view.getInvestmentToggleButton().isSelected()) {
             BankAccount acc = new InvestmentAccount(first, last, 5000, 0.35);
             customer.addAccount(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
         }
-        if (formView.getCreditCardToggleButton().isSelected()) {
+        if (view.getCreditCardToggleButton().isSelected()) {
             BankAccount acc = new CreditCardAccount(first, last, 25000);
             customer.addAccount(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
         }
 
-        formView.getSuccessAccountsLabel().setText(
+        view.getSuccessAccountsLabel().setText(
                 created.isEmpty() ? "None" : String.join(", ", created)
         );
 

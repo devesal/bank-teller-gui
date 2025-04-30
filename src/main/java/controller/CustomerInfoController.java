@@ -1,5 +1,6 @@
 package controller;
 
+import com.sun.tools.javac.Main;
 import view.CustomerInfoView;
 import view.MainView;
 
@@ -16,6 +17,14 @@ public class CustomerInfoController {
     }
 
     private void initController() {
+        // Back button → customers card
+        mainView.getHeader().getBackButton().addActionListener(
+                e -> {
+                    mainView.getHeader().showControls(true);
+                    mainView.showPage(MainView.CUSTOMERS_VIEW);
+                }
+        );
+
         // 1) “Transaction History” button → history card
         view.getBtnHistory().addActionListener(e -> {
             view.showRightCard(CustomerInfoView.CARD_TRANSACTION_HISTORY);

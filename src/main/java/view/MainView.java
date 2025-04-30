@@ -17,6 +17,8 @@ public class MainView {
     private CustomerInfoView customerInfoView;
     private CustomerFormView customerFormView;
 
+    private String currentPage;
+
     // Card identifiers
     public static final String CUSTOMERS_VIEW     = "CustomersView";
     public static final String REPORTS_VIEW       = "ReportsView";
@@ -69,11 +71,12 @@ public class MainView {
 
     public void showPage(String cardName) {
         contentCardLayout.show(contentPanel, cardName);
+        currentPage = cardName;
     }
 
-    // ==== getters for controller ====
+    // getters for controller
     public Frame            getFrame()            { return frame;                      }
-    public Header            getHeader()          { return header;                     }
+    public Header           getHeader()           { return header;                     }
     public Sidebar          getSidebar()          { return sidebar;                    }
     public ReportsView      getReportsView()      { return reportsView;                }
     public CustomersView    getCustomersView()    { return customersView;              }

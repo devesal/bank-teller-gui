@@ -62,8 +62,8 @@ public class Header extends JPanel {
     }
 
     // Expose buttons/fields to the controller
-    public JButton getBtnBack()        { return btnBack;      }
-    public JButton getBtnAdd()         { return btnAdd;       }
-    public JTextField getSearchField() { return searchField;  }
-    public JButton getBtnSearch()      { return btnSearch;    }
+    public JButton getBackButton()        { return btnBack;      }
+    public JButton getAddButton()         { return btnAdd;       }
+    public JTextField getSearchField()    { return searchField;  }
+    public JButton getBtnSearch()         { return btnSearch;    }
 }
