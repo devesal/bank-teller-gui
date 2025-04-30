@@ -38,7 +38,7 @@ public class Header extends JPanel {
         // Store titleLabel for later updates
         putClientProperty("titleLabel", titleLabel);
 
-        btnAddCustomer.addActionListener(e -> view.showCard(MainView.ADD_CUSTOMERS_VIEW));
+        btnAddCustomer.addActionListener(e -> view.showPage(MainView.ADD_CUSTOMERS_VIEW));
     }
 
     public void updateHeaderTitle(String title) {

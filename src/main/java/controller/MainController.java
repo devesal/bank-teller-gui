@@ -19,13 +19,13 @@ public class MainController {
         // Show Customers card when sidebar button clicked
         view.getSidebar().getBtnCustomers().addActionListener(
                 e -> {
-                    view.showCard(MainView.CUSTOMERS_VIEW);
+                    view.showPage(MainView.CUSTOMERS_VIEW);
                 }
         );
 
         // Show Reports card
         view.getSidebar().getBtnReports().addActionListener(
-                e -> view.showCard(MainView.REPORTS_VIEW)
+                e -> view.showPage(MainView.REPORTS_VIEW)
         );
 
         // Save-on-exit stub (could hook into persistence later)
@@ -42,7 +42,7 @@ public class MainController {
                 if (evt.getClickCount() == 2) {
                     int row = view.getCustomersView().getTable().getSelectedRow();
                     // load customer details by ID
-                    view.showCard(MainView.CUSTOMER_INFO_VIEW);
+                    view.showPage(MainView.CUSTOMER_INFO_VIEW);
                 }
             }
         });
@@ -52,7 +52,7 @@ public class MainController {
         SwingUtilities.invokeLater(() -> {
             view.getFrame().setVisible(true);
             // show customers by default
-            view.showCard(MainView.CUSTOMERS_VIEW);
+            view.showPage(MainView.CUSTOMERS_VIEW);
         });
     }
 }

@@ -16,13 +16,14 @@ public class CustomerFormView extends JPanel {
     private final JTextField txtFirstName = new JTextField(20);
     private final JTextField txtLastName  = new JTextField(20);
     private final JTextField txtDob       = new JTextField(20);
+    private final JButton    btnBack1      = new JButton("Back");
     private final JButton    btnNext1     = new JButton("Next");
 
     // --- Step 2: Account Types ---
-    private final JCheckBox  chkSavings    = new JCheckBox("Savings Account");
-    private final JCheckBox  chkChecking   = new JCheckBox("Checking Account");
-    private final JCheckBox  chkInvestment = new JCheckBox("Investment Account");
-    private final JCheckBox  chkCreditCard = new JCheckBox("Credit Card Account");
+    private final JToggleButton tglSavings    = new JToggleButton("Savings Account");
+    private final JToggleButton tglChecking   = new JToggleButton("Checking Account");
+    private final JToggleButton tglInvestment = new JToggleButton("Investment Account");
+    private final JToggleButton tglCreditCard = new JToggleButton("Credit Card Account");
     private final JButton    btnBack2      = new JButton("Back");
     private final JButton    btnCreate     = new JButton("Create");
 
@@ -68,7 +69,10 @@ public class CustomerFormView extends JPanel {
         form.add(txtDob);
         p.add(form, BorderLayout.CENTER);
 
-        JPanel btnPanel = new JPanel();
+        // --- button bar, centered ---
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        btnPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
+        btnPanel.add(btnBack1);
         btnPanel.add(btnNext1);
         p.add(btnPanel, BorderLayout.SOUTH);
 
@@ -81,32 +85,32 @@ public class CustomerFormView extends JPanel {
         title.setFont(new Font("SansSerif", Font.BOLD, 20));
         p.add(title, BorderLayout.NORTH);
 
-        // --- checkbox list panel ---
+        // --- toggle-button list panel ---
         JPanel list = new JPanel();
         list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
         list.setBorder(new EmptyBorder(10, 50, 10, 50));
 
-        // Desired height for each “row”
+        // Lock each toggle to 40px height, but allow full width
         Dimension rowSize = new Dimension(Integer.MAX_VALUE, 40);
 
-        // Configure each checkbox
-        for (JCheckBox cb : new JCheckBox[]{ chkSavings, chkChecking, chkInvestment, chkCreditCard }) {
-            cb.setAlignmentX(Component.CENTER_ALIGNMENT);
-            cb.setMaximumSize(rowSize);      // fills width, locks height
-            cb.setPreferredSize(rowSize);    // suggests our 40px height
-            cb.setFont(cb.getFont().deriveFont(Font.PLAIN, 16f));  // slightly larger text
-            list.add(cb);
+        for (JToggleButton tgl : new JToggleButton[]{
+                tglSavings, tglChecking, tglInvestment, tglCreditCard
+        }) {
+            tgl.setAlignmentX(Component.CENTER_ALIGNMENT);
+            tgl.setMaximumSize(rowSize);
+            tgl.setPreferredSize(rowSize);
+            tgl.setFont(tgl.getFont().deriveFont(Font.PLAIN, 16f));
+            list.add(tgl);
             list.add(Box.createVerticalStrut(10));
         }
 
         p.add(list, BorderLayout.CENTER);
 
-        // --- button bar ---
+        // --- button bar, centered ---
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+        btnPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
         btnPanel.add(btnBack2);
         btnPanel.add(btnCreate);
-        // add a little padding above the buttons
-        btnPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
         p.add(btnPanel, BorderLayout.SOUTH);
 
         return p;
@@ -137,13 +141,14 @@ public class CustomerFormView extends JPanel {
     public JTextField getLastNameField()     { return txtLastName;    }
     public JTextField getDobField()          { return txtDob;         }
     public JButton    getNextButtonStep1()   { return btnNext1;       }
+    public JButton    getBackButtonStep1()   { return btnBack1;       }
 
-    public JButton    getBackButtonStep2()   { return btnBack2;       }
-    public JCheckBox  getSavingsCheckbox()   { return chkSavings;     }
-    public JCheckBox  getCheckingCheckbox()  { return chkChecking;    }
-    public JCheckBox  getInvestmentCheckbox(){ return chkInvestment;  }
-    public JCheckBox  getCreditCardCheckbox(){ return chkCreditCard;  }
-    public JButton    getCreateButton()      { return btnCreate;      }
+    public JButton        getBackButtonStep2()       { return btnBack2;       }
+    public JToggleButton  getSavingsToggleButton()   { return tglSavings;     }
+    public JToggleButton  getCheckingToggleButton()  { return tglChecking;    }
+    public JToggleButton  getInvestmentToggleButton(){ return tglInvestment;  }
+    public JToggleButton  getCreditCardToggleButton(){ return tglCreditCard;  }
+    public JButton        getCreateButton()          { return btnCreate;      }
 
     public JLabel     getSuccessNameLabel()      { return lblSuccessName;     }
     public JLabel     getSuccessDobLabel()       { return lblSuccessDob;      }

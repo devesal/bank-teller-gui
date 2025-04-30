@@ -21,7 +21,7 @@ public class CustomerInfoController {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    mainView.showCard(MainView.CUSTOMER_INFO_VIEW);
+                    mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
                 }
             }
         });

@@ -67,7 +67,7 @@ public class MainView {
         return panel;
     }
 
-    public void showCard(String cardName) {
+    public void showPage(String cardName) {
         contentCardLayout.show(contentPanel, cardName);
     }
 
