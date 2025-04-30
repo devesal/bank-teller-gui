@@ -40,13 +40,6 @@ public class Header extends JPanel {
 
         // Store titleLabel for later updates
         putClientProperty("titleLabel", titleLabel);
-
-        btnAdd.addActionListener(
-                e -> {
-                    view.showPage(MainView.ADD_CUSTOMERS_VIEW);
-                    view.getCustomerFormView().reset();
-                }
-        );
     }
 
     public void showControls(boolean visible) {
