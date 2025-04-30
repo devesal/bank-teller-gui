@@ -51,6 +51,14 @@ public class MainController {
                 }
             }
         });
+
+        view.getHeader().getBtnAdd().addActionListener(
+                e -> {
+                    view.showPage(MainView.ADD_CUSTOMERS_VIEW);
+                    view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
+                    view.getCustomerFormView().reset();
+                }
+        );
     }
 
     public void start() {
