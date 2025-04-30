@@ -3,6 +3,7 @@ package controller;
 import model.Customer;
 import model.BankAccount;
 import util.FileIO;
+import view.CustomerFormView;
 import view.CustomerInfoView;
 import view.MainView;
 
@@ -48,9 +49,17 @@ public class CustomerInfoController {
 
         // Add Bank Account
         view.getBtnAddAccount().addActionListener(e -> {
-            view.showRightCard(CustomerInfoView.CARD_ACCOUNTS);
-            mainView.getHeader().updateHeaderTitle("ACCOUNTS");
-            mainView.getHeader().showControls(true);
+            // Reset the form but pre-fill customer info
+            mainView.getCustomerFormView().reset();
+            mainView.getCustomerFormView().getFirstNameField().setText(currentCustomer.getFirstName());
+            mainView.getCustomerFormView().getLastNameField().setText(currentCustomer.getLastName());
+            mainView.getCustomerFormView().getDobField().setText(currentCustomer.getBirthDate());
+
+            // Show only the account selection step
+            mainView.getCustomerFormView().showStep(CustomerFormView.STEP_ACCOUNTS);
+
+            // Show the form panel
+            mainView.showPage(MainView.ADD_CUSTOMERS_VIEW);
         });
 
         // Close Account
@@ -74,11 +83,11 @@ public class CustomerInfoController {
         view.getBtnStatement().addActionListener(e -> {
             // implement statement display, perhaps another card
         });
+
     }
 
     /**
-     * Populate view with customer data.
-     * @param index index in the customers list
+     * Populate view with customer data by index in list.
      */
     public void setCustomerIndex(int index) {
         this.currentCustomer = customers.get(index);
@@ -86,6 +95,14 @@ public class CustomerInfoController {
         view.setCustomerName(currentCustomer.getFirstName() + " " + currentCustomer.getLastName());
         view.setCustomerDob(currentCustomer.getBirthDate());
         populateAccountsTable();
+    }
+
+    /**
+     * Populate view with most recently added customer.
+     */
+    public void setLatestCustomer() {
+        if (customers.isEmpty()) return;
+        setCustomerIndex(customers.size() - 1);
     }
 
     private void populateAccountsTable() {

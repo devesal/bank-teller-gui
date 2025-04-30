@@ -22,7 +22,6 @@ public class MainView {
     public static final String REPORTS_VIEW       = "ReportsView";
     public static final String CUSTOMER_INFO_VIEW = "CustomerInfoView";
     public static final String ADD_CUSTOMERS_VIEW = "AddCustomersView";
-
     public MainView() {
         initialize();
     }

@@ -5,6 +5,7 @@ import model.Customer;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileIO  {
 
@@ -59,5 +60,16 @@ public class FileIO  {
         } catch (IOException e) {
             System.out.println("Error saving accounts: " + e.getMessage());
         }
+    }
+    public static void addCustomer(Customer customer) {
+        ArrayList<Customer> all = loadAllCustomers();
+        all.add(customer);
+        saveAllCustomers(all);
+
+        // Also update the accounts file with the new accounts from this customer
+        ArrayList<BankAccount> allAccounts = all.stream()
+                .flatMap(c -> c.getAccounts().stream())
+                .collect(Collectors.toCollection(ArrayList::new));
+        saveAllAccounts(allAccounts);
     }
 }

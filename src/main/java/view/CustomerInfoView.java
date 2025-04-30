@@ -43,7 +43,6 @@ public class CustomerInfoView extends JPanel {
         detailPanel.add(new JLabel("ID:"));      detailPanel.add(lblId);
         detailPanel.add(new JLabel("Name:"));    detailPanel.add(lblName);
         detailPanel.add(new JLabel("DOB:"));     detailPanel.add(lblDob);
-        detailPanel.add(new JLabel("Contact:")); detailPanel.add(lblContact);
         leftPanel.add(detailPanel, BorderLayout.NORTH);
 
         // Action buttons down the center
@@ -108,5 +107,5 @@ public class CustomerInfoView extends JPanel {
     public void setCustomerId(String id)         { lblId.setText(id);      }
     public void setCustomerName(String name)     { lblName.setText(name);  }
     public void setCustomerDob(String dob)       { lblDob.setText(dob);    }
-    public void setCustomerContact(String phone) { lblContact.setText(phone);}
+
 }

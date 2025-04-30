@@ -18,7 +18,7 @@ public class CustomerFormController {
     private final MainView mainView;
     private final List<Customer> customers;
     private final List<BankAccount> allAccounts;
-
+    private Customer existingCustomer = null;
     /**
      * @param mainView the root view (should expose getCustomerFormView())
      */
@@ -65,9 +65,11 @@ public class CustomerFormController {
         });
 
         // navigate to info view
-        formView.getViewButton().addActionListener(e ->
-                mainView.showPage(MainView.CUSTOMER_INFO_VIEW)
-        );
+        formView.getViewButton().addActionListener(e -> {
+            CustomerInfoController controller = new CustomerInfoController(mainView);
+            controller.setLatestCustomer();
+            mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
+        });
         setupUntoggleBehavior(formView.getSavingsToggleButton());
         setupUntoggleBehavior(formView.getCheckingToggleButton());
         setupUntoggleBehavior(formView.getInvestmentToggleButton());
@@ -137,4 +139,15 @@ public class CustomerFormController {
         });
     }
 
+    public void setExistingCustomer(Customer customer) {
+        this.existingCustomer = customer;
+
+        // Pre-fill customer data
+        formView.getFirstNameField().setText(customer.getFirstName());
+        formView.getLastNameField().setText(customer.getLastName());
+        formView.getDobField().setText(customer.getBirthDate());
+
+        // Jump directly to account selection step
+        formView.showStep(CustomerFormView.STEP_ACCOUNTS);
+    }
 }
