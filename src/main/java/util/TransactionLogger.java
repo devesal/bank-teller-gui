@@ -1,5 +1,7 @@
 package util;
 
+import model.Transaction;
+
 import javax.swing.table.DefaultTableModel;
 import java.io.*;
 
