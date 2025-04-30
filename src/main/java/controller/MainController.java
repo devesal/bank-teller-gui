@@ -86,7 +86,8 @@
                     List<BankAccount> matchingAccounts = customerList.stream()
                             .flatMap(c -> c.getAccounts().stream())
                             .filter(a -> a.getFirstName().toLowerCase().contains(key)
-                                    || a.getLastName().toLowerCase().contains(key))
+                                    || a.getLastName().toLowerCase().contains(key) ||
+                                    a.getStatus().toLowerCase().contains(key))
                             .collect(Collectors.toList());
 
 
