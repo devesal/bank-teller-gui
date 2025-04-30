@@ -31,17 +31,17 @@ public class TransactionLogger {
             while ((line = tReader.readLine())!= null){
                 String[] parts = line.split(",");
                 if (parts.length >= 5) {
-                    String date = parts[0].substring(0, 10); // Only keep the date part from timestamp
+                    String date = parts[0].substring(0, 10);
                     String type = parts[3];
                     String amount = (type.equals("DEPOSIT") || type.equals("TRANSFER") ? "+" : "-") + "$" + parts[4];
-                    String balance = ""; // Optional: If you have balance, otherwise leave blank
+                    String balance = "";
                     tTable.addRow(new Object[]{date, type, amount, balance});
                 }
             }
         } catch (FileNotFoundException e) {
-
+            System.err.println("Cannot find report file");
         } catch (IOException e) {
-
+            System.err.println("Error writing to file");
         }
 
     }
