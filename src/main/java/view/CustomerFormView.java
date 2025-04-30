@@ -19,7 +19,7 @@ public class CustomerFormView extends JPanel {
     private final JToggleButton tglChecking   = new JToggleButton("Checking Account");
     private final JToggleButton tglInvestment = new JToggleButton("Investment Account");
     private final JToggleButton tglCreditCard = new JToggleButton("Credit Card Account");
-    private final JButton btnCreate = new JButton("Create");
+    private final JButton btnCreate           = new JButton("Create");
 
     // --- Step 3: Success ---
     private final JLabel lblSuccessName     = new JLabel();
@@ -47,7 +47,7 @@ public class CustomerFormView extends JPanel {
         cardLayout.show(cardPanel, stepName);
     }
 
-    private JPanel buildPersonalPanel() {
+    public JPanel buildPersonalPanel() {
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("FILL IN ACCOUNT INFORMATION", SwingConstants.CENTER);
         title.setFont(new Font("SansSerif", Font.PLAIN, 20));
@@ -93,7 +93,7 @@ public class CustomerFormView extends JPanel {
         return p;
     }
 
-    private JPanel buildAccountsPanel() {
+    public JPanel buildAccountsPanel() {
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("CHOOSE ACCOUNT TYPES", SwingConstants.CENTER);
         title.setFont(new Font("SansSerif", Font.PLAIN, 20));
