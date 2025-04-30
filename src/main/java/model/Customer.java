@@ -17,13 +17,11 @@ public class Customer {
      * @param firstName   the customer's first name
      * @param lastName    the customer's last name
      * @param BirthDate       the customer's email address
-     * @param phoneNumber the customer's phone number
      */
-    public Customer(String firstName, String lastName, String BirthDate, String phoneNumber) {
+    public Customer(String firstName, String lastName, String BirthDate) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.BirthDate = BirthDate;
-        this.phoneNumber = phoneNumber;
         this.accounts = new ArrayList<>();
     }
 
@@ -52,17 +50,6 @@ public class Customer {
     public void setBirthDate(String BirthDate) {
         this.BirthDate = BirthDate;
     }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-
-
 
     public void addAccount(BankAccount account) {
         accounts.add(account);
@@ -116,7 +103,7 @@ public class Customer {
 
     @Override
     public String toString() {
-        return String.format("%s %s (Date of Birth: %s, Phone: %s)",
-                firstName, lastName, BirthDate, phoneNumber);
+        return String.format("%s %s (Date of Birth: %s)",
+                firstName, lastName, BirthDate);
     }
 }

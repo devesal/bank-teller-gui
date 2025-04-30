@@ -1,12 +1,10 @@
 package model;
-import interfaces.Depositable;
-import interfaces.Transferrable;
-import interfaces.Withdrawable;
+
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public abstract class BankAccount implements Depositable, Transferrable, Withdrawable {
+public class BankAccount {
 
     /** Random generator for account numbers */
     private static final Random RANDOM = new Random();
