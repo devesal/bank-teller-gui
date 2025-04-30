@@ -2,6 +2,7 @@ module edu.slu.cs.Main {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
+    requires java.desktop;
 
     opens edu.slu.cs.controller to javafx.fxml;
 
