@@ -1,4 +1,6 @@
-package model;
+package util;
+import model.BankAccount;
+
 import java.io.*;
 import java.util.ArrayList;
 public class FileIO {

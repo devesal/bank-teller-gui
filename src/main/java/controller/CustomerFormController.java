@@ -14,12 +14,11 @@ public class CustomerFormController {
     }
 
     private void initController() {
-        formView.getNextButtonStep1().addActionListener(
-                e ->
-                    formView.showStep(CustomerFormView.STEP_ACCOUNTS)
+        formView.getNextButtonStep1().addActionListener(e ->
+                formView.showStep(CustomerFormView.STEP_ACCOUNTS)
         );
         formView.getBackButtonStep1().addActionListener(e ->
-                    mainView.showPage(MainView.CUSTOMERS_VIEW)
+                mainView.showPage(MainView.CUSTOMERS_VIEW)
         );
         formView.getBackButtonStep2().addActionListener(e ->
                 formView.showStep(CustomerFormView.STEP_PERSONAL)
