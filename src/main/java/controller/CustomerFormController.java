@@ -4,12 +4,12 @@ import view.CustomerFormView;
 import view.MainView;
 
 public class CustomerFormController {
-    private final MainView mainView;
     private final CustomerFormView formView;
+    private final MainView mainView;
 
     public CustomerFormController(MainView mainView) {
-        this.mainView = mainView;
         this.formView = mainView.getCustomerFormView();
+        this.mainView = mainView;
         initController();
     }
 
@@ -26,5 +26,7 @@ public class CustomerFormController {
         formView.getCreateButton().addActionListener(e ->
                 formView.showStep(CustomerFormView.STEP_SUCCESS)
         );
+        formView.getViewButton().addActionListener(e ->
+                mainView.showPage(MainView.CUSTOMER_INFO_VIEW));
     }
 }

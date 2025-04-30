@@ -10,7 +10,6 @@ public class Header extends JPanel {
 
     public Header(MainView view) {
         setLayout(new BorderLayout());
-
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
         // Logo

@@ -6,12 +6,12 @@ import view.MainView;
 import java.awt.event.*;
 
 public class CustomerInfoController {
-    private final MainView mainView;
     private final CustomerInfoView view;
+    private final MainView mainView;
 
     public CustomerInfoController(MainView mainView) {
-        this.mainView = mainView;
         this.view = mainView.getCustomerInfoView();
+        this.mainView = mainView;
         initController();
     }
 

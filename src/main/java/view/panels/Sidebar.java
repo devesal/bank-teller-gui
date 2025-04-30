@@ -8,9 +8,9 @@ public class Sidebar extends JPanel {
     private final JButton btnCustomers;
 
     public Sidebar() {
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        this.setPreferredSize(new Dimension(140, 0));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setPreferredSize(new Dimension(140, 0));
 
         btnCustomers = new JButton("CUSTOMERS");
         btnCustomers.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -20,9 +20,9 @@ public class Sidebar extends JPanel {
         btnReports.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnReports.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
 
-        this.add(btnCustomers);
-        this.add(Box.createVerticalStrut(10));
-        this.add(btnReports);
+        add(btnCustomers);
+        add(Box.createVerticalStrut(10));
+        add(btnReports);
     }
 
     public JButton getBtnCustomers() {

@@ -21,35 +21,57 @@ public class CustomerInfoView extends JPanel {
     private final JTable accountsTable;
 
     public CustomerInfoView() {
+        // 1) Main split
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        setLayout(new BorderLayout(10,10));
 
-        // === Top: Customer detail panel ===
-        JPanel detailPanel = new JPanel(new GridLayout(0,2,10,10));
-        detailPanel.setBorder(new TitledBorder("Customer Information"));
+        // === LEFT PANEL ===
+        JPanel leftPanel = new JPanel(new BorderLayout(10,10));
+
+        //   └─ Customer details at top
+        JPanel detailPanel = new JPanel(new GridLayout(0,2,5,5));
+        detailPanel.setBorder(BorderFactory.createTitledBorder("Customer Information"));
         detailPanel.add(new JLabel("ID:"));      detailPanel.add(lblId);
         detailPanel.add(new JLabel("Name:"));    detailPanel.add(lblName);
         detailPanel.add(new JLabel("DOB:"));     detailPanel.add(lblDob);
         detailPanel.add(new JLabel("Contact:")); detailPanel.add(lblContact);
+        leftPanel.add(detailPanel, BorderLayout.NORTH);
 
-        // === Center: action buttons ===
-        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        actions.add(btnEdit);
-        actions.add(btnHistory);
-        actions.add(btnAddAccount);
+        //   └─ Actions vertically at bottom
+        JPanel actionPanel = new JPanel();
+        actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
+        actionPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        actionPanel.add(btnEdit);
+        actionPanel.add(Box.createVerticalStrut(10));
+        actionPanel.add(btnHistory);
+        actionPanel.add(Box.createVerticalStrut(10));
+        actionPanel.add(btnAddAccount);
+        leftPanel.add(actionPanel, BorderLayout.CENTER);
 
-        // === Bottom: accounts table ===
+        // === RIGHT PANEL ===
+        JPanel rightPanel = new JPanel(new BorderLayout(10,10));
+        rightPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+
+        //   └─ Header (search + add) at top
+        JPanel topHeader = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        JTextField searchField = new JTextField(15);
+        JButton btnSearch = new JButton("Search");
+        topHeader.add(searchField);
+        topHeader.add(btnSearch);
+        rightPanel.add(topHeader, BorderLayout.NORTH);
+
+        //   └─ Accounts table in the center
         String[] cols = {"Account No", "Type", "Status", "Balance"};
         DefaultTableModel model = new DefaultTableModel(cols, 0);
         accountsTable = new JTable(model);
         JScrollPane tableScroll = new JScrollPane(accountsTable);
+        rightPanel.add(tableScroll, BorderLayout.CENTER);
 
-        // assemble
-        add(detailPanel, BorderLayout.NORTH);
-        add(actions,     BorderLayout.CENTER);
-        add(tableScroll, BorderLayout.SOUTH);
+        // === assemble main view ===
+        add(leftPanel,  BorderLayout.WEST);
+        add(rightPanel, BorderLayout.CENTER);
     }
-
     // ==== getters for controller ====
     public JButton   getBtnEdit()        { return btnEdit;       }
     public JButton   getBtnHistory()     { return btnHistory;    }
