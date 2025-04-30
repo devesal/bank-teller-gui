@@ -118,6 +118,7 @@ public class CustomerFormController {
                 created.isEmpty() ? "None" : String.join("\n", created)
         );
 
+        System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
         return customer;
     }
     private void setupUntoggleBehavior(JToggleButton button) {
