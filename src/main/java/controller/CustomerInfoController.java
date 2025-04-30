@@ -6,7 +6,6 @@ import util.FileIO;
 import view.CustomerInfoView;
 import view.MainView;
 
-import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

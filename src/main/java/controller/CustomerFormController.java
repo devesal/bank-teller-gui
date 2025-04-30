@@ -68,6 +68,10 @@ public class CustomerFormController {
         formView.getViewButton().addActionListener(e ->
                 mainView.showPage(MainView.CUSTOMER_INFO_VIEW)
         );
+        setupUntoggleBehavior(formView.getSavingsToggleButton());
+        setupUntoggleBehavior(formView.getCheckingToggleButton());
+        setupUntoggleBehavior(formView.getInvestmentToggleButton());
+        setupUntoggleBehavior(formView.getCreditCardToggleButton());
     }
 
     /**
@@ -111,9 +115,25 @@ public class CustomerFormController {
         }
 
         formView.getSuccessAccountsLabel().setText(
-                created.isEmpty() ? "None" : String.join(", ", created)
+                created.isEmpty() ? "None" : String.join("\n", created)
         );
 
         return customer;
     }
+    private void setupUntoggleBehavior(JToggleButton button) {
+        button.addActionListener(e -> {
+            if (button.isSelected()) {
+                // Mark this click as a possible un-toggle candidate
+                button.putClientProperty("wasSelected", true);
+            } else {
+                // Check if it was already selected before this click
+                Object wasSelected = button.getClientProperty("wasSelected");
+                if (Boolean.TRUE.equals(wasSelected)) {
+                    button.setSelected(false); // Un-toggle
+                    button.putClientProperty("wasSelected", false);
+                }
+            }
+        });
+    }
+
 }
