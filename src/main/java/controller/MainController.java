@@ -1,9 +1,10 @@
     package controller;
 
     import model.*;
+    import util.FileIO;
     import view.MainView;
 
-
+    import util.FileIO.*;
     import javax.swing.*;
     import java.awt.event.*;
     import java.util.*;
@@ -112,6 +113,7 @@
         }
 
         public void start() {
+            customerList.addAll(FileIO.loadAllCustomers());
             SwingUtilities.invokeLater(() -> {
                 view.getFrame().setVisible(true);
                 // show customers by default

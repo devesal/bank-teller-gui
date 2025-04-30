@@ -7,6 +7,7 @@ import model.CreditCardAccount;
 import model.InvestmentAccount;
 import view.CustomerFormView;
 import view.MainView;
+import util.FileIO;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -85,27 +86,32 @@ public class CustomerFormController {
         Customer customer = new Customer(first, last, dob);
         customers.add(customer);
 
+
         // create accounts
         List<String> created = new ArrayList<>();
         if (formView.getSavingsToggleButton().isSelected()) {
             BankAccount acc = new BankAccount(first, last);
             customer.addAccount(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+            util.FileIO.saveAllCustomers((customers));
         }
         if (formView.getCheckingToggleButton().isSelected()) {
             BankAccount acc = new CheckingAccount(first, last, 500.0);
             customer.addAccount(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+            util.FileIO.saveAllCustomers((customers));
         }
         if (formView.getInvestmentToggleButton().isSelected()) {
             BankAccount acc = new InvestmentAccount(first, last, 5000, 0.35);
             customer.addAccount(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+            util.FileIO.saveAllCustomers((customers));
         }
         if (formView.getCreditCardToggleButton().isSelected()) {
             BankAccount acc = new CreditCardAccount(first, last, 25000);
             customer.addAccount(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+            util.FileIO.saveAllCustomers((customers));
         }
 
         formView.getSuccessAccountsLabel().setText(
