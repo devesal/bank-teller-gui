@@ -17,13 +17,19 @@ public class MainView {
     private CustomerInfoView customerInfoView;
     private CustomerFormView customerFormView;
 
-    private String currentPage;
-
     // Card identifiers
-    public static final String CUSTOMERS_VIEW     = "CustomersView";
-    public static final String REPORTS_VIEW       = "ReportsView";
-    public static final String CUSTOMER_INFO_VIEW = "CustomerInfoView";
-    public static final String ADD_CUSTOMERS_VIEW = "AddCustomersView";
+    public static final String CUSTOMERS           = "CustomersView";
+    public static final String REPORTS             = "ReportsView";
+    public static final String ADD_CUSTOMERS       = "AddCustomersView";
+    public static final String TRANSACTION_HISTORY = "TransactionHistoryView";
+    public static final String STEP_PERSONAL       = "StepPersonal";
+    public static final String STEP_ACCOUNTS       = "StepAccounts";
+    public static final String STEP_SUCCESS        = "StepSuccess";
+    public static final String CUSTOMER_INFO       = "CustomerInfo";
+    public static final String BANK_ACCOUNTS       = "BankAccounts";
+    public static final String BANK_ACCOUNT        = "BankAccount";
+
+    private String currentPage;
 
     public MainView() {
         initialize();
@@ -45,7 +51,7 @@ public class MainView {
         frame.add(contentPanel, BorderLayout.CENTER);
 
         // default view
-        contentCardLayout.show(contentPanel, CUSTOMERS_VIEW);
+        contentCardLayout.show(contentPanel, CUSTOMERS);
         header.updateHeaderTitle("CUSTOMERS");
 
         frame.setTitle("CO-PALS Bank Information System");
@@ -61,10 +67,10 @@ public class MainView {
         customerInfoView = new CustomerInfoView();
         customerFormView = new CustomerFormView();
 
-        panel.add(customersView, CUSTOMERS_VIEW);
-        panel.add(reportsView, REPORTS_VIEW);
-        panel.add(customerInfoView, CUSTOMER_INFO_VIEW);
-        panel.add(customerFormView, ADD_CUSTOMERS_VIEW);
+        panel.add(customersView, CUSTOMERS);
+        panel.add(reportsView, REPORTS);
+        panel.add(customerInfoView, CUSTOMER_INFO);
+        panel.add(customerFormView, ADD_CUSTOMERS);
 
         return panel;
     }
@@ -74,12 +80,14 @@ public class MainView {
         currentPage = cardName;
     }
 
-    // getters for controller
-    public Frame            getFrame()            { return frame;                      }
-    public Header           getHeader()           { return header;                     }
-    public Sidebar          getSidebar()          { return sidebar;                    }
-    public ReportsView      getReportsView()      { return reportsView;                }
-    public CustomersView    getCustomersView()    { return customersView;              }
-    public CustomerInfoView getCustomerInfoView() { return customerInfoView;           }
-    public CustomerFormView getCustomerFormView() { return customerFormView;           }
+    // getters and setters for controller
+    public String           getCurrentPage()       { return currentPage;                }
+    public Frame            getFrame()             { return frame;                      }
+    public Header           getHeader()            { return header;                     }
+    public Sidebar          getSidebar()           { return sidebar;                    }
+    public ReportsView      getReportsView()       { return reportsView;                }
+    public CustomersView    getCustomersView()     { return customersView;              }
+    public CustomerInfoView getCustomerInfoView()  { return customerInfoView;           }
+    public CustomerFormView getCustomerFormView()  { return customerFormView;           }
+    public void setCurrentPage(String currentPage) { this.currentPage = currentPage;    }
 }

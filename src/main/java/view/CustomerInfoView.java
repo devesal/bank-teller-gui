@@ -5,11 +5,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class CustomerInfoView extends JPanel {
-    // card names for the right‐hand panel
-    public static final String BANK_ACCOUNTS              = "BANK_ACCOUNTS";
-    public static final String BANK_TRANSACTION_HISTORY   = "BANK_TRANSACTION_HISTORY";
-    public static final String BANK_ACCOUNT               = "BANK_ACCOUNT";
-
     private final JLabel lblId      = new JLabel();
     private final JLabel lblName    = new JLabel();
     private final JLabel lblDob     = new JLabel();
@@ -21,9 +16,11 @@ public class CustomerInfoView extends JPanel {
     private final JButton btnAddAccount   = new JButton("Add Bank Account");
     private final JTable accountsTable;
 
+    private String currentRightCard;
+
     // the CardLayout and its panel
     private final CardLayout rightCardLayout = new CardLayout();
-    private final JPanel     rightPanel      = new JPanel(rightCardLayout);
+    private final JPanel rightPanel = new JPanel(rightCardLayout);
 
     public CustomerInfoView() {
         setLayout(new BorderLayout(10, 10));
@@ -65,31 +62,30 @@ public class CustomerInfoView extends JPanel {
 
         // === RIGHT PANEL SETUP ===
 
-        // 1) Build the “accounts” card
         JPanel accountsPanel = new JPanel(new BorderLayout(10,10));
-        // header with “Add Account”
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         btnAddAccount.setPreferredSize(new Dimension(120, 40));
         headerPanel.add(btnAddAccount);
         accountsPanel.add(headerPanel, BorderLayout.NORTH);
+
         // the table itself
         String[] cols = {"Account No", "Type", "Status", "Balance"};
         DefaultTableModel model = new DefaultTableModel(cols, 0);
         accountsTable = new JTable(model);
         accountsPanel.add(new JScrollPane(accountsTable), BorderLayout.CENTER);
 
-        // 2) Add all cards to rightPanel
+        // Add all cards to rightPanel
         rightPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        rightPanel.add(accountsPanel,            BANK_ACCOUNTS);
-        rightPanel.add(new TransactionHistoryView(), BANK_TRANSACTION_HISTORY);
-        rightPanel.add(new BankAccountView(),        BANK_ACCOUNT);
+        rightPanel.add(accountsPanel, MainView.BANK_ACCOUNTS);
+        rightPanel.add(new TransactionHistoryView(), MainView.TRANSACTION_HISTORY);
+        rightPanel.add(new BankAccountView(), MainView.BANK_ACCOUNT);
 
         // assemble the two halves
         add(leftPanel,  BorderLayout.WEST);
         add(rightPanel, BorderLayout.CENTER);
     }
 
-    /** Controller calls this to flip the right‐hand card */
+    //Controller calls this to flip the right‐hand card
     public void showRightCard(String cardName) {
         rightCardLayout.show(rightPanel, cardName);
     }
@@ -101,9 +97,11 @@ public class CustomerInfoView extends JPanel {
     public JButton getBtnCloseAccount()       { return btnCloseAccount; }
     public JButton getBtnStatement()          { return btnStatement;    }
     public JButton getBtnEdit()               { return btnEdit;         }
+    public String getCurrentRightCard()       { return currentRightCard; }
 
     // setters for labels
     public void setCustomerId(String id)         { lblId.setText(id);      }
     public void setCustomerName(String name)     { lblName.setText(name);  }
     public void setCustomerDob(String dob)       { lblDob.setText(dob);    }
+    public void setCurrentRightCard(String card) { currentRightCard = card; }
 }

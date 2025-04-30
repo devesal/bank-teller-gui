@@ -1,6 +1,5 @@
 package controller;
 
-import com.sun.tools.javac.Main;
 import view.CustomerInfoView;
 import view.MainView;
 
@@ -17,37 +16,38 @@ public class CustomerInfoController {
     }
 
     private void initController() {
-        // Back button → customers card
-        mainView.getHeader().getBackButton().addActionListener(
-                e -> {
-                    mainView.getHeader().showControls(true);
-                    mainView.showPage(MainView.CUSTOMERS_VIEW);
-                }
-        );
-
-        // 1) “Transaction History” button → history card
+        // 1) “Transaction History” button -> history card
         view.getBtnHistory().addActionListener(e -> {
-            view.showRightCard(CustomerInfoView.BANK_TRANSACTION_HISTORY);
+            view.showRightCard(MainView.TRANSACTION_HISTORY);
+            view.setCurrentRightCard(MainView.TRANSACTION_HISTORY);
+            mainView.setCurrentPage(MainView.TRANSACTION_HISTORY);
+
             mainView.getHeader().showControls(false);
+            mainView.getHeader().getBackButton().addActionListener(
+                    f -> view.showRightCard(MainView.BANK_ACCOUNTS)
+            );
         });
 
-        // 2) Double‐click on a row → bank‐account card
+        // 2) Double‐click on a row -> bank‐account card
         view.getAccountsTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    view.showRightCard(CustomerInfoView.BANK_ACCOUNT);
+                    view.showRightCard(MainView.BANK_ACCOUNT);
+                    view.setCurrentRightCard(MainView.BANK_ACCOUNT);
+                    mainView.setCurrentPage(MainView.BANK_ACCOUNT);
                     mainView.getHeader().updateHeaderTitle("ACCOUNT DETAILS");
                     mainView.getHeader().showControls(false);
                 }
             }
         });
 
-        // 3) “Add Bank Account” → flip back to accounts list (or launch wizard)
+        // 3) “Add Bank Account” -> flip back to accounts list (or launch wizard)
         view.getBtnAddAccount().addActionListener(e -> {
-            view.showRightCard(CustomerInfoView.BANK_ACCOUNTS);
+            view.showRightCard(MainView.BANK_ACCOUNTS);
+            view.setCurrentRightCard(MainView.BANK_ACCOUNTS);
             mainView.getHeader().updateHeaderTitle("BANK ACCOUNTS");
-            // or: mainView.showPage(MainView.ADD_CUSTOMERS_VIEW);
+            // or: mainView.showPage(MainView.ADD_CUSTOMERS);
         });
     }
 }

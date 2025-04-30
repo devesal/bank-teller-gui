@@ -27,12 +27,6 @@ public class TransactionHistoryView extends JPanel {
         DefaultTableModel model = new DefaultTableModel(cols, 0);
         historyTable = new JTable(model);
         add(new JScrollPane(historyTable), BorderLayout.CENTER);
-
-        // back-button bar
-        btnBack.setPreferredSize(new Dimension(140, 40));
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        btnPanel.add(btnBack);
-        add(btnPanel, BorderLayout.SOUTH);
     }
 
     // getters for controller

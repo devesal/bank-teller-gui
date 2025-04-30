@@ -25,60 +25,38 @@ public class CustomerFormController {
     }
 
     private void initController() {
-        // navigation buttons
-        mainView.getHeader().getBackButton().addActionListener(
-                e ->{
-                    if (view.getCurrentPage().equals(CustomerFormView.STEP_ACCOUNTS)) {
-                        view.showStep(CustomerFormView.STEP_PERSONAL);
-                        view.setCurrentPage(CustomerFormView.STEP_PERSONAL);
-                    } else {
-                        mainView.showPage(MainView.CUSTOMERS_VIEW);
-                        mainView.getHeader().showControls(true);
-                    }
-                    view.reset();
-                }
-        );
-
         view.getNextButtonStep1().addActionListener(
                 e -> {
-                    view.showStep(CustomerFormView.STEP_ACCOUNTS);
-                    view.setCurrentPage(CustomerFormView.STEP_ACCOUNTS);
+                    view.showStep(MainView.STEP_ACCOUNTS);
+                    mainView.setCurrentPage(MainView.STEP_ACCOUNTS);
                 }
         );
 
         // create and persist customer + accounts
-        view.getCreateButton().addActionListener(e -> {
-            try {
-                Customer customer = accountCreation();
-                // populate success view
-                view.getSuccessNameLabel().setText(
-                        customer.getFirstName() + " " + customer.getLastName());
-                view.getSuccessDobLabel().setText(customer.getBirthDate());
-                mainView.getHeader().updateHeaderTitle("CUSTOMER CREATION");
-                mainView.getHeader().showControls(false);
-                view.showStep(CustomerFormView.STEP_SUCCESS);
-                view.setCurrentPage(CustomerFormView.STEP_SUCCESS);
-            } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
-
-        // navigate to info view
-        view.getViewButton().addActionListener(e ->
-                mainView.showPage(MainView.CUSTOMER_INFO_VIEW)
-        );
-
         view.getCreateButton().addActionListener(
                 e -> {
+                    try {
+                        Customer customer = accountCreation();
+                        // populate success view
+                        view.getSuccessNameLabel().setText(
+                                customer.getFirstName() + " " + customer.getLastName());
+                        view.getSuccessDobLabel().setText(customer.getBirthDate());
+                    } catch (IllegalArgumentException ex) {
+                        JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
                     mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
                     mainView.getHeader().showControls(false);
-                    view.showStep(CustomerFormView.STEP_SUCCESS);
+                    view.showStep(MainView.STEP_SUCCESS);
+                    mainView.setCurrentPage(MainView.STEP_SUCCESS);
                 }
         );
+
         view.getViewButton().addActionListener(
                 e -> {
                     new CustomerInfoController(mainView);
-                    mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
+                    mainView.showPage(MainView.CUSTOMER_INFO);
+                    mainView.setCurrentPage(MainView.CUSTOMER_INFO);
                 }
         );
     }

@@ -5,10 +5,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class CustomerFormView extends JPanel {
-    public static final String STEP_PERSONAL  = "STEP_PERSONAL";
-    public static final String STEP_ACCOUNTS  = "STEP_ACCOUNTS";
-    public static final String STEP_SUCCESS   = "STEP_SUCCESS";
-
     private final CardLayout cardLayout;
     private final JPanel cardPanel;
 
@@ -31,8 +27,6 @@ public class CustomerFormView extends JPanel {
     private final JLabel lblSuccessAccounts = new JLabel();
     private final JButton btnView           = new JButton("View");
 
-    private String currentPage;
-
     public CustomerFormView() {
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         cardLayout = new CardLayout();
@@ -40,9 +34,9 @@ public class CustomerFormView extends JPanel {
         cardPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         // assemble the four steps
-        cardPanel.add(buildPersonalPanel(), STEP_PERSONAL);
-        cardPanel.add(buildAccountsPanel(), STEP_ACCOUNTS);
-        cardPanel.add(buildSuccessPanel(), STEP_SUCCESS);
+        cardPanel.add(buildPersonalPanel(), MainView.STEP_PERSONAL);
+        cardPanel.add(buildAccountsPanel(), MainView.STEP_ACCOUNTS);
+        cardPanel.add(buildSuccessPanel(), MainView.STEP_SUCCESS);
 
         setLayout(new BorderLayout());
         add(cardPanel, BorderLayout.CENTER);
@@ -88,7 +82,7 @@ public class CustomerFormView extends JPanel {
 
         p.add(form, BorderLayout.CENTER);
 
-        btnNext1.setPreferredSize(new Dimension(100, 40));
+        btnNext1.setPreferredSize(new Dimension(120, 40));
 
         // --- button bar, centered ---
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
@@ -126,7 +120,7 @@ public class CustomerFormView extends JPanel {
 
         p.add(list, BorderLayout.CENTER);
 
-        btnCreate.setPreferredSize(new Dimension(100, 40));
+        btnCreate.setPreferredSize(new Dimension(120, 40));
 
         // --- button bar, centered ---
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
@@ -150,7 +144,7 @@ public class CustomerFormView extends JPanel {
         details.add(new JLabel("Accounts:"));        details.add(lblSuccessAccounts);
         p.add(details, BorderLayout.CENTER);
 
-        btnView.setPreferredSize(new Dimension(100, 40));
+        btnView.setPreferredSize(new Dimension(120, 40));
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(btnView);
@@ -177,12 +171,10 @@ public class CustomerFormView extends JPanel {
         lblSuccessAccounts.setText("");
 
         // --- go back to the first card ---
-        showStep(STEP_PERSONAL);
+        showStep(MainView.STEP_PERSONAL);
     }
 
     // getters for controller
-    public String getCurrentPage() { return currentPage; }
-
     public JTextField getFirstNameField()    { return txtFirstName;   }
     public JTextField getLastNameField()     { return txtLastName;    }
     public JTextField getDobField()          { return txtDob;         }
@@ -198,7 +190,4 @@ public class CustomerFormView extends JPanel {
     public JLabel     getSuccessDobLabel()       { return lblSuccessDob;      }
     public JLabel     getSuccessAccountsLabel()  { return lblSuccessAccounts; }
     public JButton    getViewButton()            { return btnView;            }
-
-    // setter for controller
-    public void setCurrentPage(String currentPage) { this.currentPage = currentPage; }
 }

@@ -16,28 +16,12 @@
 
         public MainController() {
             view = new MainView();
-            new CustomerFormController(view);
             customerList = new ArrayList<>();
             initController();
         }
 
         private void initController() {
-            // Show Customers card when sidebar button clicked
-            view.getSidebar().getBtnCustomers().addActionListener(
-                    e -> {
-                        view.getHeader().updateHeaderTitle("CUSTOMERS");
-                        view.getHeader().showControls(true);
-                        view.showPage(MainView.CUSTOMERS_VIEW);
-                    }
-            );
-
-            // Show Reports card
-            view.getSidebar().getBtnReports().addActionListener(
-                    e -> {
-                        view.getHeader().updateHeaderTitle("CUSTOMERS");
-                        view.showPage(MainView.REPORTS_VIEW);
-                    }
-            );
+            setNavigationActions();
 
             // Save-on-exit stub (could hook into persistence later)
             view.getFrame().addWindowListener(new WindowAdapter() {
@@ -53,29 +37,50 @@
                     if (evt.getClickCount() == 2) {
                         int row = view.getCustomersView().getTable().getSelectedRow();
                         // load customer details by ID
-                        view.showPage(MainView.CUSTOMER_INFO_VIEW);
+                        view.showPage(MainView.CUSTOMER_INFO);
                     }
                 }
             });
 
-            view.getHeader().getAddButton().addActionListener(
+            view.getHeader().getSearchField().addActionListener(
+                    e -> searchCustomer()
+            );
+        }
+
+        private void setNavigationActions() {
+            setBackButtonAction();
+
+            view.getSidebar().getBtnCustomers().addActionListener(
                     e -> {
-                        view.showPage(MainView.ADD_CUSTOMERS_VIEW);
-                        view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
-                        view.getHeader().showControls(false);
-                        view.getCustomerFormView().reset();
-                        view.getCustomerFormView().setCurrentPage(CustomerFormView.STEP_PERSONAL);
+                        view.getHeader().updateHeaderTitle("CUSTOMERS");
+                        view.getHeader().showControls(true);
+                        view.showPage(MainView.CUSTOMERS);
                     }
             );
 
-            view.getHeader().getBtnSearch().addActionListener(e -> {
-                searchCustomer();
-            });
-            view.getHeader().getSearchField().addActionListener(e ->{
-           searchCustomer();
-            });
+            // Show Reports card
+            view.getSidebar().getBtnReports().addActionListener(
+                    e -> {
+                        view.getHeader().updateHeaderTitle("CUSTOMERS");
+                        view.showPage(MainView.REPORTS);
+                    }
+            );
 
+            view.getHeader().getAddButton().addActionListener(
+                    e -> {
+                        new CustomerFormController(view);
+                        view.setCurrentPage(MainView.ADD_CUSTOMERS);
+                        view.showPage(MainView.ADD_CUSTOMERS);
+                        view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
+                        view.getHeader().showControls(false);
+                        view.getCustomerFormView().reset();
+                        view.setCurrentPage(MainView.STEP_PERSONAL);
+                    }
+            );
 
+            view.getHeader().getBtnSearch().addActionListener(
+                    e -> searchCustomer()
+            );
         }
 
         public void searchCustomer() {
@@ -113,12 +118,47 @@
             }
         }
 
+        private void setBackButtonAction() {
+            view.getHeader().getBackButton().addActionListener(e -> {
+                switch (view.getCurrentPage()) {
+                    case MainView.REPORTS,
+                         MainView.CUSTOMER_INFO,
+                         MainView.ADD_CUSTOMERS,
+                         MainView.STEP_PERSONAL,
+                         MainView.STEP_SUCCESS -> {
+                            view.showPage(MainView.CUSTOMERS);
+                            view.setCurrentPage(MainView.CUSTOMERS);
+                            view.getHeader().updateHeaderTitle("CUSTOMERS");
+                            view.getHeader().showControls(true);
+                    }
+                    case MainView.STEP_ACCOUNTS -> {
+                        // back from accounts step → personal step
+                        view.getCustomerFormView().showStep(MainView.STEP_PERSONAL);
+                        view.setCurrentPage(MainView.STEP_PERSONAL);
+                        view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
+                    }
+                    case MainView.TRANSACTION_HISTORY -> {
+                        // sub‐page under CustomerInfo
+                        view.getCustomerInfoView().showRightCard(MainView.CUSTOMER_INFO);
+                        view.setCurrentPage(MainView.CUSTOMER_INFO);
+                        view.getHeader().showControls(false);
+                        view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+                    }
+                    case MainView.BANK_ACCOUNT -> {
+                        view.getCustomerInfoView().showRightCard(MainView.CUSTOMER_INFO);
+                        view.setCurrentPage(MainView.CUSTOMER_INFO);
+                        view.getHeader().showControls(false);
+                        view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+                    }
+                }
+            });
+        }
+
         public void start() {
             SwingUtilities.invokeLater(() -> {
                 view.getFrame().setVisible(true);
                 // show customers by default
-                view.showPage(MainView.CUSTOMERS_VIEW);
-
+                view.showPage(MainView.CUSTOMERS);
             });
         }
     }
