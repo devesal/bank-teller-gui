@@ -12,9 +12,10 @@ public class CustomerInfoView extends JPanel {
 
     private final JButton btnEdit         = new JButton("Edit Customer Info");
     private final JButton btnHistory      = new JButton("Transaction History");
-    private final JButton btnAddAccount   = new JButton("Account Statement");
+    private final JButton btnStatement   = new JButton("Account Statement");
     private final JButton btnCloseAccount = new JButton("Close Account");
 
+    private final JButton btnAddAccount = new JButton("Add Bank Account");
     private final JTable accountsTable;
 
     public CustomerInfoView() {
@@ -38,10 +39,13 @@ public class CustomerInfoView extends JPanel {
 
         // Actions vertically at center
 
-        btnEdit.setPreferredSize(new Dimension(100, 40));
-        btnHistory.setPreferredSize(new Dimension(100, 40));
-        btnAddAccount.setPreferredSize(new Dimension(100, 40));
-        btnCloseAccount.setPreferredSize(new Dimension(100, 40));
+        Dimension btnSize = new Dimension(120, 40);
+        for (JButton b : new JButton[]{ btnEdit, btnHistory, btnStatement, btnCloseAccount }) {
+            b.setPreferredSize(btnSize);
+            b.setMaximumSize(btnSize);
+            b.setMinimumSize(btnSize);
+            b.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
 
         JPanel actionPanel = new JPanel();
         actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
@@ -50,14 +54,20 @@ public class CustomerInfoView extends JPanel {
         actionPanel.add(Box.createVerticalStrut(10));
         actionPanel.add(btnHistory);
         actionPanel.add(Box.createVerticalStrut(10));
-        actionPanel.add(btnAddAccount);
-        leftPanel.add(actionPanel, BorderLayout.CENTER);
+        actionPanel.add(btnStatement);
         actionPanel.add(Box.createVerticalStrut(10));
+        actionPanel.add(btnCloseAccount);
         leftPanel.add(actionPanel, BorderLayout.CENTER);
 
         // === RIGHT PANEL ===
         JPanel rightPanel = new JPanel(new BorderLayout(10,10));
         rightPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+        btnAddAccount.setPreferredSize(new Dimension(120, 40));
+        headerPanel.add(btnAddAccount);
+        rightPanel.add(headerPanel, BorderLayout.NORTH);
 
         // Accounts table in right panel
         String[] cols = {"Account No", "Type", "Status", "Balance"};
