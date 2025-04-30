@@ -10,9 +10,10 @@ public class CustomerInfoView extends JPanel {
     private final JLabel lblDob     = new JLabel();
     private final JLabel lblContact = new JLabel();
 
-    private final JButton btnEdit       = new JButton("Edit Customer Info");
-    private final JButton btnHistory    = new JButton("View Transaction History");
-    private final JButton btnAddAccount = new JButton("Add New Bank Account");
+    private final JButton btnEdit         = new JButton("Edit Customer Info");
+    private final JButton btnHistory      = new JButton("Transaction History");
+    private final JButton btnAddAccount   = new JButton("Account Statement");
+    private final JButton btnCloseAccount = new JButton("Close Account");
 
     private final JTable accountsTable;
 
@@ -24,6 +25,7 @@ public class CustomerInfoView extends JPanel {
 
         // LEFT PANEL
         JPanel leftPanel = new JPanel(new BorderLayout(10,10));
+        leftPanel.setPreferredSize(new Dimension(140, 0));
 
         // Customer details at top
         JPanel detailPanel = new JPanel(new GridLayout(0,2,5,5));
@@ -39,6 +41,7 @@ public class CustomerInfoView extends JPanel {
         btnEdit.setPreferredSize(new Dimension(100, 40));
         btnHistory.setPreferredSize(new Dimension(100, 40));
         btnAddAccount.setPreferredSize(new Dimension(100, 40));
+        btnCloseAccount.setPreferredSize(new Dimension(100, 40));
 
         JPanel actionPanel = new JPanel();
         actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
@@ -48,6 +51,8 @@ public class CustomerInfoView extends JPanel {
         actionPanel.add(btnHistory);
         actionPanel.add(Box.createVerticalStrut(10));
         actionPanel.add(btnAddAccount);
+        leftPanel.add(actionPanel, BorderLayout.CENTER);
+        actionPanel.add(Box.createVerticalStrut(10));
         leftPanel.add(actionPanel, BorderLayout.CENTER);
 
         // === RIGHT PANEL ===
