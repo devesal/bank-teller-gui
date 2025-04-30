@@ -28,14 +28,14 @@ public class CustomerFormController {
         // navigation buttons
         mainView.getHeader().getBackButton().addActionListener(
                 e ->{
-                    switch (view.getCurrentPage()) {
-                        case CustomerFormView.STEP_PERSONAL, CustomerFormView.STEP_SUCCESS:
-                            mainView.showPage(MainView.CUSTOMERS_VIEW);
-                            mainView.getHeader().showControls(true);
-                        case CustomerFormView.STEP_ACCOUNTS:
-                            view.showStep(CustomerFormView.STEP_PERSONAL);
-                            break;
+                    if (view.getCurrentPage().equals(CustomerFormView.STEP_ACCOUNTS)) {
+                        view.showStep(CustomerFormView.STEP_PERSONAL);
+                        view.setCurrentPage(CustomerFormView.STEP_PERSONAL);
+                    } else {
+                        mainView.showPage(MainView.CUSTOMERS_VIEW);
+                        mainView.getHeader().showControls(true);
                     }
+                    view.reset();
                 }
         );
 
@@ -57,6 +57,7 @@ public class CustomerFormController {
                 mainView.getHeader().updateHeaderTitle("CUSTOMER CREATION");
                 mainView.getHeader().showControls(false);
                 view.showStep(CustomerFormView.STEP_SUCCESS);
+                view.setCurrentPage(CustomerFormView.STEP_SUCCESS);
             } catch (IllegalArgumentException ex) {
                 JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }

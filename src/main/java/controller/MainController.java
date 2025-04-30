@@ -64,6 +64,7 @@
                         view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
                         view.getHeader().showControls(false);
                         view.getCustomerFormView().reset();
+                        view.getCustomerFormView().setCurrentPage(CustomerFormView.STEP_PERSONAL);
                     }
             );
 
