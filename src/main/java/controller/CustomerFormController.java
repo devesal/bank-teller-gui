@@ -26,8 +26,24 @@ public class CustomerFormController {
 
     private void initController() {
         // navigation buttons
-        view.getNextButtonStep1().addActionListener(e ->
-                view.showStep(CustomerFormView.STEP_ACCOUNTS)
+        mainView.getHeader().getBackButton().addActionListener(
+                e ->{
+                    switch (view.getCurrentPage()) {
+                        case CustomerFormView.STEP_PERSONAL, CustomerFormView.STEP_SUCCESS:
+                            mainView.showPage(MainView.CUSTOMERS_VIEW);
+                            mainView.getHeader().showControls(true);
+                        case CustomerFormView.STEP_ACCOUNTS:
+                            view.showStep(CustomerFormView.STEP_PERSONAL);
+                            break;
+                    }
+                }
+        );
+
+        view.getNextButtonStep1().addActionListener(
+                e -> {
+                    view.showStep(CustomerFormView.STEP_ACCOUNTS);
+                    view.setCurrentPage(CustomerFormView.STEP_ACCOUNTS);
+                }
         );
 
         // create and persist customer + accounts

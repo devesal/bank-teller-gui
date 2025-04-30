@@ -54,8 +54,6 @@ public class CustomerFormView extends JPanel {
     }
 
     private JPanel buildPersonalPanel() {
-        currentPage = STEP_PERSONAL;
-
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("FILL IN ACCOUNT INFORMATION", SwingConstants.CENTER);
         title.setFont(new Font("SansSerif", Font.PLAIN, 20));
@@ -102,8 +100,6 @@ public class CustomerFormView extends JPanel {
     }
 
     private JPanel buildAccountsPanel() {
-        currentPage = STEP_ACCOUNTS;
-
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("CHOOSE ACCOUNT TYPES", SwingConstants.CENTER);
         title.setFont(new Font("SansSerif", Font.PLAIN, 20));
@@ -142,8 +138,6 @@ public class CustomerFormView extends JPanel {
     }
 
     private JPanel buildSuccessPanel() {
-        currentPage = STEP_SUCCESS;
-
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("ACCOUNT CREATED SUCCESSFULLY", SwingConstants.CENTER);
         title.setFont(new Font("SansSerif", Font.PLAIN, 20));
@@ -186,6 +180,9 @@ public class CustomerFormView extends JPanel {
         showStep(STEP_PERSONAL);
     }
 
+    // getters for controller
+    public String getCurrentPage() { return currentPage; }
+
     public JTextField getFirstNameField()    { return txtFirstName;   }
     public JTextField getLastNameField()     { return txtLastName;    }
     public JTextField getDobField()          { return txtDob;         }
@@ -201,4 +198,7 @@ public class CustomerFormView extends JPanel {
     public JLabel     getSuccessDobLabel()       { return lblSuccessDob;      }
     public JLabel     getSuccessAccountsLabel()  { return lblSuccessAccounts; }
     public JButton    getViewButton()            { return btnView;            }
+
+    // setter for controller
+    public void setCurrentPage(String currentPage) { this.currentPage = currentPage; }
 }
