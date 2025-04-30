@@ -16,7 +16,7 @@ public class CustomerFormView extends JPanel {
     private final JTextField txtFirstName = new JTextField(20);
     private final JTextField txtLastName  = new JTextField(20);
     private final JTextField txtDob       = new JTextField(20);
-    private final JButton    btnBack1      = new JButton("Back");
+    private final JButton    btnBack1     = new JButton("Back");
     private final JButton    btnNext1     = new JButton("Next");
 
     // --- Step 2: Account Types ---
@@ -24,8 +24,8 @@ public class CustomerFormView extends JPanel {
     private final JToggleButton tglChecking   = new JToggleButton("Checking Account");
     private final JToggleButton tglInvestment = new JToggleButton("Investment Account");
     private final JToggleButton tglCreditCard = new JToggleButton("Credit Card Account");
-    private final JButton    btnBack2      = new JButton("Back");
-    private final JButton    btnCreate     = new JButton("Create");
+    private final JButton btnBack2  = new JButton("Back");
+    private final JButton btnCreate = new JButton("Create");
 
     // --- Step 3: Success ---
     private final JLabel lblSuccessName     = new JLabel();
@@ -144,6 +144,28 @@ public class CustomerFormView extends JPanel {
         p.add(btnPanel, BorderLayout.SOUTH);
 
         return p;
+    }
+
+    public void reset() {
+        // --- clear step 1 fields ---
+        txtFirstName.setText("");
+        txtLastName .setText("");
+        txtDob      .setText("");
+
+        // --- clear step 2 toggles ---
+        tglSavings   .setSelected(false);
+        tglChecking  .setSelected(false);
+        tglInvestment.setSelected(false);
+        tglCreditCard.setSelected(false);
+
+        // --- clear step 3 labels ---
+        lblSuccessName    .setText("");
+        lblSuccessDob     .setText("");
+        lblSuccessPhone   .setText("");
+        lblSuccessAccounts.setText("");
+
+        // --- go back to the first card ---
+        showStep(STEP_PERSONAL);
     }
 
     public JTextField getFirstNameField()    { return txtFirstName;   }

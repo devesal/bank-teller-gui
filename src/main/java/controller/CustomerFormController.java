@@ -23,10 +23,15 @@ public class CustomerFormController {
         formView.getBackButtonStep2().addActionListener(e ->
                 formView.showStep(CustomerFormView.STEP_PERSONAL)
         );
-        formView.getCreateButton().addActionListener(e ->
-                formView.showStep(CustomerFormView.STEP_SUCCESS)
+        formView.getCreateButton().addActionListener(
+                e -> {
+                    mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+                    mainView.getHeader().showControls(false);
+                    formView.showStep(CustomerFormView.STEP_SUCCESS);
+                }
         );
         formView.getViewButton().addActionListener(e ->
                 mainView.showPage(MainView.CUSTOMER_INFO_VIEW));
+
     }
 }

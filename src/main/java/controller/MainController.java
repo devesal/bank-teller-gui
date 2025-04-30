@@ -19,13 +19,18 @@ public class MainController {
         // Show Customers card when sidebar button clicked
         view.getSidebar().getBtnCustomers().addActionListener(
                 e -> {
+                    view.getHeader().updateHeaderTitle("CUSTOMERS");
+                    view.getHeader().showControls(true);
                     view.showPage(MainView.CUSTOMERS_VIEW);
                 }
         );
 
         // Show Reports card
         view.getSidebar().getBtnReports().addActionListener(
-                e -> view.showPage(MainView.REPORTS_VIEW)
+                e -> {
+                    view.getHeader().updateHeaderTitle("CUSTOMERS");
+                    view.showPage(MainView.REPORTS_VIEW);
+                }
         );
 
         // Save-on-exit stub (could hook into persistence later)

@@ -1,12 +1,16 @@
 package view.panels;
 
+import view.CustomerInfoView;
 import view.MainView;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class Header extends JPanel {
-    private final JButton btnAddCustomer;
+    private JButton btnAdd;
+    private JButton btnSearch;
+    private JTextField searchField;
+    private JPanel rightPanel;
 
     public Header(MainView view) {
         setLayout(new BorderLayout());
@@ -24,20 +28,31 @@ public class Header extends JPanel {
         add(titleLabel, BorderLayout.CENTER);
 
         // Search & Add Customer
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JTextField searchField = new JTextField(15);
-        JButton btnSearch = new JButton("Search");
-        btnAddCustomer = new JButton("ADD CUSTOMER");
+        rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        searchField = new JTextField(15);
+        btnSearch = new JButton("Search");
+        btnAdd = new JButton("ADD CUSTOMER");
 
         rightPanel.add(searchField);
         rightPanel.add(btnSearch);
-        rightPanel.add(btnAddCustomer);
+        rightPanel.add(btnAdd);
         add(rightPanel, BorderLayout.EAST);
 
         // Store titleLabel for later updates
         putClientProperty("titleLabel", titleLabel);
 
-        btnAddCustomer.addActionListener(e -> view.showPage(MainView.ADD_CUSTOMERS_VIEW));
+        btnAdd.addActionListener(
+                e -> {
+                    view.showPage(MainView.ADD_CUSTOMERS_VIEW);
+                    view.getCustomerFormView().reset();
+                }
+        );
+    }
+
+    public void showControls(boolean visible) {
+        rightPanel.setVisible(visible);
+        revalidate();
+        repaint();
     }
 
     public void updateHeaderTitle(String title) {
@@ -45,7 +60,8 @@ public class Header extends JPanel {
         titleLabel.setText(title);
     }
 
-    public JButton getBtnAddCustomer() {
-        return btnAddCustomer;
-    }
+    // header getters for controller
+    public JButton getBtnAdd()         { return btnAdd;      }
+    public JTextField getSearchField() { return searchField; }
+    public JButton getBtnSearch()      { return btnSearch;   }
 }

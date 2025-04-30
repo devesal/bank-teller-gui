@@ -7,13 +7,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainView {
-    private JFrame frame;
-    private Sidebar sidebar;
-    private Header header;
-    private JPanel contentPanel;
-    private CardLayout contentCardLayout;
-    private ReportsView reportsView;
-    private CustomersView customersView;
+    private JFrame           frame;
+    private Sidebar          sidebar;
+    private Header           header;
+    private JPanel           contentPanel;
+    private CardLayout       contentCardLayout;
+    private ReportsView      reportsView;
+    private CustomersView    customersView;
     private CustomerInfoView customerInfoView;
     private CustomerFormView customerFormView;
 
@@ -73,6 +73,7 @@ public class MainView {
 
     // ==== getters for controller ====
     public Frame            getFrame()            { return frame;                      }
+    public Header            getHeader()          { return header;                     }
     public Sidebar          getSidebar()          { return sidebar;                    }
     public ReportsView      getReportsView()      { return reportsView;                }
     public CustomersView    getCustomersView()    { return customersView;              }
