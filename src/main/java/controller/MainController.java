@@ -142,36 +142,31 @@ public class MainController {
         );
     }
     public void refreshCustomerTable() {
-        // 1) reload customers and accounts
+        // 1) Reload customers and accounts from DB
         customerList.clear();
-        customerList.addAll(FileIO.loadAllCustomers());
-
-        allAccounts.clear();
-        allAccounts.addAll(FileIO.loadAllAccounts());
-
-        // 2) group by customer ID
-        Map<String, Long> counts = allAccounts.stream()
-                // skip any accounts that somehow have no customer ID
-                .filter(acc -> acc.getCustomerId() != null)
-                .collect(Collectors.groupingBy(
-                        BankAccount::getCustomerId,
-                        Collectors.counting()
+        List<Customer> allCustomers = FileIO.loadAllCustomers();
+        customerList.addAll(allCustomers);
+        List<BankAccount> allAccounts = FileIO.loadAllAccounts();
+        allAccounts.addAll(allAccounts);
+        // 2) Group accounts by customerId
+        Map<String, List<BankAccount>> accountsByCust = customerList.stream()
+                .collect(Collectors.toMap(
+                        Customer::getId,
+                        Customer::getAccounts
                 ));
 
-        // 3) repopulate the JTable
         DefaultTableModel model = (DefaultTableModel) view
                 .getCustomersView().getTable().getModel();
         model.setRowCount(0);
-        for (Customer c : customerList) {
-            long num = counts.getOrDefault(c.getId(), 0L);
+        for (Customer cust : customerList) {
             model.addRow(new Object[]{
-                    c.getId(),
-                    c.getFirstName() + " " + c.getLastName(),
-                    (int)num
+                    cust.getId(),
+                    cust.getFirstName() + " " + cust.getLastName(),
+                    accountsByCust.getOrDefault(cust.getId(), List.of()).size()
             });
         }
-    }
 
+    }
     public void start() {
         SwingUtilities.invokeLater(() -> {
             loadCustomersToTable(customerList);

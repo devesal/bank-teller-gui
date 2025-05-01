@@ -38,7 +38,6 @@ public class CustomerFormController {
             Customer customer = createCustomer();
             customers.add(customer);
             currentCustomer = customer;
-
             // Save to file
             FileIO.saveAllCustomers(customers);
             FileIO.saveAllAccounts(new ArrayList<>(allAccounts));
