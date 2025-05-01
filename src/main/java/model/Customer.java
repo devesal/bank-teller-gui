@@ -10,6 +10,8 @@ public class Customer implements Serializable {
     private String lastName;
     private String BirthDate;
     private List<BankAccount> accounts;
+    private static int nextId = 1; // This should be static and incrementing
+    private final int id; 
 
     /**
      * Constructs a new Customer with the given personal information.
@@ -23,6 +25,7 @@ public class Customer implements Serializable {
         this.lastName = lastName;
         this.BirthDate = BirthDate;
         this.accounts = new ArrayList<>();
+        this.id = nextId++;
     }
 
     // --- Personal Info Getters/Setters ---
@@ -109,5 +112,8 @@ public class Customer implements Serializable {
     public String toString() {
         return String.format("%s %s (Date of Birth: %s)",
                 firstName, lastName, BirthDate);
+    }
+    public int getId() {
+        return id;
     }
 }

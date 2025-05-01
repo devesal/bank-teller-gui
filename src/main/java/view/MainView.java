@@ -16,6 +16,7 @@ public class MainView {
     private CustomersView    customersView;
     private CustomerInfoView customerInfoView;
     private CustomerFormView customerFormView;
+    private BankAccountView  bankAccountView;
 
     // Card identifiers
     public static final String CUSTOMERS     = "CustomersView";
@@ -63,6 +64,7 @@ public class MainView {
         reportsView      = new ReportsView();
         customerInfoView = new CustomerInfoView();
         customerFormView = new CustomerFormView();
+        bankAccountView = new BankAccountView();
 
         panel.add(customersView, CUSTOMERS);
         panel.add(reportsView, REPORTS);
@@ -85,6 +87,7 @@ public class MainView {
     public ReportsView      getReportsView()       { return reportsView;                }
     public CustomersView    getCustomersView()     { return customersView;              }
     public CustomerInfoView getCustomerInfoView()  { return customerInfoView;           }
+    public BankAccountView  getBankAccountView()   { return bankAccountView;            }
     public CustomerFormView getCustomerFormView()  { return customerFormView;           }
     public void setCurrentPage(String currentPage) { this.currentPage = currentPage;    }
 }
