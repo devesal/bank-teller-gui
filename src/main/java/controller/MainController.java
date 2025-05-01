@@ -1,6 +1,5 @@
 package controller;
 
-import model.BankAccount;
 import model.Customer;
 import util.FileIO;
 import view.MainView;
@@ -51,15 +50,14 @@ public class MainController {
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
                     int row = view.getCustomersView().getTable().getSelectedRow();
-                    String id  = (String) view.getCustomersView().getTable().getValueAt(row, 0);
-                    Customer chosen = customerList.stream()
-                            .filter(c -> c.getId().equals(id))
-                            .findFirst()
-                            .orElseThrow();  // shouldn't happen
-
-                    customerInfoController.setCurrentCustomer(chosen);
-                    customerInfoController.setCustomerIndex(Integer.parseInt(id) - 1);  // or rename to setCustomerId()
-                    view.showPage(MainView.CUSTOMER_INFO);
+                    if (row >= 0) {
+                        // map view row to customerList
+                        Customer customer = customerList.get(row);
+                        customerInfoController.setCurrentCustomer(customer);
+                        view.showPage(MainView.CUSTOMER_INFO);
+                        view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+                        view.getHeader().showControls(false);
+                    }
                 }
             }
         });
