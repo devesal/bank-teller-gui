@@ -3,14 +3,12 @@ package controller;
 import view.CustomerInfoView;
 import view.MainView;
 import model.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import javax.swing.text.DateFormatter;
 import java.awt.event.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import util.FileIO;
@@ -234,9 +232,9 @@ public class CustomerInfoController {
 
     private void saveAll() {
         FileIO.saveAllCustomers(customers);
-        List<BankAccount> all = customers.stream()
+        ArrayList<BankAccount> all = customers.stream()
                 .flatMap(c -> c.getAccounts().stream())
                 .collect(Collectors.toCollection(ArrayList::new));
-        FileIO.saveAllAccounts((ArrayList<BankAccount>) all);
+        FileIO.saveAllAccounts(all);
     }
 }
