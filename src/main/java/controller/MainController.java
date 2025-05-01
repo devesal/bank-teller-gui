@@ -14,11 +14,12 @@
         private final MainView view;
         private final CustomerFormController customerFormController;
         private final List<Customer> customerList;
-
+        private final List<BankAccount> allAccounts;
         public MainController() {
             view = new MainView();
             customerFormController = new CustomerFormController(view);
-            customerList = new ArrayList<>();
+            customerList = FileIO.loadAllCustomers();
+            allAccounts = FileIO.loadAllAccounts();
             initController();
         }
 

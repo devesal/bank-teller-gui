@@ -2,10 +2,10 @@ package model;
 
 import model.BankAccount;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class CreditCardAccount extends BankAccount implements Serializable {
+public class CreditCardAccount extends BankAccount {
+
     /** The maximum credit limit for this account */
     private double creditLimit;
     /** The current charges/balance on the credit card */
@@ -46,6 +46,9 @@ public class CreditCardAccount extends BankAccount implements Serializable {
         return creditLimit;
     }
 
+    public double inquireBalance() {
+        return inquireAvailableCredit();
+    }
     /**
      * Gets the current charges on the account.
      *

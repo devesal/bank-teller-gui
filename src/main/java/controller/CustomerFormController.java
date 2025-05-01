@@ -85,9 +85,15 @@ public class CustomerFormController {
         String last  = formView.getLastNameField().getText().trim();
         String dob   = formView.getDobField().getText().trim();
 
-        // create and store customer
-        Customer customer = new Customer(first, last, dob);
-        customers.add(customer);
+        Customer customer;
+        if (existingCustomer == null) {
+            // new customer
+            customer = new Customer(first, last, dob);
+            customers.add(customer);
+        } else {
+            // editing an existing one
+            customer = existingCustomer;
+        }
 
         // create accounts for customer
         List<String> created = new ArrayList<>();
@@ -116,10 +122,13 @@ public class CustomerFormController {
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
         }
 
+        formView.getSuccessNameLabel().setText(customer.getFirstName() + " " + customer.getLastName());
+        formView.getSuccessDobLabel().setText(customer.getBirthDate());
         formView.getSuccessAccountsLabel().setText(
                 created.isEmpty() ? "None" : String.join("\n", created)
         );
-
+        // Clear the “editing” flag so next time it’s a fresh form:
+        existingCustomer = null;
         System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
         return customer;
     }

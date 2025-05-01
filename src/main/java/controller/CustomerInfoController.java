@@ -6,8 +6,10 @@ import util.FileIO;
 import view.CustomerFormView;
 import view.CustomerInfoView;
 import view.MainView;
-
+import model.*;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ public class CustomerInfoController {
     private final CustomerInfoView view;
     private final MainView mainView;
     private final List<Customer> customers;
+    private final List<BankAccount> allAccounts = FileIO.loadAllAccounts();
     private Customer currentCustomer;
 
     public CustomerInfoController(MainView mainView) {
@@ -49,17 +52,83 @@ public class CustomerInfoController {
 
         // Add Bank Account
         view.getBtnAddAccount().addActionListener(e -> {
-            // Reset the form but pre-fill customer info
-            mainView.getCustomerFormView().reset();
-            mainView.getCustomerFormView().getFirstNameField().setText(currentCustomer.getFirstName());
-            mainView.getCustomerFormView().getLastNameField().setText(currentCustomer.getLastName());
-            mainView.getCustomerFormView().getDobField().setText(currentCustomer.getBirthDate());
+            if (currentCustomer == null) {
+                JOptionPane.showMessageDialog(view,
+                        "No customer selected!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            // Show only the account selection step
-            mainView.getCustomerFormView().showStep(CustomerFormView.STEP_ACCOUNTS);
+            // 1) Define the account‐type options
+            String[] options = {
+                    "Savings Account",
+                    "Checking Account (₱500 min)",
+                    "Investment Account (₱5,000, 35% rate)",
+                    "Credit Card Account (₱25,000 limit)"
+            };
 
-            // Show the form panel
-            mainView.showPage(MainView.ADD_CUSTOMERS_VIEW);
+            // 2) Show the dialog
+            String choice = (String) JOptionPane.showInputDialog(
+                    view,                                // parent
+                    "Select account type to add:",      // message
+                    "Add Bank Account",                 // title
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,                                // icon
+                    options,                             // choices
+                    options[0]                           // default
+            );
+
+            // 3) If user cancels, choice is null → do nothing
+            if (choice == null) return;
+
+            // 4) Instantiate the right BankAccount subclass
+            BankAccount newAcc;
+            switch (choice) {
+                case "Checking Account (₱500 min)":
+                    newAcc = new CheckingAccount(
+                            currentCustomer.getFirstName(),
+                            currentCustomer.getLastName(),
+                            500.0
+                    );
+                    break;
+                case "Investment Account (₱5,000, 35% rate)":
+                    newAcc = new InvestmentAccount(
+                            currentCustomer.getFirstName(),
+                            currentCustomer.getLastName(),
+                            5000.0,
+                            0.35
+                    );
+                    break;
+                case "Credit Card Account (₱25,000 limit)":
+                    newAcc = new CreditCardAccount(
+                            currentCustomer.getFirstName(),
+                            currentCustomer.getLastName(),
+                            25000.0
+                    );
+                    break;
+                default:  // "Savings Account"
+                    newAcc = new BankAccount(
+                            currentCustomer.getFirstName(),
+                            currentCustomer.getLastName()
+                    );
+            }
+
+            // 5) Attach to customer and global list, persist & refresh
+            currentCustomer.addAccount(newAcc);
+            allAccounts.add(newAcc);
+            saveAll();                      // calls FileIO.saveAllCustomers(...) & saveAllAccounts(...)
+            populateAccountsTable();        // refresh the JTable
+
+            // 6) Inform user
+            JOptionPane.showMessageDialog(view,
+                    String.format("%s added!\nAccount No: %d",
+                            newAcc.displayAccountType(),
+                            newAcc.getAccountNo()),
+                    "Account Created",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
         });
 
         // Close Account
@@ -80,8 +149,40 @@ public class CustomerInfoController {
 
         // Edit Customer Info
         view.getBtnEdit().addActionListener(e -> {
-            mainView.showPage(MainView.CUSTOMER_INFO_VIEW);
-            // assume the form is set up to edit currentCustomer
+            JTextField firstNameField = new JTextField(currentCustomer.getFirstName(), 15);
+            JTextField lastNameField = new JTextField(currentCustomer.getLastName(), 15);
+
+            JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
+            panel.add(new JLabel("Edit First Name:"));
+            panel.add(firstNameField);
+            panel.add(new JLabel("Edit Last Name:"));
+            panel.add(lastNameField);
+            panel.add(new JLabel("Date of Birth:"));
+            panel.add(new JLabel(currentCustomer.getBirthDate())); // display only, not editable
+
+            int result = JOptionPane.showConfirmDialog(
+                    view,
+                    panel,
+                    "Edit Customer Information",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (result == JOptionPane.OK_OPTION) {
+                String newFirstName = firstNameField.getText().trim();
+                String newLastName = lastNameField.getText().trim();
+
+                if (!newFirstName.isEmpty() && !newLastName.isEmpty()) {
+                    currentCustomer.setFirstName(newFirstName);
+                    currentCustomer.setLastName(newLastName);
+
+                    view.setCustomerName(newFirstName + " " + newLastName);
+
+                    JOptionPane.showMessageDialog(view, "Customer info updated successfully.");
+                } else {
+                    JOptionPane.showMessageDialog(view, "First name and last name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
         });
 
         // Account Statement
@@ -118,6 +219,7 @@ public class CustomerInfoController {
                     acc.getAccountNo(),
                     acc.displayAccountType(),
                     acc.getStatus(),
+
                     acc.inquireBalance()
             });
         }

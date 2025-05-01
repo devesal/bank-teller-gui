@@ -48,8 +48,8 @@ public class CheckingAccount extends BankAccount implements Serializable{
      *
      * @return The minimum balance that must be maintained
      */
-    public double getMinimumBalance() {
-        return minimumBalance;
+    public double inquireBalance() {
+        return super.inquireBalance() + minimumBalance;
     }
 
     /**

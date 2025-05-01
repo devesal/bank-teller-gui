@@ -38,11 +38,49 @@ public class CustomerInfoView extends JPanel {
         leftPanel.setPreferredSize(new Dimension(160, 0));
 
         // Customer details at top
-        JPanel detailPanel = new JPanel(new GridLayout(0,2,5,5));
+        JPanel detailPanel = new JPanel(new GridBagLayout());
         detailPanel.setBorder(BorderFactory.createTitledBorder("Customer Information"));
-        detailPanel.add(new JLabel("ID:"));      detailPanel.add(lblId);
-        detailPanel.add(new JLabel("Name:"));    detailPanel.add(lblName);
-        detailPanel.add(new JLabel("DOB:"));     detailPanel.add(lblDob);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(2, 2, 2, 2);
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // ID Label
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0;
+        detailPanel.add(new JLabel("ID:"), gbc);
+
+    // ID Value
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        detailPanel.add(lblId, gbc);
+
+    // Name Label
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0;
+        detailPanel.add(new JLabel("Name:"), gbc);
+
+    // Name Value (wrapped in HTML)
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        lblName.setVerticalAlignment(SwingConstants.TOP);
+        lblName.setText("<html><div style='width:120px;'>---</div></html>"); // this will be overwritten in setCustomerName()
+        detailPanel.add(lblName, gbc);
+
+    // DOB Label
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 0;
+        detailPanel.add(new JLabel("DOB:"), gbc);
+
+    // DOB Value
+        gbc.gridx = 1;
+        gbc.weightx = 1;
+        detailPanel.add(lblDob, gbc);
+
+    // Add to left panel
         leftPanel.add(detailPanel, BorderLayout.NORTH);
 
         // Action buttons down the center

@@ -1,5 +1,6 @@
 package view;
 
+import controller.CustomerFormController;
 import view.panels.Header;
 import view.panels.Sidebar;
 
@@ -16,6 +17,7 @@ public class MainView {
     private CustomersView    customersView;
     private CustomerInfoView customerInfoView;
     private CustomerFormView customerFormView;
+    private CustomerFormController customerFormController;
 
     // Card identifiers
     public static final String CUSTOMERS_VIEW     = "CustomersView";
@@ -78,4 +80,10 @@ public class MainView {
     public CustomersView    getCustomersView()    { return customersView;              }
     public CustomerInfoView getCustomerInfoView() { return customerInfoView;           }
     public CustomerFormView getCustomerFormView() { return customerFormView;           }
+    public CustomerFormController getCustomerFormController() {
+        if (customerFormController == null) {
+            customerFormController = new CustomerFormController(this);
+        }
+        return customerFormController;
+    }
 }
