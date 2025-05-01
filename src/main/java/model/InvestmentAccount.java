@@ -63,8 +63,7 @@ public class InvestmentAccount extends BankAccount implements Serializable {
      */
     public void addInvestment(double amount) throws AccountClosedException {
         if (!"Active".equals(getStatus())) {
-            System.out.println("❌ Cannot invest to a closed account.");
-            return;
+            throw new AccountClosedException("❌ Cannot invest to a closed account.");
         }
         super.deposit(amount);
     }
