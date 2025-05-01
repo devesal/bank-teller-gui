@@ -46,8 +46,7 @@ public class MainController {
                     int row = view.getCustomersView().getTable().getSelectedRow();
                     if (row >= 0) {
                         // map view row to customerList
-                        Customer customer = (Customer) view.getCustomersView()
-                                .getTable().getModel().getValueAt(row, -1); // assuming model stores Customer
+                        Customer customer = customerList.get(row);
                         customerInfoController.setCurrentCustomer(customer);
                         view.showPage(MainView.CUSTOMER_INFO);
                         view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
