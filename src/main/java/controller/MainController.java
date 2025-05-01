@@ -58,7 +58,7 @@
         private void setNavigationActions() {
             setBackButtonAction();
 
-            view.getSidebar().getBtnCustomers().addActionListener(
+            view.getSidebar().getCustomersButton().addActionListener(
                     e -> {
                         view.getHeader().updateHeaderTitle("CUSTOMERS");
                         view.getHeader().showControls(true);
@@ -67,18 +67,19 @@
             );
 
             // Show Reports card
-            view.getSidebar().getBtnReports().addActionListener(
+            view.getSidebar().getReportsButton().addActionListener(
                     e -> {
-                        view.getHeader().updateHeaderTitle("CUSTOMERS");
+                        view.getHeader().updateHeaderTitle("REPORTS");
                         view.showPage(MainView.REPORTS);
+                        view.setCurrentPage(MainView.REPORTS);
                     }
             );
 
             view.getHeader().getAddButton().addActionListener(
                     e -> {
                         new CustomerFormController(view);
-                        view.setCurrentPage(MainView.ADD_CUSTOMERS);
-                        view.showPage(MainView.ADD_CUSTOMERS);
+                        view.setCurrentPage(MainView.ADD_CUSTOMER);
+                        view.showPage(MainView.ADD_CUSTOMER);
                         view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
                         view.getHeader().showControls(false);
                         view.getCustomerFormView().reset();
@@ -130,7 +131,7 @@
             view.getHeader().getBackButton().addActionListener(e -> {
                 switch (view.getCurrentPage()) {
                     case MainView.REPORTS,
-                         MainView.ADD_CUSTOMERS,
+                         MainView.ADD_CUSTOMER,
                          MainView.STEP_PERSONAL,
                          MainView.STEP_SUCCESS -> {
                             view.showPage(MainView.CUSTOMERS);

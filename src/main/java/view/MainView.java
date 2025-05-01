@@ -18,13 +18,13 @@ public class MainView {
     private CustomerFormView customerFormView;
 
     // Card identifiers
-    public static final String CUSTOMERS           = "CustomersView";
-    public static final String REPORTS             = "ReportsView";
-    public static final String ADD_CUSTOMERS       = "AddCustomersView";
-    public static final String STEP_PERSONAL       = "StepPersonal";
-    public static final String STEP_ACCOUNTS       = "StepAccounts";
-    public static final String STEP_SUCCESS        = "StepSuccess";
-    public static final String CUSTOMER_INFO       = "CustomerInfo";
+    public static final String CUSTOMERS     = "CustomersView";
+    public static final String REPORTS       = "ReportsView";
+    public static final String ADD_CUSTOMER  = "AddCustomersView";
+    public static final String STEP_PERSONAL = "StepPersonal";
+    public static final String STEP_ACCOUNTS = "StepAccounts";
+    public static final String STEP_SUCCESS  = "StepSuccess";
+    public static final String CUSTOMER_INFO = "CustomerInfo";
 
     private String currentPage;
 
@@ -67,7 +67,7 @@ public class MainView {
         panel.add(customersView, CUSTOMERS);
         panel.add(reportsView, REPORTS);
         panel.add(customerInfoView, CUSTOMER_INFO);
-        panel.add(customerFormView, ADD_CUSTOMERS);
+        panel.add(customerFormView, ADD_CUSTOMER);
 
         return panel;
     }

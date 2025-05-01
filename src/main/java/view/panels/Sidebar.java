@@ -25,6 +25,6 @@ public class Sidebar extends JPanel {
         add(btnReports);
     }
 
-    public JButton getBtnCustomers() { return btnCustomers; }
-    public JButton getBtnReports()   { return btnReports;   }
+    public JButton getCustomersButton() { return btnCustomers; }
+    public JButton getReportsButton()   { return btnReports;   }
 }

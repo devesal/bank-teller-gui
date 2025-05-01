@@ -101,6 +101,7 @@ public class CustomerInfoView extends JPanel {
     public JPanel buildAccountAddPanel() {
         JPanel p = new JPanel(new BorderLayout(0, 20));
         JLabel title = new JLabel("CHOOSE ACCOUNT TYPES", SwingConstants.CENTER);
+        title.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
         title.setFont(new Font("SansSerif", Font.PLAIN, 20));
         p.add(title, BorderLayout.NORTH);
 
