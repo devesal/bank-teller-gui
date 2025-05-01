@@ -21,6 +21,7 @@ public class BankAccount implements Serializable {
     private double balance;
     /** Current status of the account (Active/Closed) */
     private String status;
+    public String customerId;
 
     /**
      * Constructs a new active BankAccount with a random 9-digit account number
@@ -152,7 +153,7 @@ public class BankAccount implements Serializable {
     public String displayAccountType() {
         return "Savings Account";
     }
-
+    public String getCustomerId() { return customerId; }
     @Override
     public String toString() {
         return firstName + " " + lastName + "\n#" + accountNo + "\nStatus: " + status;

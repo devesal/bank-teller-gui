@@ -16,13 +16,14 @@ public class CustomerInfoController {
     private final CustomerInfoView view;
     private final MainView mainView;
     private final List<Customer> customers;
-    private final List<BankAccount> allAccounts = FileIO.loadAllAccounts();
+    private final List<BankAccount> allAccounts;
     private Runnable onAccountAddedCallback;
     private Customer currentCustomer;
     public CustomerInfoController(MainView mainView) {
         this.mainView = mainView;
         view = mainView.getCustomerInfoView();
         customers = FileIO.loadAllCustomers();
+        allAccounts = FileIO.loadAllAccounts();
         initController();
     }
 
@@ -164,11 +165,12 @@ public class CustomerInfoController {
             };
 
             // 5) Attach to customer and global list, persist & refresh
+            List<BankAccount> all = FileIO.loadAllAccounts();
             currentCustomer.addAccount(newAcc);
-            allAccounts.add(newAcc);
-            saveAll();                      // calls FileIO.saveAllCustomers(...) & saveAllAccounts(...)
-            populateAccountsTable();        // refresh the JTable
-
+            all.add(newAcc);
+            FileIO.saveAllCustomers(customers);
+            FileIO.saveAllAccounts(new ArrayList<>(all));      // refresh the JTable
+            populateAccountsTable();
             // 6) Inform user
             JOptionPane.showMessageDialog(view,
                     String.format("%s added!\nAccount No: %d",

@@ -1,5 +1,6 @@
 package controller;
 
+import model.BankAccount;
 import model.Customer;
 import util.FileIO;
 import view.MainView;
@@ -8,21 +9,27 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MainController {
     private final MainView view;
+    private final CustomerInfoView customerInfoView;
     private final List<Customer> customerList;
+    private final List<BankAccount> allAccounts;
     private final CustomerInfoController customerInfoController;
     private final CustomerFormController customerFormController;
 
 
     public MainController() {
         view = new MainView();
+        customerInfoView = view.getCustomerInfoView();
         customerFormController = new CustomerFormController(view);
         customerInfoController = new CustomerInfoController(view);
-        customerList = FileIO.loadAllCustomers();       // load customers from database
-        initController();
         customerInfoController.setOnAccountAddedCallback(this::refreshCustomerTable);
+        customerList = FileIO.loadAllCustomers();       // load customers from database
+        allAccounts = FileIO.loadAllAccounts();
+        initController();
+
     }
 
     private void initController() {
@@ -44,15 +51,15 @@ public class MainController {
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
                     int row = view.getCustomersView().getTable().getSelectedRow();
-                    if (row >= 0) {
-                        // map view row to customerList
-                        Customer customer = (Customer) view.getCustomersView()
-                                .getTable().getModel().getValueAt(row, -1); // assuming model stores Customer
-                        customerInfoController.setCurrentCustomer(customer);
-                        view.showPage(MainView.CUSTOMER_INFO);
-                        view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
-                        view.getHeader().showControls(false);
-                    }
+                    String id  = (String) view.getCustomersView().getTable().getValueAt(row, 0);
+                    Customer chosen = customerList.stream()
+                            .filter(c -> c.getId().equals(id))
+                            .findFirst()
+                            .orElseThrow();  // shouldn't happen
+
+                    customerInfoController.setCurrentCustomer(chosen);
+                    customerInfoController.setCustomerIndex(Integer.parseInt(id) - 1);  // or rename to setCustomerId()
+                    view.showPage(MainView.CUSTOMER_INFO);
                 }
             }
         });
@@ -82,11 +89,20 @@ public class MainController {
         DefaultTableModel model = (DefaultTableModel)
                 view.getCustomersView().getTable().getModel();
         model.setRowCount(0);
-        for (Customer c : list) {
-            int id = c.getId();                          // database customer ID
-            String fullName = c.getFirstName() + " " + c.getLastName();
-            int numAccounts = c.getAccounts() != null ? c.getAccounts().size() : 0;
-            model.addRow(new Object[]{ id, fullName, numAccounts, c });
+        Map<String, List<BankAccount>> accountsByCust = customerList.stream()
+                .collect(Collectors.toMap(
+                        Customer::getId,
+                        Customer::getAccounts
+                ));
+
+        for (Customer cust : list) {
+            String id = cust.getId();// database customer ID
+            String fullName = cust.getFirstName() + " " + cust.getLastName();
+            int numAccounts = accountsByCust
+                    .getOrDefault(id, Collections.emptyList())
+                    .size();
+
+            model.addRow(new Object[]{ id, fullName, numAccounts });
         }
     }
 
@@ -127,24 +143,30 @@ public class MainController {
         );
     }
     public void refreshCustomerTable() {
-        // 1) Reload the master list
+        // 1) Reload customers and accounts from DB
         customerList.clear();
-        customerList.addAll(FileIO.loadAllCustomers());
+        List<Customer> allCustomers = FileIO.loadAllCustomers();
+        customerList.addAll(allCustomers);
+        List<BankAccount> allAccounts = FileIO.loadAllAccounts();
+        allAccounts.addAll(allAccounts);
+        // 2) Group accounts by customerId
+        Map<String, List<BankAccount>> accountsByCust = customerList.stream()
+                .collect(Collectors.toMap(
+                        Customer::getId,
+                        Customer::getAccounts
+                ));
 
-        // 2) Repopulate the table
         DefaultTableModel model = (DefaultTableModel) view
-                .getCustomersView()
-                .getTable()
-                .getModel();
+                .getCustomersView().getTable().getModel();
         model.setRowCount(0);
-
         for (Customer cust : customerList) {
             model.addRow(new Object[]{
                     cust.getId(),
                     cust.getFirstName() + " " + cust.getLastName(),
-                    cust.getAccounts().size()
+                    accountsByCust.getOrDefault(cust.getId(), List.of()).size()
             });
         }
+
     }
     public void start() {
         SwingUtilities.invokeLater(() -> {
