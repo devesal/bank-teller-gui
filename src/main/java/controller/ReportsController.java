@@ -44,15 +44,15 @@ public class ReportsController {
     }
 
     private void initController() {
-        // Add action listener to the generate button
+
         view.getBtnGenerate().addActionListener(e -> generateReport());
         
-        // Initialize table sorter
+
         DefaultTableModel model = (DefaultTableModel) view.getResultsTable().getModel();
         sorter = new TableRowSorter<>(model);
         view.getResultsTable().setRowSorter(sorter);
         
-        // Add column sorting
+
         view.getResultsTable().getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -63,12 +63,12 @@ public class ReportsController {
             }
         });
 
-        // Add export button
+
         btnExport = new JButton("Export to CSV");
         btnExport.setEnabled(false);
         btnExport.addActionListener(e -> exportToCSV());
 
-        // Add pagination controls
+
         btnPrevPage = new JButton("Previous");
         btnNextPage = new JButton("Next");
         lblPageInfo = new JLabel("Page 0 of 0");
@@ -79,7 +79,7 @@ public class ReportsController {
         btnPrevPage.addActionListener(e -> showPreviousPage());
         btnNextPage.addActionListener(e -> showNextPage());
         
-        // Create button panel with pagination controls
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(btnPrevPage);
         buttonPanel.add(lblPageInfo);
@@ -123,7 +123,7 @@ public class ReportsController {
             case "Account Statement" -> showAccountStatement(pageTransactions);
         }
 
-        // Update pagination controls
+
         int totalPages = (int) Math.ceil((double) currentTransactions.size() / PAGE_SIZE);
         lblPageInfo.setText(String.format("Page %d of %d", currentPage + 1, totalPages));
         btnPrevPage.setEnabled(currentPage > 0);
@@ -141,19 +141,19 @@ public class ReportsController {
             currentTransactions = transactionLogger.loadAllTransactions();
             currentPage = 0;
             
-            // Apply filters
+
             currentTransactions = filterTransactions(currentTransactions);
             
-            // Update pagination controls
+
             int totalPages = (int) Math.ceil((double) currentTransactions.size() / PAGE_SIZE);
             lblPageInfo.setText(String.format("Page %d of %d", currentPage + 1, totalPages));
             btnPrevPage.setEnabled(false);
             btnNextPage.setEnabled(totalPages > 1);
             
-            // Generate report based on selected type
+
             updateTableForCurrentPage();
             
-            // Enable export button after generating report
+
             btnExport.setEnabled(true);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(view, "Error loading transactions: " + e.getMessage());
@@ -172,7 +172,7 @@ public class ReportsController {
             }
             
             try (PrintWriter writer = new PrintWriter(file)) {
-                // Write headers
+
                 DefaultTableModel model = (DefaultTableModel) view.getResultsTable().getModel();
                 for (int i = 0; i < model.getColumnCount(); i++) {
                     writer.print(model.getColumnName(i));
@@ -182,7 +182,7 @@ public class ReportsController {
                 }
                 writer.println();
                 
-                // Write data
+
                 for (int row = 0; row < model.getRowCount(); row++) {
                     for (int col = 0; col < model.getColumnCount(); col++) {
                         Object value = model.getValueAt(row, col);
@@ -204,7 +204,7 @@ public class ReportsController {
     }
 
     private List<Transaction> filterTransactions(List<Transaction> transactions) {
-        // Filter by account number if provided
+
         String accountFilter = view.getAccountField().getText().trim();
         if (!accountFilter.isEmpty()) {
             try {
@@ -218,10 +218,10 @@ public class ReportsController {
             }
         }
 
-        // Filter by name if provided
+
         String nameFilter = view.getNameField().getText().trim().toLowerCase();
         if (!nameFilter.isEmpty()) {
-            // Find accounts matching the name
+
             Set<Integer> matchingAccountNos = allAccounts.stream()
                     .filter(acc -> (acc.getFirstName() + " " + acc.getLastName()).toLowerCase().contains(nameFilter))
                     .map(BankAccount::getAccountNo)
@@ -232,7 +232,7 @@ public class ReportsController {
                     .collect(Collectors.toList());
         }
 
-        // Filter by transaction type
+
         String txnType = (String) view.getTxnTypeCombo().getSelectedItem();
         if (!"All".equals(txnType)) {
             transactions = transactions.stream()
@@ -240,7 +240,7 @@ public class ReportsController {
                     .collect(Collectors.toList());
         }
 
-        // Filter by date range
+
         Date fromDate = (Date) view.getFromDateSpinner().getValue();
         Date toDate = (Date) view.getToDateSpinner().getValue();
         LocalDate from = fromDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -284,14 +284,14 @@ public class ReportsController {
         DefaultTableModel model = (DefaultTableModel) view.getResultsTable().getModel();
         model.setRowCount(0);
 
-        // Group transactions by type and calculate totals
+
         Map<Transaction.Type, Double> summary = transactions.stream()
                 .collect(Collectors.groupingBy(
                         Transaction::getType,
                         Collectors.summingDouble(Transaction::getAmount)
                 ));
 
-        // Add summary rows
+
         for (Map.Entry<Transaction.Type, Double> entry : summary.entrySet()) {
             model.addRow(new Object[]{
                     "", // Empty date
@@ -308,7 +308,7 @@ public class ReportsController {
         DefaultTableModel model = (DefaultTableModel) view.getResultsTable().getModel();
         model.setRowCount(0);
 
-        // Group transactions by account
+
         Map<Integer, List<Transaction>> byAccount = transactions.stream()
                 .collect(Collectors.groupingBy(Transaction::getFromAccount));
 
@@ -317,7 +317,7 @@ public class ReportsController {
             List<Transaction> accountTxns = entry.getValue();
             double runningBalance = 0.0;
 
-            // Add account header
+
             model.addRow(new Object[]{
                     "Account #" + accountNo,
                     "",
@@ -327,7 +327,7 @@ public class ReportsController {
                     ""
             });
 
-            // Add transactions
+
             for (Transaction tx : accountTxns) {
                 boolean isCredit = switch (tx.getType()) {
                     case DEPOSIT, TRANSFER, ADD_INVESTMENT, CHARGE_TO_CARD -> true;
@@ -346,7 +346,7 @@ public class ReportsController {
                 });
             }
 
-            // Add separator
+
             model.addRow(new Object[]{"", "", "", "", "", ""});
         }
     }

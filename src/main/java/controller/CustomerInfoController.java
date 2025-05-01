@@ -34,7 +34,7 @@ public class CustomerInfoController {
     }
 
     private void initController() {
-        // 1) “Transaction History” button -> history card
+
         view.getHistoryButton().addActionListener(
                 e -> {
                     view.showRightCard(CustomerInfoView.TRANSACTION_HISTORY);
@@ -101,7 +101,7 @@ public class CustomerInfoController {
             }
         });
 
-        // 2) Double‐click on a row -> bank‐account card
+
         view.getAccountsTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -115,7 +115,7 @@ public class CustomerInfoController {
                             .findFirst().orElse(null);
                     if (account == null) return;
 
-                    // Prevent transactions on closed accounts
+
                     if ("closed".equalsIgnoreCase(account.getStatus())) {
                         JOptionPane.showMessageDialog(
                                 view,
@@ -129,7 +129,7 @@ public class CustomerInfoController {
                         return;
                     }
 
-                    // Build and show operations dialog for active accounts
+
                     String[] operations = buildOperations(account);
                     String choice = (String) JOptionPane.showInputDialog(
                             view,
@@ -147,7 +147,7 @@ public class CustomerInfoController {
             }
         });
 
-        // 3) “Add Bank Account” -> flip back to accounts list (or launch wizard)
+
         view.getAddAccountButton().addActionListener(e -> {
             if (currentCustomer == null) {
                 JOptionPane.showMessageDialog(view,
@@ -157,7 +157,7 @@ public class CustomerInfoController {
                 return;
             }
 
-            // 1) Define the account‐type options
+
             String[] options = {
                     "Savings Account",
                     "Checking Account (₱500 min)",
@@ -165,7 +165,7 @@ public class CustomerInfoController {
                     "Credit Card Account (₱25,000 limit)"
             };
 
-            // 2) Show the dialog
+
             String choice = (String) JOptionPane.showInputDialog(
                     view,                                // parent
                     "Select account type to add:",      // message
@@ -176,10 +176,10 @@ public class CustomerInfoController {
                     options[0]                           // default
             );
 
-            // 3) If user cancels, choice is null → do nothing
+
             if (choice == null) return;
 
-            // 4) Instantiate the right BankAccount subclass
+
             BankAccount newAcc = switch (choice) {
                 case "Checking Account (₱500 min)" -> new CheckingAccount(
                         currentCustomer.getFirstName(),
@@ -203,10 +203,9 @@ public class CustomerInfoController {
                                 currentCustomer.getLastName()
                         );
             };
-            // —— TAG THE NEW ACCOUNT WITH ITS OWNER’S ID ——
+
             newAcc.setCustomerId(currentCustomer.getId());
 
-            // 5) Attach to customer and global list, persist & refresh
             List<BankAccount> all = FileIO.loadAllAccounts();
             currentCustomer.addAccount(newAcc);
             all.add(newAcc);
@@ -247,9 +246,6 @@ public class CustomerInfoController {
         return f;
     }
 
-    /**
-     +     * Show a given customer’s info (ID, name, DOB) and their accounts.
-     +     */
     public void setCurrentCustomer(Customer customer) {
         this.currentCustomer = customer;
         if (customer == null) return;
@@ -294,12 +290,6 @@ public class CustomerInfoController {
         onAccountAddedCallback = cb;
     }
 
-    /**
-     * Builds a list of operations available for the given account.
-     *
-     * @param account the account to build operations for
-     * @return an array of operation strings
-     */
     private String[] buildOperations(BankAccount account) {
         if (account instanceof CheckingAccount) {
             return new String[]{"Deposit", "Encash Check", "Close Account"};

@@ -38,7 +38,6 @@ public class CustomerFormController {
                 }
         );
 
-        // create and persist customer + accounts
         formView.getCreateButton().addActionListener(e -> {
             Customer customer = createCustomer();
             customers.add(customer);
@@ -67,10 +66,6 @@ public class CustomerFormController {
         setupUntoggleBehavior(formView.getCreditCardToggleButton());
     }
 
-    /**
-     * Builds a new Customer using the formView inputs and adds toggled accounts.
-     * @return the created Customer
-     */
     private Customer createCustomer() {
         String first = formView.getFirstNameField().getText().trim();
         String last  = formView.getLastNameField().getText().trim();
@@ -78,7 +73,6 @@ public class CustomerFormController {
 
         Customer customer = new Customer(first, last, dob);
 
-        // create accounts for customer
         List<String> created = new ArrayList<>();
         if (formView.getSavingsToggleButton().isSelected()) {
             BankAccount acc = new BankAccount(first, last);
@@ -122,7 +116,6 @@ public class CustomerFormController {
             onCustomerCreated.run();
         }
 
-        // Clear the “editing” flag so next time it’s a fresh form:
         System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
         return customer;
     }

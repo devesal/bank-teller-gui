@@ -36,13 +36,13 @@ public class MainController {
     private void initController() {
         setNavigationActions();
 
-        // initial load of customers
+
         refreshCustomerTable();
 
         view.getFrame().addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                // persist data if needed
+
             }
         });
 
@@ -82,9 +82,7 @@ public class MainController {
         view.getHeader().getBtnSearch().addActionListener(doSearch);
     }
 
-    /**
-     * Populate the CustomersView table from a list of Customer objects.
-     */
+
     private void loadCustomersToTable(List<Customer> list) {
         DefaultTableModel model = (DefaultTableModel)
                 view.getCustomersView().getTable().getModel();
@@ -142,17 +140,16 @@ public class MainController {
 
     }
     public void refreshCustomerTable() {
-        // 1) Reload customers and accounts from DB
+
         customerList.clear();
         List<Customer> reloadedCusts = FileIO.loadAllCustomers();
         customerList.addAll(reloadedCusts);
 
-        // Now reload the master account list
+
         List<BankAccount> reloadedAccts = FileIO.loadAllAccounts();
         this.allAccounts.clear();
         this.allAccounts.addAll(reloadedAccts);
 
-        // 2) Attach accounts to each customer (so getAccounts() is up-to-date)
         Map<String,List<BankAccount>> accountsByCust =
                 customerList.stream()
                         .collect(Collectors.toMap(
@@ -191,12 +188,10 @@ public class MainController {
                             || CustomerInfoView.BANK_ADD.equals(right)
                             || CustomerInfoView.BANK_ACCOUNT.equals(right)
                             || CustomerInfoView.ACCOUNT_STATEMENT.equals(right)) {
-                        // always go back to the accounts list
                         view.getCustomerInfoView().showRightCard(CustomerInfoView.BANK_ACCOUNTS);
                         view.getHeader().updateHeaderTitle("BANK ACCOUNTS");
                         view.getHeader().showControls(false);
                     } else {
-                        // we were already on the accounts list → fall back to the customer list
                         view.showPage(MainView.CUSTOMERS);
                         view.setCurrentPage(MainView.CUSTOMERS);
                         view.getHeader().updateHeaderTitle("CUSTOMERS");
@@ -204,13 +199,13 @@ public class MainController {
                     }
                 }
                 case MainView.STEP_ACCOUNTS -> {
-                    // back from accounts step → personal step
+
                     view.getCustomerFormView().showStep(MainView.STEP_PERSONAL);
                     view.setCurrentPage(MainView.STEP_PERSONAL);
                     view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
                 }
                 case CustomerInfoView.TRANSACTION_HISTORY -> {
-                    // sub‐page under CustomerInfo
+
                     view.getCustomerInfoView().showRightCard(MainView.CUSTOMER_INFO);
                     view.setCurrentPage(MainView.CUSTOMER_INFO);
                     view.getHeader().showControls(false);
