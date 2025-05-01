@@ -90,6 +90,7 @@ public class MainController {
     }
 
     private void setNavigationActions() {
+        setBackButtonAction();
         view.getSidebar().getCustomersButton().addActionListener(e -> {
             refreshCustomerTable();
             view.getHeader().updateHeaderTitle("CUSTOMERS");
@@ -121,9 +122,6 @@ public class MainController {
             }
         });
 
-        view.getHeader().getBackButton().addActionListener(e ->
-                view.getSidebar().getCustomersButton().doClick()
-        );
     }
     public void refreshCustomerTable() {
         // 1) Reload the master list
@@ -145,6 +143,61 @@ public class MainController {
             });
         }
     }
+
+    private void setBackButtonAction() {
+        view.getHeader().getBackButton().addActionListener(e -> {
+            switch (view.getCurrentPage()) {
+                case MainView.REPORTS,
+                     MainView.ADD_CUSTOMER,
+                     MainView.STEP_PERSONAL,
+                     MainView.STEP_SUCCESS -> {
+                    view.showPage(MainView.CUSTOMERS);
+                    view.setCurrentPage(MainView.CUSTOMERS);
+                    view.getHeader().updateHeaderTitle("CUSTOMERS");
+                    view.getHeader().showControls(true);
+                }
+                case MainView.CUSTOMER_INFO -> {
+                    String right = view.getCustomerInfoView().getCurrentRightCard();
+                    if (CustomerInfoView.TRANSACTION_HISTORY.equals(right)
+                            || CustomerInfoView.BANK_ADD.equals(right)
+                            || CustomerInfoView.BANK_ACCOUNT.equals(right)
+                            || CustomerInfoView.ACCOUNT_STATEMENT.equals(right)) {
+                        // always go back to the accounts list
+                        view.getCustomerInfoView().showRightCard(CustomerInfoView.BANK_ACCOUNTS);
+                        view.getHeader().updateHeaderTitle("BANK ACCOUNTS");
+                        view.getHeader().showControls(false);
+                    } else {
+                        // we were already on the accounts list → fall back to the customer list
+                        view.showPage(MainView.CUSTOMERS);
+                        view.setCurrentPage(MainView.CUSTOMERS);
+                        view.getHeader().updateHeaderTitle("CUSTOMERS");
+                        view.getHeader().showControls(true);
+                    }
+                }
+                case MainView.STEP_ACCOUNTS -> {
+                    // back from accounts step → personal step
+                    view.getCustomerFormView().showStep(MainView.STEP_PERSONAL);
+                    view.setCurrentPage(MainView.STEP_PERSONAL);
+                    view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
+                }
+                case CustomerInfoView.TRANSACTION_HISTORY -> {
+                    // sub‐page under CustomerInfo
+                    view.getCustomerInfoView().showRightCard(MainView.CUSTOMER_INFO);
+                    view.setCurrentPage(MainView.CUSTOMER_INFO);
+                    view.getHeader().showControls(false);
+                    view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+                }
+
+                case CustomerInfoView.BANK_ADD -> {
+                    view.showPage(MainView.CUSTOMER_INFO);
+                    view.setCurrentPage(MainView.CUSTOMER_INFO);
+                    view.getHeader().showControls(false);
+                    view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+                }
+            }
+        });
+    }
+
     public void start() {
         SwingUtilities.invokeLater(() -> {
             loadCustomersToTable(customerList);
