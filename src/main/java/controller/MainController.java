@@ -1,10 +1,12 @@
     package controller;
 
     import model.*;
+    import util.TransactionLogger;
     import view.*;
 
 
     import javax.swing.*;
+    import javax.swing.table.DefaultTableModel;
     import java.awt.event.*;
     import java.util.*;
     import java.util.stream.Collectors;
@@ -172,11 +174,68 @@
                 }
             });
         }
+        private void setupReportsView() {
+            ReportsView rv = view.getReportsView();
+
+            // Add listener to the "Generate" button
+            rv.getBtnGenerate().addActionListener(e -> {
+                String reportType = (String) rv.getReportTypeCombo().getSelectedItem();
+                String account = rv.getAccountField().getText().trim();
+                String name = rv.getNameField().getText().trim();
+                String txnType = (String) rv.getTxnTypeCombo().getSelectedItem();
+                String fromDate = getFormattedDate(rv.getFromDateSpinner());
+                String toDate = getFormattedDate(rv.getToDateSpinner());
+
+                generateReport(reportType, account, name, txnType, fromDate, toDate);
+            });
+        }
+
+        private String getFormattedDate(JSpinner spinner) {
+            java.util.Date date = (java.util.Date) spinner.getValue();
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            return sdf.format(date);
+        }
+
+        private void generateReport(String reportType, String account, String name, String txnType, String fromDate, String toDate) {
+            DefaultTableModel model = (DefaultTableModel) view.getReportsView().getResultsTable().getModel();
+            model.setRowCount(0);
+
+            TransactionLogger logger = new TransactionLogger("transactions.log");
+            List<String[]> transactions = logger.loadTransactions();
+
+            for (String[] transaction : transactions) {
+                boolean matches = true;
+
+                if (!account.isEmpty() && !transaction[1].equals(account)) matches = false; // Account #
+                if (!name.isEmpty() && !transaction[2].equalsIgnoreCase(name)) matches = false; // Account Name
+                if (!txnType.equals("All") && !transaction[3].equalsIgnoreCase(txnType))
+                    matches = false; // Transaction Type
+                if (!isDateInRange(transaction[0], fromDate, toDate)) matches = false; // Date Range
+
+                if (matches) model.addRow(transaction);
+            }
+        }
+        private boolean matchReportType(String reportType, String[] row) {
+            switch (reportType) {
+                case "Summary (By Type)":
+                    return row[3].equalsIgnoreCase("Deposit") || row[3].equalsIgnoreCase("Withdrawal");
+                case "Account Statement":
+                    return true;
+                default:
+                    return true;
+            }
+        }
+        private boolean isDateInRange(String date, String fromDate, String toDate) {
+            return date.compareTo(fromDate) >= 0 && date.compareTo(toDate) <= 0;
+        }
+
 
         public void start() {
             SwingUtilities.invokeLater(() -> {
                 view.getFrame().setVisible(true);
                 view.showPage(MainView.CUSTOMERS);
+                setupReportsView();
+
             });
         }
     }
