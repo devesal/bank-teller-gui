@@ -80,7 +80,7 @@ public class ReportsView extends JPanel {
         add(new JScrollPane(table), BorderLayout.CENTER);
     }
 
-    // getters for controller…
+    // getters for controller
     public JComboBox<String> getReportTypeCombo()   { return reportTypeCombo; }
     public JTextField       getAccountField()       { return accountField;    }
     public JTextField       getNameField()          { return nameField;       }

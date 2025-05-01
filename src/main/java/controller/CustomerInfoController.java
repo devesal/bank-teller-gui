@@ -28,6 +28,21 @@ public class CustomerInfoController {
                 }
         );
 
+        view.getCloseAccountButton().addActionListener(e -> {
+            int choice = JOptionPane.showConfirmDialog(
+                    view,                                   // parent component
+                    "Are you sure you want to close this account?",
+                    "Confirm Close Account",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
+            if (choice == JOptionPane.YES_OPTION) {
+                // TODO: perform the account‐closure logic here
+                // e.g. model.closeAccount(selectedAccount);
+                // refresh view
+            }
+        });
+
         // Pop up dialogue for editing account
         view.getEditButton().addActionListener(e -> {
             // create the text fields
