@@ -130,7 +130,7 @@ public class CreditCardAccount extends BankAccount {
      * Account remains in list but becomes inactive.
      */
     @Override
-    public void closeAccount() throws InsufficientFundsException, AccountClosedException, TransactionLimitException {
+    public void closeAccount() {
         if (!"Active".equals(getStatus())) {
             System.out.println("❌ Account is already closed.");
             return;

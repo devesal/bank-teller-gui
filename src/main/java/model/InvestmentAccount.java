@@ -1,5 +1,9 @@
 package model;
 
+import util.Exceptions.AccountClosedException;
+import util.Exceptions.InsufficientFundsException;
+import util.Exceptions.TransactionLimitException;
+
 import java.io.Serializable;
 
 public class InvestmentAccount extends BankAccount implements Serializable {
@@ -57,10 +61,9 @@ public class InvestmentAccount extends BankAccount implements Serializable {
      *
      * @param amount the amount to invest
      */
-    public void addInvestment(double amount) {
+    public void addInvestment(double amount) throws AccountClosedException {
         if (!"Active".equals(getStatus())) {
-            System.out.println("❌ Cannot invest to a closed account.");
-            return;
+            throw new AccountClosedException("❌ Cannot invest to a closed account.");
         }
         super.deposit(amount);
     }
@@ -90,10 +93,9 @@ public class InvestmentAccount extends BankAccount implements Serializable {
      * The account remains in list but becomes inactive.
      */
     @Override
-    public void closeAccount() {
+    public void closeAccount() throws InsufficientFundsException, AccountClosedException, TransactionLimitException {
         if (!"Active".equals(getStatus())) {
-            System.out.println("❌ Account is already closed.");
-            return;
+            throw new AccountClosedException("❌ Account is already closed.");
         }
         double principal = super.inquireBalance();
         double total = principal * (1 + interestRate);
