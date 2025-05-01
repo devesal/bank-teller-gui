@@ -12,14 +12,13 @@ public class CustomersView extends JPanel {
     public CustomersView() {
         setLayout(new BorderLayout());
 
-        String[] columns = {"Account No", "Name", "Status"};
+        String[] columns = {"ID", "Name", "# of accounts"};
         DefaultTableModel model = new DefaultTableModel(columns, 0)  {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;  // all cells non-editable
             }
         };
-
         table = new JTable(model);
         JScrollPane scroll = new JScrollPane(table);
         add(scroll, BorderLayout.CENTER);
