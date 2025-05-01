@@ -32,7 +32,9 @@ public class Customer implements Serializable {
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        if (!firstName.isEmpty()) {
+            this.firstName = firstName;
+        }
     }
 
     public String getLastName() {
@@ -40,7 +42,9 @@ public class Customer implements Serializable {
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        if (!lastName.isEmpty()) {
+            this.lastName = lastName;
+        }
     }
 
     public String getBirthDate() {

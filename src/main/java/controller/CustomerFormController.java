@@ -12,10 +12,12 @@ public class CustomerFormController {
     private final MainView mainView;
     private final List<Customer> customers;
     private final List<BankAccount> allAccounts;
-    private Customer existingCustomer = null;
+    private final CustomerInfoView infoView;
+    private Customer currentCustomer;
 
     public CustomerFormController(MainView mainView) {
         this.formView = mainView.getCustomerFormView();
+        this.infoView = mainView.getCustomerInfoView();
         this.mainView = mainView;
         // Load persisted data
         this.customers = FileIO.loadAllCustomers();
@@ -33,30 +35,23 @@ public class CustomerFormController {
 
         // create and persist customer + accounts
         formView.getCreateButton().addActionListener(e -> {
-            try {
-                Customer customer = accountCreation();
-                // Save to file
-                FileIO.saveAllCustomers(customers);
-                FileIO.saveAllAccounts(new ArrayList<>(allAccounts));
+            Customer customer = createCustomer();
+            customers.add(customer);
+            currentCustomer = customer;
+            // Save to file
+            FileIO.saveAllCustomers(customers);
+            FileIO.saveAllAccounts(new ArrayList<>(allAccounts));
 
-                // populate success view
-                formView.getSuccessNameLabel().setText(
-                        customer.getFirstName() + " " + customer.getLastName());
-                formView.getSuccessDobLabel().setText(customer.getBirthDate());
+            // populate success view
+            formView.getSuccessNameLabel().setText(
+                    customer.getFirstName() + " " + customer.getLastName());
+            formView.getSuccessDobLabel().setText(customer.getBirthDate());
 
-                mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
-                mainView.getHeader().showControls(false);
-                formView.showStep(MainView.STEP_SUCCESS);
-            } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(formView, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+            mainView.getHeader().showControls(false);
+            formView.showStep(MainView.STEP_SUCCESS);
         });
 
-        formView.getViewButton().addActionListener(e -> {
-            CustomerInfoController controller = new CustomerInfoController(mainView);
-            controller.setLatestCustomer();
-            mainView.showPage(MainView.CUSTOMER_INFO);
-        });
         setupUntoggleBehavior(formView.getSavingsToggleButton());
         setupUntoggleBehavior(formView.getCheckingToggleButton());
         setupUntoggleBehavior(formView.getInvestmentToggleButton());
@@ -67,20 +62,12 @@ public class CustomerFormController {
      * Builds a new Customer using the formView inputs and adds toggled accounts.
      * @return the created Customer
      */
-    private Customer accountCreation() {
+    private Customer createCustomer() {
         String first = formView.getFirstNameField().getText().trim();
         String last  = formView.getLastNameField().getText().trim();
         String dob   = formView.getDobField().getText().trim();
 
-        Customer customer;
-        if (existingCustomer == null) {
-            // new customer
-            customer = new Customer(first, last, dob);
-            customers.add(customer);
-        } else {
-            // editing an existing one
-            customer = existingCustomer;
-        }
+        Customer customer = new Customer(first, last, dob);
 
         // create accounts for customer
         List<String> created = new ArrayList<>();
@@ -115,7 +102,6 @@ public class CustomerFormController {
                 created.isEmpty() ? "None" : String.join("\n", created)
         );
         // Clear the “editing” flag so next time it’s a fresh form:
-        existingCustomer = null;
         System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
         return customer;
     }
@@ -135,16 +121,6 @@ public class CustomerFormController {
             }
         });
     }
-    public void setExistingCustomer(Customer customer) {
-        this.existingCustomer = customer;
 
-        // Pre-fill customer data
-        formView.getFirstNameField().setText(customer.getFirstName());
-        formView.getLastNameField().setText(customer.getLastName());
-        formView.getDobField().setText(customer.getBirthDate());
-
-        // Jump directly to account selection step
-        formView.showStep(MainView.STEP_ACCOUNTS);
-    }
-
+    public Customer getCurrentCustomer() { return currentCustomer; }
 }

@@ -12,7 +12,6 @@ public class FileIO  {
     private static final String ACCOUNTS_DATA_FILE = "all_accounts.dat";
     private static final String CUSTOMER_DATA_FILE = "all_customers.dat";
 
-
     public static void saveAllAccounts(ArrayList<BankAccount> accounts) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(ACCOUNTS_DATA_FILE))) {
@@ -21,7 +20,6 @@ public class FileIO  {
             System.out.println("Error saving accounts: " + e.getMessage());
         }
     }
-
 
     public static ArrayList<BankAccount> loadAllAccounts() {
         File file = new File(ACCOUNTS_DATA_FILE);
