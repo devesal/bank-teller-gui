@@ -76,24 +76,32 @@ public class CustomerFormController {
             customer.addAccount(acc);
             allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+            FileIO.saveAllAccounts((ArrayList<BankAccount>) allAccounts);
+            FileIO.saveAllCustomers(customers);
         }
         if (formView.getCheckingToggleButton().isSelected()) {
             BankAccount acc = new CheckingAccount(first, last, 500.0);
             customer.addAccount(acc);
             allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+            FileIO.saveAllAccounts((ArrayList<BankAccount>) allAccounts);
+            FileIO.saveAllCustomers(customers);
         }
         if (formView.getInvestmentToggleButton().isSelected()) {
             BankAccount acc = new InvestmentAccount(first, last, 5000, 0.35);
             customer.addAccount(acc);
             allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+            FileIO.saveAllAccounts((ArrayList<BankAccount>) allAccounts);
+            FileIO.saveAllCustomers(customers);
         }
         if (formView.getCreditCardToggleButton().isSelected()) {
             BankAccount acc = new CreditCardAccount(first, last, 25000);
             customer.addAccount(acc);
             allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+            FileIO.saveAllAccounts((ArrayList<BankAccount>) allAccounts);
+            FileIO.saveAllCustomers(customers);
         }
 
         formView.getSuccessNameLabel().setText(customer.getFirstName() + " " + customer.getLastName());
