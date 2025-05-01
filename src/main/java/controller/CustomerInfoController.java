@@ -127,8 +127,163 @@ public class CustomerInfoController {
                 }
             }
         });
+
+        // 3) “Add Bank Account” -> flip back to accounts list (or launch wizard)
+        view.getAddAccountButton().addActionListener(e -> {
+            if (currentCustomer == null) {
+                JOptionPane.showMessageDialog(view,
+                        "No customer selected!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 1) Define the account‐type options
+            String[] options = {
+                    "Savings Account",
+                    "Checking Account (₱500 min)",
+                    "Investment Account (₱5,000, 35% rate)",
+                    "Credit Card Account (₱25,000 limit)"
+            };
+
+            // 2) Show the dialog
+            String choice = (String) JOptionPane.showInputDialog(
+                    view,                                // parent
+                    "Select account type to add:",      // message
+                    "Add Bank Account",                 // title
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,                                // icon
+                    options,                             // choices
+                    options[0]                           // default
+            );
+
+            // 3) If user cancels, choice is null → do nothing
+            if (choice == null) return;
+
+            // 4) Instantiate the right BankAccount subclass
+            BankAccount newAcc = switch (choice) {
+                case "Checking Account (₱500 min)" -> new CheckingAccount(
+                        currentCustomer.getFirstName(),
+                        currentCustomer.getLastName(),
+                        500.0
+                );
+                case "Investment Account (₱5,000, 35% rate)" -> new InvestmentAccount(
+                        currentCustomer.getFirstName(),
+                        currentCustomer.getLastName(),
+                        5000.0,
+                        0.35
+                );
+                case "Credit Card Account (₱25,000 limit)" -> new CreditCardAccount(
+                        currentCustomer.getFirstName(),
+                        currentCustomer.getLastName(),
+                        25000.0
+                );
+                default ->  // "Savings Account"
+                        new BankAccount(
+                                currentCustomer.getFirstName(),
+                                currentCustomer.getLastName()
+                        );
+            };
+            // —— TAG THE NEW ACCOUNT WITH ITS OWNER’S ID ——
+            newAcc.setCustomerId(currentCustomer.getId());
+
+            // 5) Attach to customer and global list, persist & refresh
+            List<BankAccount> all = FileIO.loadAllAccounts();
+            currentCustomer.addAccount(newAcc);
+            all.add(newAcc);
+            FileIO.saveAllCustomers(customers);
+            FileIO.saveAllAccounts(new ArrayList<>(all));      // refresh the JTable
+            populateAccountsTable();
+            // 6) Inform user
+            JOptionPane.showMessageDialog(view,
+                    String.format("%s added!\nAccount No: %d",
+                            newAcc.displayAccountType(),
+                            newAcc.getAccountNo()),
+                    "Account Created",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            if (onAccountAddedCallback != null) {
+                onAccountAddedCallback.run();
+            }
+            System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
+        });
+
     }
 
+    public static JFormattedTextField createDateField() {
+        return getjFormattedTextField();
+    }
+
+    public static JFormattedTextField getjFormattedTextField() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        format.setLenient(false);
+        DateFormatter df = new DateFormatter(format);
+        df.setAllowsInvalid(false);
+        df.setOverwriteMode(true);
+
+        JFormattedTextField f = new JFormattedTextField(df);
+        f.setValue(new Date());
+        f.setColumns(10);
+        f.setToolTipText("Enter date as YYYY-MM-DD");
+        return f;
+    }
+
+    public void setCustomerIndex(int index) {
+        view.setCustomerId(String.valueOf(index + 1));
+        view.setCustomerName(currentCustomer.getFirstName() + " " + currentCustomer.getLastName());
+        view.setCustomerDob(currentCustomer.getBirthDate());
+        populateAccountsTable();
+    }
+
+    /**
+     * Populate view with most recently added customer.
+     */
+    /**
+     +     * Show a given customer’s info (ID, name, DOB) and their accounts.
+     +     */
+    public void setCurrentCustomer(Customer customer) {
+        this.currentCustomer = customer;
+        if (customer == null) return;
+
+        // Use the real ID string:
+        view.setCustomerId(customer.getId());
+        view.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
+        view.setCustomerDob(customer.getBirthDate());
+
+        populateAccountsTable();
+    }
+
+    private void populateAccountsTable() {
+        DefaultTableModel model = (DefaultTableModel) view.getAccountsTable().getModel();
+        model.setRowCount(0);
+        for (BankAccount acc : currentCustomer.getAccounts()) {
+            model.addRow(new Object[]{
+                    acc.getAccountNo(),
+                    acc.displayAccountType(),
+                    acc.getStatus(),
+
+                    acc.inquireBalance()
+            });
+        }
+    }
+
+    private void saveAll() {
+        FileIO.saveAllCustomers(customers);
+        ArrayList<BankAccount> all = customers.stream()
+                .flatMap(c -> c.getAccounts().stream())
+                .collect(Collectors.toCollection(ArrayList::new));
+        FileIO.saveAllAccounts(all);
+    }
+    public void setOnAccountAddedCallback(Runnable cb) {
+        onAccountAddedCallback = cb;
+    }
+
+    /**
+     * Builds a list of operations available for the given account.
+     *
+     * @param account the account to build operations for
+     * @return an array of operation strings
+     */
     private String[] buildOperations(BankAccount account) {
         if (account instanceof CheckingAccount) {
             return new String[]{"Deposit", "Withdraw", "Transfer", "Encash Check", "Close Account"};
@@ -293,157 +448,5 @@ public class CustomerInfoController {
                 "Account Closed",
                 JOptionPane.INFORMATION_MESSAGE
         );
-
-
-
-        // 3) “Add Bank Account” -> flip back to accounts list (or launch wizard)
-        view.getAddAccountButton().addActionListener(e -> {
-            if (currentCustomer == null) {
-                JOptionPane.showMessageDialog(view,
-                        "No customer selected!",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            // 1) Define the account‐type options
-            String[] options = {
-                    "Savings Account",
-                    "Checking Account (₱500 min)",
-                    "Investment Account (₱5,000, 35% rate)",
-                    "Credit Card Account (₱25,000 limit)"
-            };
-
-            // 2) Show the dialog
-            String choice = (String) JOptionPane.showInputDialog(
-                    view,                                // parent
-                    "Select account type to add:",      // message
-                    "Add Bank Account",                 // title
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,                                // icon
-                    options,                             // choices
-                    options[0]                           // default
-            );
-
-            // 3) If user cancels, choice is null → do nothing
-            if (choice == null) return;
-
-            // 4) Instantiate the right BankAccount subclass
-            BankAccount newAcc = switch (choice) {
-                case "Checking Account (₱500 min)" -> new CheckingAccount(
-                        currentCustomer.getFirstName(),
-                        currentCustomer.getLastName(),
-                        500.0
-                );
-                case "Investment Account (₱5,000, 35% rate)" -> new InvestmentAccount(
-                        currentCustomer.getFirstName(),
-                        currentCustomer.getLastName(),
-                        5000.0,
-                        0.35
-                );
-                case "Credit Card Account (₱25,000 limit)" -> new CreditCardAccount(
-                        currentCustomer.getFirstName(),
-                        currentCustomer.getLastName(),
-                        25000.0
-                );
-                default ->  // "Savings Account"
-                        new BankAccount(
-                                currentCustomer.getFirstName(),
-                                currentCustomer.getLastName()
-                        );
-            };
-            // —— TAG THE NEW ACCOUNT WITH ITS OWNER’S ID ——
-            newAcc.setCustomerId(currentCustomer.getId());
-
-            // 5) Attach to customer and global list, persist & refresh
-            List<BankAccount> all = FileIO.loadAllAccounts();
-            currentCustomer.addAccount(newAcc);
-            all.add(newAcc);
-            FileIO.saveAllCustomers(customers);
-            FileIO.saveAllAccounts(new ArrayList<>(all));      // refresh the JTable
-            populateAccountsTable();
-            // 6) Inform user
-            JOptionPane.showMessageDialog(view,
-                    String.format("%s added!\nAccount No: %d",
-                            newAcc.displayAccountType(),
-                            newAcc.getAccountNo()),
-                    "Account Created",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-            if (onAccountAddedCallback != null) {
-                onAccountAddedCallback.run();
-            }
-            System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
-        });
-
     }
-
-    public static JFormattedTextField createDateField() {
-        return getjFormattedTextField();
-    }
-
-    public static JFormattedTextField getjFormattedTextField() {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        format.setLenient(false);
-        DateFormatter df = new DateFormatter(format);
-        df.setAllowsInvalid(false);
-        df.setOverwriteMode(true);
-
-        JFormattedTextField f = new JFormattedTextField(df);
-        f.setValue(new Date());
-        f.setColumns(10);
-        f.setToolTipText("Enter date as YYYY-MM-DD");
-        return f;
-    }
-
-    public void setCustomerIndex(int index) {
-        view.setCustomerId(String.valueOf(index + 1));
-        view.setCustomerName(currentCustomer.getFirstName() + " " + currentCustomer.getLastName());
-        view.setCustomerDob(currentCustomer.getBirthDate());
-        populateAccountsTable();
-    }
-
-    /**
-     * Populate view with most recently added customer.
-     */
-    /**
-     +     * Show a given customer’s info (ID, name, DOB) and their accounts.
-     +     */
-    public void setCurrentCustomer(Customer customer) {
-        this.currentCustomer = customer;
-        if (customer == null) return;
-
-        // Use the real ID string:
-        view.setCustomerId(customer.getId());
-        view.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
-        view.setCustomerDob(customer.getBirthDate());
-
-        populateAccountsTable();
-    }
-
-    private void populateAccountsTable() {
-        DefaultTableModel model = (DefaultTableModel) view.getAccountsTable().getModel();
-        model.setRowCount(0);
-        for (BankAccount acc : currentCustomer.getAccounts()) {
-            model.addRow(new Object[]{
-                    acc.getAccountNo(),
-                    acc.displayAccountType(),
-                    acc.getStatus(),
-
-                    acc.inquireBalance()
-            });
-        }
-    }
-
-    private void saveAll() {
-        FileIO.saveAllCustomers(customers);
-        ArrayList<BankAccount> all = customers.stream()
-                .flatMap(c -> c.getAccounts().stream())
-                .collect(Collectors.toCollection(ArrayList::new));
-        FileIO.saveAllAccounts(all);
-    }
-    public void setOnAccountAddedCallback(Runnable cb) {
-        onAccountAddedCallback = cb;
-    }
-
 }
