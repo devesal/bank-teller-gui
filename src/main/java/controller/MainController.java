@@ -11,19 +11,10 @@
 
     public class MainController {
         private final MainView view;
-        private final CustomerInfoView customerInfoView;
-        private final CustomerFormView formView;
-        private final CustomersView customersView;
-        private final ReportsView reportsView;
-
         private final List<Customer> customerList;
 
         public MainController() {
             view = new MainView();
-            customerInfoView = new CustomerInfoView();
-            formView = new CustomerFormView();
-            customersView = new CustomersView();
-            reportsView = new ReportsView();
             customerList = new ArrayList<>();
             initController();
         }
@@ -53,6 +44,41 @@
             view.getHeader().getSearchField().addActionListener(
                     e -> searchCustomer()
             );
+        }
+
+        public void searchCustomer() {
+            String query = view.getHeader().getSearchField().getText().trim();
+            if (!query.isEmpty()) {
+                String key = query.toLowerCase();
+
+                if (query.matches("[a-zA-Z\\s]+")) {
+
+                    List<BankAccount> matchingAccounts = customerList.stream()
+                            .flatMap(c -> c.getAccounts().stream())
+                            .filter(a -> a.getFirstName().toLowerCase().contains(key)
+                                    || a.getLastName().toLowerCase().contains(key) ||
+                                    a.getStatus().toLowerCase().contains(key))
+                            .collect(Collectors.toList());
+
+
+                    view.getCustomersView().updateTableWithSearchResults(matchingAccounts);
+                } else if (query.matches("\\d+")) {
+                    int accountNo = Integer.parseInt(query);
+                    BankAccount matchingAccount = customerList.stream()
+                            .flatMap(c -> c.getAccounts().stream())
+                            .filter(a -> a.getAccountNo() == accountNo)
+                            .findFirst()
+                            .orElse(null);
+
+
+                    if (matchingAccount != null) {
+                        view.getCustomersView().updateTableWithSearchResults(
+                                List.of(matchingAccount));
+                    } else {
+                        view.getCustomersView().updateTableWithSearchResults(Collections.emptyList());
+                    }
+                }
+            }
         }
 
         private void setNavigationActions() {
@@ -91,41 +117,6 @@
             view.getHeader().getBtnSearch().addActionListener(
                     e -> searchCustomer()
             );
-        }
-
-        public void searchCustomer() {
-            String query = view.getHeader().getSearchField().getText().trim();
-            if (!query.isEmpty()) {
-                String key = query.toLowerCase();
-
-                if (query.matches("[a-zA-Z\\s]+")) {
-
-                    List<BankAccount> matchingAccounts = customerList.stream()
-                            .flatMap(c -> c.getAccounts().stream())
-                            .filter(a -> a.getFirstName().toLowerCase().contains(key)
-                                    || a.getLastName().toLowerCase().contains(key) ||
-                                    a.getStatus().toLowerCase().contains(key))
-                            .collect(Collectors.toList());
-
-
-                    view.getCustomersView().updateTableWithSearchResults(matchingAccounts);
-                } else if (query.matches("\\d+")) {
-                    int accountNo = Integer.parseInt(query);
-                    BankAccount matchingAccount = customerList.stream()
-                            .flatMap(c -> c.getAccounts().stream())
-                            .filter(a -> a.getAccountNo() == accountNo)
-                            .findFirst()
-                            .orElse(null);
-
-
-                    if (matchingAccount != null) {
-                        view.getCustomersView().updateTableWithSearchResults(
-                                List.of(matchingAccount));
-                    } else {
-                        view.getCustomersView().updateTableWithSearchResults(Collections.emptyList());
-                    }
-                }
-            }
         }
 
         private void setBackButtonAction() {
@@ -185,7 +176,6 @@
         public void start() {
             SwingUtilities.invokeLater(() -> {
                 view.getFrame().setVisible(true);
-                // show customers by default
                 view.showPage(MainView.CUSTOMERS);
             });
         }
