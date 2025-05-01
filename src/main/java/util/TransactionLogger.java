@@ -33,7 +33,7 @@ public class TransactionLogger {
 
     public List<String[]> loadTransactions() {
         List<String[]> transactions = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileLocation))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(""))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
