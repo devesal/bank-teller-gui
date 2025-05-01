@@ -1,5 +1,6 @@
 package controller;
 
+import model.BankAccount;
 import model.Customer;
 import util.FileIO;
 import view.MainView;
@@ -141,31 +142,36 @@ public class MainController {
         );
     }
     public void refreshCustomerTable() {
-        // 1) Reload customers and accounts from DB
+        // 1) reload customers and accounts
         customerList.clear();
-        List<Customer> allCustomers = FileIO.loadAllCustomers();
-        customerList.addAll(allCustomers);
-        List<BankAccount> allAccounts = FileIO.loadAllAccounts();
-        allAccounts.addAll(allAccounts);
-        // 2) Group accounts by customerId
-        Map<String, List<BankAccount>> accountsByCust = customerList.stream()
-                .collect(Collectors.toMap(
-                        Customer::getId,
-                        Customer::getAccounts
+        customerList.addAll(FileIO.loadAllCustomers());
+
+        allAccounts.clear();
+        allAccounts.addAll(FileIO.loadAllAccounts());
+
+        // 2) group by customer ID
+        Map<String, Long> counts = allAccounts.stream()
+                // skip any accounts that somehow have no customer ID
+                .filter(acc -> acc.getCustomerId() != null)
+                .collect(Collectors.groupingBy(
+                        BankAccount::getCustomerId,
+                        Collectors.counting()
                 ));
 
+        // 3) repopulate the JTable
         DefaultTableModel model = (DefaultTableModel) view
                 .getCustomersView().getTable().getModel();
         model.setRowCount(0);
-        for (Customer cust : customerList) {
+        for (Customer c : customerList) {
+            long num = counts.getOrDefault(c.getId(), 0L);
             model.addRow(new Object[]{
-                    cust.getId(),
-                    cust.getFirstName() + " " + cust.getLastName(),
-                    accountsByCust.getOrDefault(cust.getId(), List.of()).size()
+                    c.getId(),
+                    c.getFirstName() + " " + c.getLastName(),
+                    (int)num
             });
         }
-
     }
+
     public void start() {
         SwingUtilities.invokeLater(() -> {
             loadCustomersToTable(customerList);
