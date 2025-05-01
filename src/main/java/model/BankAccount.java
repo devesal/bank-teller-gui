@@ -19,6 +19,13 @@ public class BankAccount implements Serializable {
     /** Current status of the account (Active/Closed) */
     private String status;
 
+    public BankAccount() {
+        this.accountNo = generateAccountNumber();
+        this.firstName = "";
+        this.lastName = "";
+    }
+
+
     /**
      * Constructs a new active BankAccount with a random 9-digit account number
      * and given first and last name.
