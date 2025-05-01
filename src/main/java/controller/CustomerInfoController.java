@@ -29,14 +29,10 @@ public class CustomerInfoController {
     private final List<Customer> customers;
     private final List<BankAccount> allAccounts = FileIO.loadAllAccounts();
     private Customer currentCustomer;
-    private final TransactionLogger logger;
-    private final TransactionHistoryView transactionView;
 
     public CustomerInfoController(MainView mainView) {
         this.view = mainView.getCustomerInfoView();
         this.mainView = mainView;
-        this.transactionView = new TransactionHistoryView();
-        this.logger = new TransactionLogger("logs/transactions.txt", transactionView.getHistoryTable());
         // load persisted customers
         this.customers = FileIO.loadAllCustomers();
         initController();
@@ -44,9 +40,13 @@ public class CustomerInfoController {
 
     private void initController() {
         // Transaction History button
+        currentCustomer = getSelectedAccount(customers);
         view.getBtnHistory().addActionListener(e -> {
             view.showRightCard(CustomerInfoView.CARD_TRANSACTION_HISTORY);
             mainView.getHeader().showControls(false);
+
+            loadTransactionHistory(currentCustomer);
+
         });
 
         // Double-click account row
@@ -243,12 +243,46 @@ public class CustomerInfoController {
             case TRANSFER -> account.withdraw(transaction.getAmount());
             default -> throw new IllegalArgumentException("Unknown transaction type0");
         }
+
+        String logFile = "logs/" + account.getAccountNo() + "_transactions.txt";
+        TransactionLogger logger = new TransactionLogger(logFile);
         try {
             logger.logTransaction(transaction, account.inquireBalance());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
+    private Customer getSelectedAccount(List<Customer> currentCustomer) {
+        int selectedRow = view.getAccountsTable().getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(view, "Please select an account.");
+            return null;
+        }
+
+        return currentCustomer.get(selectedRow); // row index matches list index
+    }
+
+    private void loadTransactionHistory(Customer customer) {
+        String logFile ="transactions.log";
+        TransactionLogger logger = new TransactionLogger(logFile);
+        List<String[]> transactions = logger.loadTransactions();
+
+        TransactionHistoryView tHistView = new TransactionHistoryView();
+        JTable tHistTable = tHistView.getHistoryTable();
+
+        DefaultTableModel tableModel = (DefaultTableModel) tHistTable.getModel();
+        tableModel.setRowCount(0); // Clear old rows
+
+        for (String[] row : transactions) {
+            String date = row[0].split("T")[0];
+            String type = row[2];
+            String amount = (type.equalsIgnoreCase("DEPOSIT") ? "+" : "-") + "₱" + row[3];
+            String balance = "₱" + row[5];
+            tableModel.addRow(new Object[]{date, type, amount, balance});
+        }
+    }
+
 
     private void saveAll() {
         FileIO.saveAllCustomers(customers);
