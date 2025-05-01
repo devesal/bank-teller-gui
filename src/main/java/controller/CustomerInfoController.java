@@ -80,7 +80,7 @@ public class CustomerInfoController {
             Object[] msg = {
                     "First Name:", first,
                     "Last Name:",  last,
-                    "Date of Birth:", dob
+                    "Date of Birth:", currentCustomer.getBirthDate()
             };
 
             int opt = JOptionPane.showConfirmDialog(
@@ -93,8 +93,8 @@ public class CustomerInfoController {
                 // validate & apply...
                 currentCustomer.setFirstName(f);
                 currentCustomer.setLastName(l);
-                currentCustomer.setBirthDate(d);
-                view.setCustomerName(f + " " + l);
+//                currentCustomer.getBirthDate();
+//                view.setCustomerName(f + " " + l);
             }
         });
 
