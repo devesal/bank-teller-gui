@@ -2,17 +2,20 @@ package view;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.DateFormatter;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class CustomerFormView extends JPanel {
     private final CardLayout cardLayout;
     private final JPanel cardPanel;
 
     // --- Step 1: Personal Info ---
-    private final JTextField txtFirstName = new JTextField(20);
-    private final JTextField txtLastName  = new JTextField(20);
-    private final JTextField txtDob       = new JTextField(20);
-    private final JButton    btnNext1     = new JButton("Next");
+    private final JTextField          txtFirstName = new JTextField(20);
+    private final JTextField          txtLastName  = new JTextField(20);
+    private final JFormattedTextField txtDob;
+    private final JButton             btnNext1     = new JButton("Next");
 
     // --- Step 2: Account Types ---
     private final JToggleButton tglSavings    = new JToggleButton("Savings Account");
@@ -28,23 +31,20 @@ public class CustomerFormView extends JPanel {
     private final JButton btnView           = new JButton("View");
 
     public CustomerFormView() {
+        txtDob = createDateField();
+
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         cardLayout = new CardLayout();
         cardPanel  = new JPanel(cardLayout);
         cardPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // assemble the four steps
+        // assemble the steps
         cardPanel.add(buildPersonalPanel(), MainView.STEP_PERSONAL);
         cardPanel.add(buildAccountsPanel(), MainView.STEP_ACCOUNTS);
-        cardPanel.add(buildSuccessPanel(), MainView.STEP_SUCCESS);
+        cardPanel.add(buildSuccessPanel(),  MainView.STEP_SUCCESS);
 
         setLayout(new BorderLayout());
         add(cardPanel, BorderLayout.CENTER);
-    }
-
-    /** Switch to one of the three steps */
-    public void showStep(String stepName) {
-        cardLayout.show(cardPanel, stepName);
     }
 
     public JPanel buildPersonalPanel() {
@@ -59,7 +59,7 @@ public class CustomerFormView extends JPanel {
         String[] labels = {
                 "First Name",
                 "Last Name",
-                "Date of Birth (eg. July 30, 2005)"
+                "Date of Birth (YYYY-MM-DD)"
         };
         JTextField[] fields = {
                 txtFirstName,
@@ -75,16 +75,13 @@ public class CustomerFormView extends JPanel {
             lbl.setFont(labelFont);
             form.add(lbl);
 
-            JTextField fld = fields[i];
-            fld.setFont(fieldFont);
-            form.add(fld);
+            fields[i].setFont(fieldFont);
+            form.add(fields[i]);
         }
 
         p.add(form, BorderLayout.CENTER);
 
         btnNext1.setPreferredSize(new Dimension(120, 40));
-
-        // --- button bar, centered ---
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         btnPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
         btnPanel.add(btnNext1);
@@ -153,6 +150,11 @@ public class CustomerFormView extends JPanel {
         return p;
     }
 
+    /** Switch to one of the three steps */
+    public void showStep(String stepName) {
+        cardLayout.show(cardPanel, stepName);
+    }
+
     public void reset() {
         // --- clear step 1 fields ---
         txtFirstName.setText("");
@@ -172,6 +174,20 @@ public class CustomerFormView extends JPanel {
 
         // --- go back to the first card ---
         showStep(MainView.STEP_PERSONAL);
+    }
+
+    private JFormattedTextField createDateField() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        format.setLenient(false);
+        DateFormatter df = new DateFormatter(format);
+        df.setAllowsInvalid(false);
+        df.setOverwriteMode(true);
+
+        JFormattedTextField f = new JFormattedTextField(df);
+        f.setValue(new Date());
+        f.setColumns(10);
+        f.setToolTipText("Enter date as YYYY-MM-DD");
+        return f;
     }
 
     // getters for controller

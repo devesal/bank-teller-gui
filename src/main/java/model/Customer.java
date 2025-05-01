@@ -8,7 +8,6 @@ public class Customer {
     private String firstName;
     private String lastName;
     private String BirthDate;
-    private String phoneNumber;
     private List<BankAccount> accounts;
 
     /**
@@ -16,7 +15,7 @@ public class Customer {
      *
      * @param firstName   the customer's first name
      * @param lastName    the customer's last name
-     * @param BirthDate       the customer's email address
+     * @param BirthDate   the customer's email address
      */
     public Customer(String firstName, String lastName, String BirthDate) {
         this.firstName = firstName;
@@ -55,11 +54,9 @@ public class Customer {
         accounts.add(account);
     }
 
-
     public void removeAccount(int accountNo) {
         accounts.removeIf(a -> a.getAccountNo() == accountNo);
     }
-
 
     public BankAccount getAccount(int accountNo) {
         return accounts.stream()
@@ -68,11 +65,9 @@ public class Customer {
                 .orElse(null);
     }
 
-
     public List<BankAccount> getAccounts() {
         return new ArrayList<>(accounts);
     }
-
 
     public List<BankAccount> getAccountsByType(String type) {
         return accounts.stream()
@@ -80,20 +75,17 @@ public class Customer {
                 .collect(Collectors.toList());
     }
 
-
     public double getTotalBalance() {
         return accounts.stream()
                 .mapToDouble(BankAccount::inquireBalance)
                 .sum();
     }
 
-
     public List<BankAccount> getActiveAccounts() {
         return accounts.stream()
                 .filter(a -> "Active".equals(a.getStatus()))
                 .collect(Collectors.toList());
     }
-
 
     public List<BankAccount> getClosedAccounts() {
         return accounts.stream()
