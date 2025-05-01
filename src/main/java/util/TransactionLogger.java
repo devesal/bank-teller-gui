@@ -19,14 +19,14 @@ public class TransactionLogger {
         this.tableModel = tableModel;
     }
 
-    public void logTransaction (Transaction transaction) throws IOException {
+    public void logTransaction (Transaction transaction, double balance) throws IOException {
         try (BufferedWriter transacWriter = new BufferedWriter(new FileWriter(fileLocation, true))){
             transacWriter.write(transaction.toString());
             transacWriter.newLine();
         } catch (IOException e) {
             System.err.println("Failed to log transaction");
         }
-        addTransactionToTable(transaction);
+        addTransactionToTable(transaction, balance);
     }
 
     public void loadTransactions (DefaultTableModel tTable, String fileLocation){
@@ -50,7 +50,7 @@ public class TransactionLogger {
 
     }
 
-    public void addTransactionToTable (Transaction transaction) {
+    public void addTransactionToTable (Transaction transaction, double balance) {
         String date = transaction.getTimestamp()
                 .toLocalDate()
                 .toString();
@@ -58,7 +58,7 @@ public class TransactionLogger {
         String amount = (transactionType.equals("Deposit")||transactionType.equals("Transfer")
                 || transactionType.equals("Add Investment") || transactionType.equals("Charge to Card") ? "+" : "-") + "₱" +
                 String.format("%.2f", transaction.getAmount());
-        String balance = "";
+        String maintainingBalance = String.valueOf(balance);
         tableModel.addRow(new Object[]{date, transactionType, amount, balance});
     }
 }
