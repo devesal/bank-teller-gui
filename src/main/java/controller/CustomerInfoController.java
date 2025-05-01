@@ -34,6 +34,7 @@ public class CustomerInfoController {
                 e -> {
                     view.showRightCard(CustomerInfoView.TRANSACTION_HISTORY);
                     mainView.getHeader().showControls(false);
+                    loadTransactionHistory();
                 }
         );
 
@@ -129,33 +130,38 @@ public class CustomerInfoController {
         }
     }
 
-    private Customer getSelectedAccount(java.util.List<Customer> currentCustomer) {
-        int selectedRow = view.getAccountsTable().getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(view, "Please select an account.");
-            return null;
-        }
-
-        return currentCustomer.get(selectedRow); // row index matches list index
-    }
-
-    private void loadTransactionHistory(Customer customer) {
-        String logFile ="transactions.log";
+    private void loadTransactionHistory() {
+        // Load transactions for this customer's account
+        String logFile = "transactions.log";
         TransactionLogger logger = new TransactionLogger(logFile);
         List<String[]> transactions = logger.loadTransactions();
 
-        TransactionHistoryView tHistView = new TransactionHistoryView();
-        JTable tHistTable = tHistView.getHistoryTable();
+        // Get the transaction history view
+        TransactionHistoryView historyView = new TransactionHistoryView();
+        JTable historyTable = historyView.getHistoryTable();
+        DefaultTableModel model = (DefaultTableModel) historyView.getHistoryTable().getModel();
 
-        DefaultTableModel tableModel = (DefaultTableModel) tHistTable.getModel();
-        tableModel.setRowCount(0); // Clear old rows
+        // Clear existing data
+        model.setRowCount(0);
 
-        for (String[] row : transactions) {
-            String date = row[0].split("T")[0];
-            String type = row[2];
-            String amount = (type.equalsIgnoreCase("DEPOSIT") ? "+" : "-") + "₱" + row[3];
-            String balance = "₱" + row[5];
-            tableModel.addRow(new Object[]{date, type, amount, balance});
+        // Add transactions to table
+        for (String[] transaction : transactions) {
+            // Format: [0]timestamp, [1]type, [2]fromAccount, [3]amount, [4]toAccount, [5]balance
+            String date = transaction[0].split("T")[0]; // Just get date part
+            String type = transaction[1];
+            String amount = formatAmount(type, transaction[3]);
+            String balance = "₱" + transaction[5];
+
+            model.addRow(new Object[]{date, type, amount, balance});
+        }
+    }
+
+    private String formatAmount(String type, String amount) {
+        // Add + for deposits, - for withdrawals
+        if (type.equalsIgnoreCase("DEPOSIT")) {
+            return "+₱" + amount;
+        } else {
+            return "-₱" + amount;
         }
     }
 }
