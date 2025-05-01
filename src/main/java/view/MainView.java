@@ -7,16 +7,16 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainView {
-    private JFrame           frame;
-    private Sidebar          sidebar;
-    private Header           header;
-    private JPanel           contentPanel;
-    private CardLayout       contentCardLayout;
-    private ReportsView      reportsView;
-    private CustomersView    customersView;
-    private CustomerInfoView customerInfoView;
-    private CustomerFormView customerFormView;
-    private BankAccountView  bankAccountView;
+    private JFrame                 frame;
+    private Sidebar                sidebar;
+    private Header                 header;
+    private JPanel                 contentPanel;
+    private CardLayout             contentCardLayout;
+    private ReportsView            reportsView;
+    private CustomersView          customersView;
+    private CustomerInfoView       customerInfoView;
+    private CustomerFormView       customerFormView;
+    private BankAccountView        bankAccountView;
 
     // Card identifiers
     public static final String CUSTOMERS     = "CustomersView";

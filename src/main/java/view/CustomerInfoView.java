@@ -31,6 +31,8 @@ public class CustomerInfoView extends JPanel {
     private final JButton btnAddAccount   = new JButton("Add Bank Account");
     private final JTable accountsTable;
 
+    private TransactionHistoryView transactionHistoryView;
+
     private String currentRightCard = BANK_ACCOUNTS;
 
     // the CardLayout and its panel
@@ -129,10 +131,12 @@ public class CustomerInfoView extends JPanel {
         accountsTable = new JTable(model);
         accountsPanel.add(new JScrollPane(accountsTable), BorderLayout.CENTER);
 
+        transactionHistoryView = new TransactionHistoryView();
+
         // Add all cards to rightPanel
         rightPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         rightPanel.add(accountsPanel, BANK_ACCOUNTS);
-        rightPanel.add(new TransactionHistoryView(), TRANSACTION_HISTORY);
+        rightPanel.add(transactionHistoryView, TRANSACTION_HISTORY);
         rightPanel.add(new BankAccountView(), BANK_ACCOUNT);
         rightPanel.add(new AccountStatementView(), ACCOUNT_STATEMENT);
         rightPanel.add(buildAccountAddPanel(), BANK_ADD);
@@ -194,6 +198,7 @@ public class CustomerInfoView extends JPanel {
     public JButton getStatementButton()      { return btnStatement;     }
     public String getCurrentRightCard()      { return currentRightCard; }
     public JButton getEditButton()           { return btnEdit;          }
+    public TransactionHistoryView getHistoryView() { return transactionHistoryView; }
 
     // setters for labels
     public void setCustomerId(String id)     { lblId.setText(id);       }

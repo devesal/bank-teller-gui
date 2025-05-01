@@ -1,5 +1,7 @@
 package controller;
 import javax.swing.text.DateFormatter;
+
+import util.TransactionLogger;
 import view.CustomerInfoView;
 import view.MainView;
 import model.*;
@@ -19,11 +21,15 @@ public class CustomerInfoController {
     private final List<BankAccount> allAccounts;
     private Runnable onAccountAddedCallback;
     private Customer currentCustomer;
+    private TransactionLogger transactionLogger;
+
     public CustomerInfoController(MainView mainView) {
         this.mainView = mainView;
         view = mainView.getCustomerInfoView();
         customers = FileIO.loadAllCustomers();
         allAccounts = FileIO.loadAllAccounts();
+        transactionLogger = new TransactionLogger("transactions.csv");
+
         initController();
     }
 
@@ -33,6 +39,7 @@ public class CustomerInfoController {
                 e -> {
                     view.showRightCard(CustomerInfoView.TRANSACTION_HISTORY);
                     mainView.getHeader().showControls(false);
+                    view.getHistoryView().refreshHistory();
                 }
         );
 
@@ -343,6 +350,7 @@ public class CustomerInfoController {
         String amt = JOptionPane.showInputDialog(view, "Enter deposit amount:");
         double amount = Double.parseDouble(amt);
         acc.deposit(amount);
+        recordTransaction(acc.getAccountNo(), amount, Transaction.Type.DEPOSIT);
         JOptionPane.showMessageDialog(
                 view,
                 String.format("<html><b>Success:</b> Deposited ₱%.2f</html>", amount),
@@ -355,6 +363,7 @@ public class CustomerInfoController {
         String amt = JOptionPane.showInputDialog(view, "Enter withdrawal amount:");
         double amount = Double.parseDouble(amt);
         acc.withdraw(amount);
+        recordTransaction(acc.getAccountNo(), amount, Transaction.Type.WITHDRAWAL);
         JOptionPane.showMessageDialog(
                 view,
                 String.format("<html><b>Success:</b> Withdrew ₱%.2f</html>", amount),
@@ -374,6 +383,7 @@ public class CustomerInfoController {
         int toAcc = Integer.parseInt(to.getText().trim());
         double amount = Double.parseDouble(amt.getText().trim());
         acc.transferMoney(toAcc, amount, new ArrayList<>(allAccounts));
+        recordTransaction(acc.getAccountNo(), toAcc, amount, Transaction.Type.TRANSFER);
         JOptionPane.showMessageDialog(
                 view,
                 String.format("<html><b>Success:</b> Transferred ₱%.2f to account %d</html>", amount, toAcc),
@@ -386,6 +396,7 @@ public class CustomerInfoController {
         String amt = JOptionPane.showInputDialog(view, "Enter check encash amount:");
         double amount = Double.parseDouble(amt);
         ((CheckingAccount) acc).encashCheck(amount);
+        recordTransaction(acc.getAccountNo(), amount, Transaction.Type.ENCASH);
         JOptionPane.showMessageDialog(
                 view,
                 String.format("<html><b>Success:</b> En cashed ₱%.2f</html>", amount),
@@ -397,6 +408,7 @@ public class CustomerInfoController {
     private void dialogInterest(InvestmentAccount acc) throws AccountClosedException {
         acc.applyMonthlyInterest();
         double earned = acc.calculateEarnedInterest();
+        recordTransaction(acc.getAccountNo(), earned, Transaction.Type.ADD_INVESTMENT);
         JOptionPane.showMessageDialog(
                 view,
                 String.format("<html><b>Success:</b> Interest applied. Earned ₱%.2f</html>", earned),
@@ -409,6 +421,7 @@ public class CustomerInfoController {
         String amt = JOptionPane.showInputDialog(view, "Enter charge amount:");
         double amount = Double.parseDouble(amt);
         acc.chargeToCard(amount);
+        recordTransaction(acc.getAccountNo(), amount, Transaction.Type.CHARGE_TO_CARD);
         JOptionPane.showMessageDialog(
                 view,
                 String.format("<html><b>Success:</b> Charged ₱%.2f</html>", amount),
@@ -421,6 +434,7 @@ public class CustomerInfoController {
         String amt = JOptionPane.showInputDialog(view, "Enter payment amount:");
         double amount = Double.parseDouble(amt);
         acc.payCard(amount);
+        recordTransaction(acc.getAccountNo(), amount, Transaction.Type.PAY_CARD);
         JOptionPane.showMessageDialog(
                 view,
                 String.format("<html><b>Success:</b> Paid ₱%.2f</html>", amount),
@@ -433,6 +447,7 @@ public class CustomerInfoController {
         String amt = JOptionPane.showInputDialog(view, "Enter cash advance amount:");
         double amount = Double.parseDouble(amt);
         acc.getCashAdvance(amount);
+        recordTransaction(acc.getAccountNo(), amount, Transaction.Type.CASH_ADVANCE);
         JOptionPane.showMessageDialog(
                 view,
                 String.format("<html><b>Success:</b> Advanced ₱%.2f</html>", amount),
@@ -458,4 +473,36 @@ public class CustomerInfoController {
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
+
+    // Helper to record transactions
+    private void recordTransaction(int fromAcc, double amount, Transaction.Type type) {
+        try {
+            Transaction tx = new Transaction(fromAcc, amount, type);
+            transactionLogger.logTransaction(tx, currentCustomer.getAccounts()
+                    .stream()
+                    .filter(a -> a.getAccountNo() == fromAcc)
+                    .findFirst().orElseThrow().inquireBalance()
+            );
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(view,
+                    "Failed to log transaction: " + e.getMessage(),
+                    "Logging Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
+    private void recordTransaction(int fromAcc, int toAcc, double amount, Transaction.Type type) {
+        try {
+            Transaction tx = new Transaction(fromAcc, toAcc, amount, type);
+            recordTransaction(fromAcc, amount, type);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(view,
+                    "Failed to log transaction: " + e.getMessage(),
+                    "Logging Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+    }
+
 }

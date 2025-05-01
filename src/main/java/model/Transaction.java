@@ -27,10 +27,24 @@ public class Transaction {
     }
 
     private final int fromAccount;
-    private final int toAccount;
+    private int toAccount;
     private final double amount;
     private final Type type;
     private final LocalDateTime timestamp;
+
+    /**
+     * Constructs a transaction record.
+     *
+     * @param fromAccount the account initiating the transaction
+     * @param amount      the amount of money involved in the transaction
+     * @param type        the type of transaction being recorded
+     */
+    public Transaction(int fromAccount, double amount, Type type) {
+        this.fromAccount = fromAccount;
+        this.amount = amount;
+        this.type = type;
+        this.timestamp = LocalDateTime.now();
+    }
 
     /**
      * Constructs a transaction record.

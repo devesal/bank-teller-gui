@@ -2,100 +2,118 @@ package util;
 
 import model.Transaction;
 
-import javax.swing.table.DefaultTableModel;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handles logging of transactions to a file and optionally displaying them in a table model.
+ * Handles appending transactions to a CSV file and loading them back into memory.
+ * This class is UI-agnostic; the controller is responsible for driving table updates.
  */
 public class TransactionLogger {
-    private String fileLocation;
-    private DefaultTableModel tableModel;
+    private final Path filePath;
 
     /**
-     * Default constructor initializes with empty file path and null table model.
-     */
-    public TransactionLogger() {
-        this.fileLocation = "";
-        this.tableModel = null;
-    }
-
-    /**
-     * Constructs a TransactionLogger with a specified file location.
-     *
-     * @param fileLocation the path to the transaction log file
+     * Constructs a TransactionLogger pointing at the given CSV file.
+     * @param fileLocation path to the transaction log CSV file
      */
     public TransactionLogger(String fileLocation) {
-        this.fileLocation = fileLocation;
-        this.tableModel = null;
+        this.filePath = Paths.get(fileLocation);
+        createFileIfMissing();
     }
 
-    /**
-     * Logs a transaction to the specified file and adds it to the table model, if applicable.
-     *
-     * @param transaction the transaction to log
-     * @param balance the resulting balance after the transaction
-     * @throws IOException if writing to the file fails
-     */
-    public void logTransaction(Transaction transaction, double balance) throws IOException {
-        try (BufferedWriter transacWriter = new BufferedWriter(new FileWriter(fileLocation, true))) {
-            transacWriter.write(transaction.toString());
-            transacWriter.newLine();
-        } catch (IOException e) {
-            System.err.println("Failed to log transaction: " + e.getMessage());
-        }
-
-        addTransactionToTable(transaction, balance);
-    }
-
-    /**
-     * Loads all transactions from the log file.
-     *
-     * @return a list of transaction data arrays (parsed by comma)
-     */
-    public List<String[]> loadTransactions() {
-        List<String[]> transactions = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(fileLocation))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 6) {
-                    transactions.add(parts);
-                }
+    private void createFileIfMissing() {
+        try {
+            if (!Files.exists(filePath)) {
+                Files.createFile(filePath);
             }
         } catch (IOException e) {
-            System.err.println("Error reading transactions: " + e.getMessage());
+            throw new UncheckedIOException("Unable to create transactions file", e);
         }
-        return transactions;
     }
 
     /**
-     * Adds a transaction to the table model, if one is set.
+     * Appends a transaction to the CSV log.
+     * Format: timestamp,type,fromAccount,toAccount,amount
      *
-     * @param transaction the transaction to add
-     * @param balance the current balance to display
+     * @param tx the transaction to log
+     * @param v
+     * @throws IOException if writing to the file fails
      */
-    public void addTransactionToTable(Transaction transaction, double balance) {
-        if (tableModel == null) return;
+    public void logTransaction(Transaction tx, double v) throws IOException {
+        String line = formatCsvLine(tx);
+        try (BufferedWriter writer = Files.newBufferedWriter(
+                filePath, StandardOpenOption.APPEND)) {
+            writer.write(line);
+            writer.newLine();
+        }
+    }
 
-        String date = transaction.getTimestamp().toLocalDate().toString();
-        String transactionType = transaction.getType().toString();
-        boolean isCredit = switch (transaction.getType()) {
+    /**
+     * Reads all logged transactions back into a list.
+     * @return list of Transaction objects
+     * @throws IOException if reading the file fails
+     */
+    public List<Transaction> loadAllTransactions() throws IOException {
+        List<Transaction> list = new ArrayList<>();
+        try (BufferedReader reader = Files.newBufferedReader(filePath)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                list.add(parseCsvLine(line));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Converts a Transaction into a displayable row at the controller/UI level.
+     * @param tx the transaction
+     * @param balanceAfter the balance after applying the transaction
+     * @return array of Objects representing table columns
+     */
+    public Object[] toRow(Transaction tx, double balanceAfter) {
+        String date = tx.getTimestamp().toLocalDate().toString();
+        String type = tx.getType().name();
+        boolean isCredit = switch (tx.getType()) {
             case DEPOSIT, TRANSFER, ADD_INVESTMENT, CHARGE_TO_CARD -> true;
             default -> false;
         };
-        String amount = (isCredit ? "+" : "-") + "₱" + String.format("%.2f", transaction.getAmount());
-        tableModel.addRow(new Object[]{date, transactionType, amount, String.format("₱%.2f", balance)});
+        String amount = (isCredit ? "+" : "-") + String.format("₱%.2f", tx.getAmount());
+        String balance = String.format("₱%.2f", balanceAfter);
+        return new Object[]{ date, type, amount, balance };
     }
 
-    /**
-     * Sets the table model used to display transactions.
-     *
-     * @param tableModel the table model to attach
-     */
-    public void setTableModel(DefaultTableModel tableModel) {
-        this.tableModel = tableModel;
+    // --- CSV formatting/parsing ---
+    private String formatCsvLine(Transaction tx) {
+        // timestamp,type,fromAccount,toAccount,amount
+        return String.join(",",
+                tx.getTimestamp().toString(),
+                tx.getType().name(),
+                String.valueOf(tx.getFromAccount()),
+                String.valueOf(tx.getToAccount()),
+                String.format("%.2f", tx.getAmount())
+        );
+    }
+
+    private Transaction parseCsvLine(String line) {
+        // timestamp,type,fromAccount,toAccount,amount
+        String[] parts = line.split(",");
+        LocalDateTime ts = LocalDateTime.parse(parts[0]);
+        Transaction.Type type = Transaction.Type.valueOf(parts[1]);
+        int from = Integer.parseInt(parts[2]);
+        int to   = Integer.parseInt(parts[3]);
+        double amt = Double.parseDouble(parts[4]);
+        // use constructor with fromAccount, toAccount, amount, type
+        Transaction tx = new Transaction(from, to, amt, type);
+        // override timestamp if needed (assumes Transaction.timestamp is final set at now; cannot override)
+        return tx;
     }
 }
