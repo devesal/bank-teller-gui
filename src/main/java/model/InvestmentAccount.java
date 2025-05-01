@@ -74,7 +74,7 @@ public class InvestmentAccount extends BankAccount implements Serializable {
      *
      * @return the investment value = principal * (1 + interestRate)
      */
-    public void applyMonthlyInterest() {
+    public void applyMonthlyInterest() throws AccountClosedException {
         if (!"Active".equals(getStatus())) return;
         double monthlyRate = interestRate / 12.0;
         double currentBalance = super.inquireBalance() + minimumBalance;
