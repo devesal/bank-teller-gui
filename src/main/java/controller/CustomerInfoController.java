@@ -44,70 +44,74 @@ public class CustomerInfoController {
         );
 
         view.getCloseAccountButton().addActionListener(e -> {
-            int row = view.getAccountsTable().getSelectedRow();
+            if (currentCustomer == null) {
+                JOptionPane.showMessageDialog(view,
+                        "No customer selected!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            if (row >= 0 && currentCustomer != null) {
-                int choice = JOptionPane.showConfirmDialog(
-                        view,
-                        "Are you sure you want to close this account?",
-                        "Confirm Close Account",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.WARNING_MESSAGE
-                );
+            int choice = JOptionPane.showConfirmDialog(
+                    view,
+                    "Are you sure you want to permanently close this customer's account and delete all their data?",
+                    "Confirm Close Account",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+            );
 
-                if (choice == JOptionPane.YES_OPTION) {
-                    int accNo = (int) view.getAccountsTable().getValueAt(row, 0);
-                    for (BankAccount acc : currentCustomer.getAccounts()) {
-                        if (acc.getAccountNo() == accNo) {
-                            acc.setStatus("Closed");
-                            break;
-                        }
-                    }
-                    saveAll();
-                    populateAccountsTable();
-                }
+            if (choice == JOptionPane.YES_OPTION) {
+                customers.remove(currentCustomer);
+                allAccounts.removeIf(acc -> currentCustomer.getAccounts().contains(acc));
+
+                saveAll();
+
+                JOptionPane.showMessageDialog(view,
+                        "Customer and all associated accounts have been removed.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+
+                mainView.showPage(MainView.CUSTOMERS);
+                mainView.getHeader().updateHeaderTitle("CUSTOMERS");
+                mainView.getHeader().showControls(true);
             }
         });
 
         // Pop up dialogue for editing account
-        view.getEditButton().addActionListener(e -> {
-            // create the text fields
-            JTextField firstNameField = new JTextField(20);
-            JTextField lastNameField  = new JTextField(20);
-            JTextField dobField       = new JTextField(20);
+        view.getCloseAccountButton().addActionListener(e -> {
+            if (currentCustomer == null) {
+                JOptionPane.showMessageDialog(view,
+                        "No customer selected!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-            // build a panel to hold them
-            JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
-            panel.add(new JLabel("First Name:"));
-            panel.add(firstNameField);
-            panel.add(new JLabel("Last Name:"));
-            panel.add(lastNameField);
-            panel.add(new JLabel("Date of Birth:"));
-            panel.add(new JLabel(currentCustomer.getBirthDate()));
-
-            // show the dialog
-            int result = JOptionPane.showConfirmDialog(
-                    view,               // parent component
-                    panel,              // contents
-                    "Edit Customer",    // title
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE
+            int choice = JOptionPane.showConfirmDialog(
+                    view,
+                    "Are you sure you want to permanently close this customer's account and delete all their data?",
+                    "Confirm Close Account",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE
             );
 
-            if (result == JOptionPane.OK_OPTION) {
-                String newFirstName = firstNameField.getText().trim();
-                String newLastName = lastNameField.getText().trim();
+            if (choice == JOptionPane.YES_OPTION) {
+                customers.remove(currentCustomer);
+                allAccounts.removeIf(acc -> currentCustomer.getAccounts().contains(acc));
+                currentCustomer = null;
 
-                if (!newFirstName.isEmpty() && !newLastName.isEmpty()) {
-                    currentCustomer.setFirstName(newFirstName);
-                    currentCustomer.setLastName(newLastName);
+                saveAll();
 
-                    view.setCustomerName(newFirstName + " " + newLastName);
+                JOptionPane.showMessageDialog(view,
+                        "Customer and all associated accounts have been removed.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
 
-                    JOptionPane.showMessageDialog(view, "Customer info updated successfully.");
-                } else {
-                    JOptionPane.showMessageDialog(view, "First name and last name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                // Navigate back and refresh
+                mainView.showPage(MainView.CUSTOMERS);
+                mainView.getHeader().updateHeaderTitle("CUSTOMERS");
+                mainView.getHeader().showControls(true);
+
             }
         });
 
