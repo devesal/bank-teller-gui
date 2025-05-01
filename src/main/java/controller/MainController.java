@@ -69,9 +69,10 @@
             // Show Reports card
             view.getSidebar().getReportsButton().addActionListener(
                     e -> {
-                        view.getHeader().updateHeaderTitle("REPORTS");
                         view.showPage(MainView.REPORTS);
                         view.setCurrentPage(MainView.REPORTS);
+                        view.getHeader().updateHeaderTitle("REPORTS");
+                        view.getHeader().showControls(false);
                     }
             );
 
