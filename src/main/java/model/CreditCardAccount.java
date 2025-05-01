@@ -173,6 +173,7 @@ public class CreditCardAccount extends BankAccount {
         } else {
             System.out.println("Please settle your remaining balance before closing your account");
         }
+
     }
 
     /**

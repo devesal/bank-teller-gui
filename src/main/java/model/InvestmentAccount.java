@@ -106,7 +106,7 @@ public class InvestmentAccount extends BankAccount implements Serializable {
      */
     public double calculateEarnedInterest() {
         double monthlyRate = interestRate / 12.0;
-        return super.inquireBalance() * monthlyRate;
+        return (super.inquireBalance()+ minimumBalance) * monthlyRate;
     }
 
     /**
