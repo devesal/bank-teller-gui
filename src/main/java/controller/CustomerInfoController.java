@@ -67,7 +67,12 @@ public class CustomerInfoController {
             int row = view.getAccountsTable().getSelectedRow();
             if (row >= 0 && currentCustomer != null) {
                 int accNo = (int) view.getAccountsTable().getValueAt(row, 0);
-                currentCustomer.removeAccount(accNo);
+                for (BankAccount acc : currentCustomer.getAccounts()) {
+                    if (acc.getAccountNo() == accNo) {
+                        acc.setStatus("Closed");
+                        break;
+                    }
+                }
                 saveAll();
                 populateAccountsTable();
             }
