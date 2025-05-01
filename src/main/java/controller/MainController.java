@@ -11,6 +11,16 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Main controller for managing navigation, customer data display, and view interactions.
+ * @author Aquino, Theo James Coroneza
+ * @author Arellano, Clendrick Joshua Mangonon
+ * @author Mangonon, John Cedrick Garcia
+ * @author Ong, Ron Miguel Cau
+ * @author Ramos, Ricky Marc Salazar
+ * @author Rosana, Jeaven Vincent Yojan Operia
+ * @version 2.1
+ */
 public class MainController {
     private final MainView view;
     private final CustomerInfoView customerInfoView;
@@ -19,7 +29,9 @@ public class MainController {
     private final CustomerInfoController customerInfoController;
     private final CustomerFormController customerFormController;
 
-
+    /**
+     * Constructs the main controller, initializes views and controllers, and loads customer data.
+     */
     public MainController() {
         view = new MainView();
         customerInfoView = view.getCustomerInfoView();
@@ -30,9 +42,11 @@ public class MainController {
         customerList = FileIO.loadAllCustomers();       // load customers from database
         allAccounts = FileIO.loadAllAccounts();
         initController();
-
     }
 
+    /**
+     * Sets up controller behavior, event listeners, and populates the customer table on launch.
+     */
     private void initController() {
         setNavigationActions();
 
@@ -83,7 +97,9 @@ public class MainController {
     }
 
     /**
-     * Populate the CustomersView table from a list of Customer objects.
+     * Populates the customer table with a given list of customers.
+     *
+     * @param list the list of customers to display in the table
      */
     private void loadCustomersToTable(List<Customer> list) {
         DefaultTableModel model = (DefaultTableModel)
@@ -96,7 +112,7 @@ public class MainController {
                 ));
 
         for (Customer cust : list) {
-            String id = cust.getId();// database customer ID
+            String id = cust.getId(); // database customer ID
             String fullName = cust.getFirstName() + " " + cust.getLastName();
             int numAccounts = accountsByCust
                     .getOrDefault(id, Collections.emptyList())
@@ -106,6 +122,9 @@ public class MainController {
         }
     }
 
+    /**
+     * Configures sidebar and button navigation actions.
+     */
     private void setNavigationActions() {
         setBackButtonAction();
 
@@ -139,8 +158,11 @@ public class MainController {
                 view.setCurrentPage(MainView.CUSTOMER_INFO);
             }
         });
-
     }
+
+    /**
+     * Refreshes the customer table by reloading customer and account data from file.
+     */
     public void refreshCustomerTable() {
         // 1) Reload customers and accounts from DB
         customerList.clear();
@@ -157,7 +179,7 @@ public class MainController {
                 customerList.stream()
                         .collect(Collectors.toMap(
                                 Customer::getId,
-                                Customer::getAccounts  // each Customer already knows its own accounts
+                                Customer::getAccounts
                         ));
 
         DefaultTableModel model = (DefaultTableModel) view
@@ -171,8 +193,11 @@ public class MainController {
                     count
             });
         }
-
     }
+
+    /**
+     * Configures behavior for the "Back" button in the UI, managing navigation between views.
+     */
     private void setBackButtonAction() {
         view.getHeader().getBackButton().addActionListener(e -> {
             switch (view.getCurrentPage()) {
@@ -191,12 +216,10 @@ public class MainController {
                             || CustomerInfoView.BANK_ADD.equals(right)
                             || CustomerInfoView.BANK_ACCOUNT.equals(right)
                             || CustomerInfoView.ACCOUNT_STATEMENT.equals(right)) {
-                        // always go back to the accounts list
                         view.getCustomerInfoView().showRightCard(CustomerInfoView.BANK_ACCOUNTS);
                         view.getHeader().updateHeaderTitle("BANK ACCOUNTS");
                         view.getHeader().showControls(false);
                     } else {
-                        // we were already on the accounts list → fall back to the customer list
                         view.showPage(MainView.CUSTOMERS);
                         view.setCurrentPage(MainView.CUSTOMERS);
                         view.getHeader().updateHeaderTitle("CUSTOMERS");
@@ -204,19 +227,16 @@ public class MainController {
                     }
                 }
                 case MainView.STEP_ACCOUNTS -> {
-                    // back from accounts step → personal step
                     view.getCustomerFormView().showStep(MainView.STEP_PERSONAL);
                     view.setCurrentPage(MainView.STEP_PERSONAL);
                     view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
                 }
                 case CustomerInfoView.TRANSACTION_HISTORY -> {
-                    // sub‐page under CustomerInfo
                     view.getCustomerInfoView().showRightCard(MainView.CUSTOMER_INFO);
                     view.setCurrentPage(MainView.CUSTOMER_INFO);
                     view.getHeader().showControls(false);
                     view.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
                 }
-
                 case CustomerInfoView.BANK_ADD -> {
                     view.showPage(MainView.CUSTOMER_INFO);
                     view.setCurrentPage(MainView.CUSTOMER_INFO);
@@ -226,6 +246,10 @@ public class MainController {
             }
         });
     }
+
+    /**
+     * Starts the application by displaying the main window and loading customer data.
+     */
     public void start() {
         SwingUtilities.invokeLater(() -> {
             loadCustomersToTable(customerList);
