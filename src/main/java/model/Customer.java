@@ -9,14 +9,11 @@ public class Customer {
     private String lastName;
     private String BirthDate;
     private List<BankAccount> accounts;
+    private String status = "Active";
 
-    /**
-     * Constructs a new Customer with the given personal information.
-     *
-     * @param firstName   the customer's first name
-     * @param lastName    the customer's last name
-     * @param BirthDate   the customer's email address
-     */
+    public static final String ACTIVE = "Active";
+    public static final String CLOSED = "Closed";
+
     public Customer(String firstName, String lastName, String BirthDate) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -24,38 +21,8 @@ public class Customer {
         this.accounts = new ArrayList<>();
     }
 
-    // --- Personal Info Getters/Setters ---
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getBirthDate() {
-        return BirthDate;
-    }
-
-    public void setBirthDate(String BirthDate) {
-        this.BirthDate = BirthDate;
-    }
-
     public void addAccount(BankAccount account) {
         accounts.add(account);
-    }
-
-    public void removeAccount(int accountNo) {
-        accounts.removeIf(a -> a.getAccountNo() == accountNo);
     }
 
     public BankAccount getAccount(int accountNo) {
@@ -98,4 +65,15 @@ public class Customer {
         return String.format("%s %s (Date of Birth: %s)",
                 firstName, lastName, BirthDate);
     }
+
+    // --- Personal Info Getters/Setters ---
+    public String getLastName()  { return lastName;  }
+    public String getFirstName() {return firstName;  }
+    public String getStatus()    { return status;    }
+    public String getBirthDate() { return BirthDate; }
+
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setLastName(String lastName)   { this.lastName = lastName;   }
+    public void setStatus(String status)       { this.status = status;       }
+    public void setBirthDate(String BirthDate) { this.BirthDate = BirthDate; }
 }

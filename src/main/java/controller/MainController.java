@@ -3,7 +3,6 @@
     import model.*;
     import view.*;
 
-
     import javax.swing.*;
     import java.awt.event.*;
     import java.util.*;
@@ -20,9 +19,9 @@
         }
 
         private void initController() {
-            setNavigationActions();
+            // Add listeners for navigation buttons
+            setButtonActions();
 
-            // Save-on-exit stub (could hook into persistence later)
             view.getFrame().addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
@@ -81,9 +80,10 @@
             }
         }
 
-        private void setNavigationActions() {
+        private void setButtonActions() {
             setBackButtonAction();
 
+            // Show Customer list card
             view.getSidebar().getCustomersButton().addActionListener(
                     e -> {
                         view.getHeader().updateHeaderTitle("CUSTOMERS");
@@ -102,6 +102,7 @@
                     }
             );
 
+            // Show Customer Form card
             view.getHeader().getAddButton().addActionListener(
                     e -> {
                         new CustomerFormController(view);
@@ -114,6 +115,7 @@
                     }
             );
 
+            // Search customer
             view.getHeader().getBtnSearch().addActionListener(
                     e -> searchCustomer()
             );

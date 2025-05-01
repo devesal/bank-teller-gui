@@ -136,9 +136,21 @@ public class CustomerFormView extends JPanel {
 
         JPanel details = new JPanel(new GridLayout(0, 2, 10, 10));
         details.setBorder(new EmptyBorder(10, 50, 10, 50));
-        details.add(new JLabel("Name:"));            details.add(lblSuccessName);
-        details.add(new JLabel("Date of Birth:"));   details.add(lblSuccessDob);
-        details.add(new JLabel("Accounts:"));        details.add(lblSuccessAccounts);
+
+        JLabel nameLabel     = new JLabel("Name:");
+        JLabel dobLabel      = new JLabel("Date of Birth:");
+        JLabel accountsLabel = new JLabel("Accounts:");
+
+        for (JLabel lbl : new JLabel[]{
+                nameLabel,
+                dobLabel,
+                accountsLabel,
+                lblSuccessAccounts,
+                lblSuccessDob,
+                lblSuccessName}) {
+            lbl.setFont(new Font("SansSerif", Font.PLAIN, 16));
+            details.add(lbl);
+        }
         p.add(details, BorderLayout.CENTER);
 
         btnView.setPreferredSize(new Dimension(120, 40));

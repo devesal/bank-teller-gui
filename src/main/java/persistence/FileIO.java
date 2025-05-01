@@ -1,4 +1,4 @@
-package util;
+package persistence;
 import model.BankAccount;
 
 import java.io.*;

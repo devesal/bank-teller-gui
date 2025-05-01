@@ -1,5 +1,6 @@
 package controller;
 
+import model.Customer;
 import view.CustomerInfoView;
 import view.MainView;
 
@@ -10,10 +11,13 @@ import java.awt.event.*;
 public class CustomerInfoController {
     private final CustomerInfoView view;
     private final MainView mainView;
+    private Customer customer;
 
-    public CustomerInfoController(MainView mainView) {
+    public CustomerInfoController(MainView mainView, Customer customer) {
         this.view = mainView.getCustomerInfoView();
         this.mainView = mainView;
+        this.customer = customer;
+
         initController();
     }
 

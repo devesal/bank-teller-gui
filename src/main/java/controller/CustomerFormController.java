@@ -1,30 +1,30 @@
 package controller;
 
-import model.Customer;
-import model.BankAccount;
-import model.CheckingAccount;
-import model.CreditCardAccount;
-import model.InvestmentAccount;
-import view.CustomerFormView;
-import view.MainView;
+import java.util.*;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
+import view.*;
+import model.*;
+import persistence.CustomerRepository;
 
 public class CustomerFormController {
+    private final CustomerRepository customers = new CustomerRepository();
     private final CustomerFormView view;
     private final MainView mainView;
-    private final List<Customer> customers;
+    private Customer customer;
 
     public CustomerFormController(MainView mainView) {
         this.view = mainView.getCustomerFormView();
         this.mainView = mainView;
-        this.customers = new ArrayList<>();
+
         initController();
     }
 
     private void initController() {
+        // Add listeners for navigation buttons
+        setButtonActions();
+    }
+
+    private void setButtonActions() {
         view.getNextButtonStep1().addActionListener(
                 e -> {
                     view.showStep(MainView.STEP_ACCOUNTS);
@@ -32,28 +32,27 @@ public class CustomerFormController {
                 }
         );
 
-        // create and persist customer + accounts
+        // create and store customer + accounts
         view.getCreateButton().addActionListener(
                 e -> {
-                    try {
-                        Customer customer = accountCreation();
-                        // populate success view
-                        view.getSuccessNameLabel().setText(
-                                customer.getFirstName() + " " + customer.getLastName());
-                        view.getSuccessDobLabel().setText(customer.getBirthDate());
-                    } catch (IllegalArgumentException ex) {
-                        JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+                    customer = createCustomer();
+                    customers.add(customer);
 
-                    mainView.getHeader().showControls(false);
+                    view.getSuccessNameLabel().setText(
+                            customer.getFirstName() + " " + customer.getLastName()
+                    );
+                    view.getSuccessDobLabel().setText(customer.getBirthDate());
+                    view.getSuccessAccountsLabel().setText(listSelectedAccounts(customer));
+
                     view.showStep(MainView.STEP_SUCCESS);
                     mainView.setCurrentPage(MainView.STEP_SUCCESS);
+                    mainView.getHeader().showControls(false);
                 }
         );
 
         view.getViewButton().addActionListener(
                 e -> {
-                    new CustomerInfoController(mainView);
+                    new CustomerInfoController(mainView, customer);
                     mainView.showPage(MainView.CUSTOMER_INFO);
                     mainView.setCurrentPage(MainView.CUSTOMER_INFO);
                     mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
@@ -61,46 +60,48 @@ public class CustomerFormController {
         );
     }
 
-    /**
-     * Builds a new Customer using the view inputs and adds toggled accounts.
-     * @return the created Customer
-     */
-    private Customer accountCreation() {
+    private String listSelectedAccounts(Customer customer) {
+        String first = customer.getFirstName();
+        String last = customer.getLastName();
+
+        // List summary of selected accounts
+        List<String> selectedAccounts = new ArrayList<>();
+
+        if (view.getSavingsToggleButton().isSelected()) {
+            BankAccount acc = new BankAccount(first, last);
+            customer.addAccount(acc);
+            selectedAccounts.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+        }
+
+        if (view.getCheckingToggleButton().isSelected()) {
+            BankAccount acc = new CheckingAccount(first, last, 500.0);
+            customer.addAccount(acc);
+            selectedAccounts.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+        }
+
+        if (view.getInvestmentToggleButton().isSelected()) {
+            BankAccount acc = new InvestmentAccount(first, last, 5000, 0.35);
+            customer.addAccount(acc);
+            selectedAccounts.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+        }
+
+        if (view.getCreditCardToggleButton().isSelected()) {
+            BankAccount acc = new CreditCardAccount(first, last, 25000);
+            customer.addAccount(acc);
+            selectedAccounts.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
+        }
+
+        return String.join(", ", selectedAccounts);
+    }
+
+    private Customer createCustomer() {
+        // Get inputs
         String first = view.getFirstNameField().getText().trim();
         String last  = view.getLastNameField().getText().trim();
         String dob   = view.getDobField().getText().trim();
 
-        // create and store customer
-        Customer customer = new Customer(first, last, dob);
-        customers.add(customer);
-
-        // create accounts
-        List<String> created = new ArrayList<>();
-        if (view.getSavingsToggleButton().isSelected()) {
-            BankAccount acc = new BankAccount(first, last);
-            customer.addAccount(acc);
-            created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
-        }
-        if (view.getCheckingToggleButton().isSelected()) {
-            BankAccount acc = new CheckingAccount(first, last, 500.0);
-            customer.addAccount(acc);
-            created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
-        }
-        if (view.getInvestmentToggleButton().isSelected()) {
-            BankAccount acc = new InvestmentAccount(first, last, 5000, 0.35);
-            customer.addAccount(acc);
-            created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
-        }
-        if (view.getCreditCardToggleButton().isSelected()) {
-            BankAccount acc = new CreditCardAccount(first, last, 25000);
-            customer.addAccount(acc);
-            created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
-        }
-
-        view.getSuccessAccountsLabel().setText(
-                created.isEmpty() ? "None" : String.join(", ", created)
-        );
-
+        // Create new customer object and pass inputs
+        customer = new Customer(first, last, dob);
         return customer;
     }
 }
