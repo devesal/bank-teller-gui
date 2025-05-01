@@ -27,7 +27,8 @@ public class CustomerFormView extends JPanel {
     // --- Step 3: Success ---
     private final JLabel lblSuccessName     = new JLabel();
     private final JLabel lblSuccessDob      = new JLabel();
-    private final JLabel lblSuccessAccounts = new JLabel();
+    private final JTextArea lblSuccessAccounts = new JTextArea(4, 20);
+    private final JScrollPane accountsScrollPane = new JScrollPane(lblSuccessAccounts);
     private final JButton btnView           = new JButton("View");
 
     public CustomerFormView() {
@@ -138,10 +139,19 @@ public class CustomerFormView extends JPanel {
         details.setBorder(new EmptyBorder(10, 50, 10, 50));
         details.add(new JLabel("Name:"));            details.add(lblSuccessName);
         details.add(new JLabel("Date of Birth:"));   details.add(lblSuccessDob);
-        details.add(new JLabel("Accounts:"));        details.add(lblSuccessAccounts);
+        lblSuccessAccounts.setLineWrap(true);
+        lblSuccessAccounts.setWrapStyleWord(true);
+        lblSuccessAccounts.setEditable(false);
+        lblSuccessAccounts.setOpaque(false);
+        lblSuccessAccounts.setBorder(null);
+        accountsScrollPane.setBorder(null);
+        accountsScrollPane.setPreferredSize(new Dimension(400, 80)); // set scroll area size
+
+        details.add(new JLabel("Accounts:"));
+        details.add(accountsScrollPane);
         p.add(details, BorderLayout.CENTER);
 
-        btnView.setPreferredSize(new Dimension(120, 40));
+        btnView.setPreferredSize(new Dimension(100, 40));
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(btnView);
@@ -204,6 +214,6 @@ public class CustomerFormView extends JPanel {
 
     public JLabel     getSuccessNameLabel()      { return lblSuccessName;     }
     public JLabel     getSuccessDobLabel()       { return lblSuccessDob;      }
-    public JLabel     getSuccessAccountsLabel()  { return lblSuccessAccounts; }
+    public JTextArea     getSuccessAccountsLabel()  { return lblSuccessAccounts; }
     public JButton    getViewButton()            { return btnView;            }
 }
