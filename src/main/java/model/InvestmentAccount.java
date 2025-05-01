@@ -1,7 +1,8 @@
 package model;
 
-public class InvestmentAccount extends BankAccount {
+import java.io.Serializable;
 
+public class InvestmentAccount extends BankAccount implements Serializable {
     /** The minimum balance that must be maintained in the account */
     private final double minimumBalance;
     /** The annual interest rate applied to the investment (as decimal) */

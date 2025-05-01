@@ -1,23 +1,23 @@
 package model;
 
-
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class BankAccount {
+public class BankAccount implements Serializable {
 
+    /** Random generator for account numbers */
     private static final Random RANDOM = new Random();
+    /** Unique 9-digit account identifier */
     private final int accountNo;
+    /** First name of the account holder */
     private String firstName;
+    /** Last name of the account holder */
     private String lastName;
+    /** Current balance in the account */
     private double balance;
+    /** Current status of the account (Active/Closed) */
     private String status;
-
-    public BankAccount() {
-        this.accountNo = generateAccountNumber();
-        this.firstName = "";
-        this.lastName = "";
-    }
 
     /**
      * Constructs a new active BankAccount with a random 9-digit account number
