@@ -2,16 +2,23 @@ package controller;
 
 import model.Customer;
 import model.BankAccount;
+import util.Exceptions.AccountClosedException;
+import util.Exceptions.InsufficientFundsException;
+import util.Exceptions.TransactionLimitException;
 import util.FileIO;
+import util.TransactionLogger;
 import view.CustomerFormView;
 import view.CustomerInfoView;
 import view.MainView;
 import model.*;
+import view.TransactionHistoryView;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,10 +29,14 @@ public class CustomerInfoController {
     private final List<Customer> customers;
     private final List<BankAccount> allAccounts = FileIO.loadAllAccounts();
     private Customer currentCustomer;
+    private final TransactionLogger logger;
+    private final TransactionHistoryView transactionView;
 
     public CustomerInfoController(MainView mainView) {
         this.view = mainView.getCustomerInfoView();
         this.mainView = mainView;
+        this.transactionView = new TransactionHistoryView();
+        this.logger = new TransactionLogger("logs/transactions.txt", transactionView.getHistoryTable());
         // load persisted customers
         this.customers = FileIO.loadAllCustomers();
         initController();
@@ -222,6 +233,20 @@ public class CustomerInfoController {
 
                     acc.inquireBalance()
             });
+        }
+    }
+
+    private void processTransaction (BankAccount account, Transaction transaction) throws AccountClosedException, TransactionLimitException, InsufficientFundsException {
+        switch (transaction.getType()){
+            case DEPOSIT ->     account.deposit(transaction.getAmount());
+            case WITHDRAWAL ->  account.withdraw(transaction.getAmount());
+            case TRANSFER -> account.withdraw(transaction.getAmount());
+            default -> throw new IllegalArgumentException("Unknown transaction type0");
+        }
+        try {
+            logger.logTransaction(transaction, account.inquireBalance());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
