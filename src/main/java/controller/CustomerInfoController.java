@@ -17,9 +17,8 @@ public class CustomerInfoController {
     private final MainView mainView;
     private final List<Customer> customers;
     private final List<BankAccount> allAccounts = FileIO.loadAllAccounts();
-
+    private Runnable onAccountAddedCallback;
     private Customer currentCustomer;
-
     public CustomerInfoController(MainView mainView) {
         this.mainView = mainView;
         view = mainView.getCustomerInfoView();
@@ -69,7 +68,6 @@ public class CustomerInfoController {
 
         // Pop up dialogue for editing account
         view.getEditButton().addActionListener(e -> {
-            System.out.println("test");
             JFormattedTextField dob = createDateField();
 
             JTextField first = new JTextField(20);
@@ -92,7 +90,7 @@ public class CustomerInfoController {
                 currentCustomer.setFirstName(f);
                 currentCustomer.setLastName(l);
 //                currentCustomer.getBirthDate();
-//                view.setCustomerName(f + " " + l);
+                view.setCustomerName(f + " " + l);
             }
         });
 
@@ -179,6 +177,9 @@ public class CustomerInfoController {
                     "Account Created",
                     JOptionPane.INFORMATION_MESSAGE
             );
+            if (onAccountAddedCallback != null) {
+                onAccountAddedCallback.run();
+            }
             System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
         });
 
@@ -239,4 +240,8 @@ public class CustomerInfoController {
                 .collect(Collectors.toCollection(ArrayList::new));
         FileIO.saveAllAccounts(all);
     }
+    public void setOnAccountAddedCallback(Runnable cb) {
+        onAccountAddedCallback = cb;
+    }
+
 }

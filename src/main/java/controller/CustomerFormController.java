@@ -8,22 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerFormController {
-    private final MainView          mainView;
-    private final CustomerFormView  formView;
-
-    private final List<Customer>    customers;
+    private final CustomerFormView formView;
+    private final MainView mainView;
+    private final List<Customer> customers;
     private final List<BankAccount> allAccounts;
-
+    private final CustomerInfoView infoView;
     private Customer currentCustomer;
 
     public CustomerFormController(MainView mainView) {
-        this.mainView = mainView;
         this.formView = mainView.getCustomerFormView();
-
+        this.infoView = mainView.getCustomerInfoView();
+        this.mainView = mainView;
         // Load persisted data
         this.customers = FileIO.loadAllCustomers();
         this.allAccounts = FileIO.loadAllAccounts();
-
         initController();
     }
 
