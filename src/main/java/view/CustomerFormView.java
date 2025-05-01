@@ -1,11 +1,10 @@
 package view;
 
+import controller.CustomerInfoController;
+
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.DateFormatter;
-import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class CustomerFormView extends JPanel {
     private final CardLayout cardLayout;
@@ -32,7 +31,7 @@ public class CustomerFormView extends JPanel {
     private final JButton btnView           = new JButton("View");
 
     public CustomerFormView() {
-        txtDob = createDateField();
+        txtDob = CustomerInfoController.createDateField();
 
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         cardLayout = new CardLayout();
@@ -184,20 +183,6 @@ public class CustomerFormView extends JPanel {
 
         // --- go back to the first card ---
         showStep(MainView.STEP_PERSONAL);
-    }
-
-    private JFormattedTextField createDateField() {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        format.setLenient(false);
-        DateFormatter df = new DateFormatter(format);
-        df.setAllowsInvalid(false);
-        df.setOverwriteMode(true);
-
-        JFormattedTextField f = new JFormattedTextField(df);
-        f.setValue(new Date());
-        f.setColumns(10);
-        f.setToolTipText("Enter date as YYYY-MM-DD");
-        return f;
     }
 
     // getters for controller

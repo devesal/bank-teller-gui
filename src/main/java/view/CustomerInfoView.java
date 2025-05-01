@@ -1,6 +1,5 @@
 package view;
 
-import model.Customer;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -31,8 +30,6 @@ public class CustomerInfoView extends JPanel {
     private final JButton btnCloseAccount = new JButton("Close Account");
     private final JButton btnAddAccount   = new JButton("Add Bank Account");
     private final JTable accountsTable;
-
-    private Customer currentCustomer;
 
     private String currentRightCard = BANK_ACCOUNTS;
 
@@ -80,7 +77,7 @@ public class CustomerInfoView extends JPanel {
         gbc.gridx = 1;
         gbc.weightx = 1;
         lblName.setVerticalAlignment(SwingConstants.TOP);
-        lblName.setText("<html><div style='width:120px;'>---</div></html>"); // this will be overwritten in setCustomerName()
+        lblName.setText("<html><div style='width:120px;'>---</div></html>");
         detailPanel.add(lblName, gbc);
 
         // DOB Label
@@ -197,11 +194,9 @@ public class CustomerInfoView extends JPanel {
     public JButton getStatementButton()      { return btnStatement;     }
     public String getCurrentRightCard()      { return currentRightCard; }
     public JButton getEditButton()           { return btnEdit;          }
-    public Customer getCurrentCustomer()     { return currentCustomer;  }
 
     // setters for labels
     public void setCustomerId(String id)     { lblId.setText(id);       }
     public void setCustomerName(String name) { lblName.setText(name);   }
     public void setCustomerDob(String dob)   { lblDob.setText(dob);     }
-    public void setCurrentCustomer(Customer currentCustomer) { this.currentCustomer = currentCustomer; }
 }

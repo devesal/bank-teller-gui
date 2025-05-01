@@ -6,7 +6,6 @@ import model.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.DateFormatter;
 import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
@@ -25,7 +24,6 @@ public class CustomerInfoController {
         this.mainView = mainView;
         view = mainView.getCustomerInfoView();
         customers = FileIO.loadAllCustomers();
-        currentCustomer = view.getCurrentCustomer();
         initController();
     }
 
@@ -186,7 +184,11 @@ public class CustomerInfoController {
 
     }
 
-    private JFormattedTextField createDateField() {
+    public static JFormattedTextField createDateField() {
+        return getjFormattedTextField();
+    }
+
+    public static JFormattedTextField getjFormattedTextField() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         format.setLenient(false);
         DateFormatter df = new DateFormatter(format);
