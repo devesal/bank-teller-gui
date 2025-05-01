@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FileIO  {
+public class FileIO {
 
     private static final String ACCOUNTS_DATA_FILE = "all_accounts.dat";
     private static final String CUSTOMER_DATA_FILE = "all_customers.dat";
@@ -36,7 +36,7 @@ public class FileIO  {
         }
     }
 
-    public static ArrayList<Customer> loadAllCustomers(){
+    public static ArrayList<Customer> loadAllCustomers() {
         File file = new File(CUSTOMER_DATA_FILE);
         if (!file.exists()) {
             return new ArrayList<>(); // Return empty list if file doesn't exist
@@ -59,6 +59,7 @@ public class FileIO  {
             System.out.println("Error saving accounts: " + e.getMessage());
         }
     }
+
     public static void addCustomer(Customer customer) {
         ArrayList<Customer> all = loadAllCustomers();
         all.add(customer);
@@ -69,5 +70,16 @@ public class FileIO  {
                 .flatMap(c -> c.getAccounts().stream())
                 .collect(Collectors.toCollection(ArrayList::new));
         saveAllAccounts(allAccounts);
+    }
+    public static void removeCustomer(Customer customer){
+        ArrayList<Customer> customers = loadAllCustomers();
+        customers.remove(customer);
+        saveAllCustomers(customers);
+
+        ArrayList<BankAccount> allAccounts = customers.stream()
+                .flatMap(c -> c.getAccounts().stream())
+                .collect(Collectors.toCollection(ArrayList::new));
+        saveAllAccounts(allAccounts);
+
     }
 }
