@@ -76,7 +76,13 @@ public class ReportsView extends JPanel {
 
         // --- Center: results table ---
         String[] cols = { "Date", "Account #", "Name", "Type", "Amount", "Balance" };
-        table = new JTable(new DefaultTableModel(cols, 0));
+        table = new JTable(new DefaultTableModel(cols, 0)) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;  // all cells non-editable
+            }
+        };
+
         add(new JScrollPane(table), BorderLayout.CENTER);
     }
 

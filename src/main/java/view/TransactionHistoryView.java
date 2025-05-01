@@ -24,7 +24,13 @@ public class TransactionHistoryView extends JPanel {
 
         // the table
         String[] cols = {"Date", "Type", "Amount", "Balance"};
-        DefaultTableModel model = new DefaultTableModel(cols, 0);
+        DefaultTableModel model = new DefaultTableModel(cols, 0)  {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;  // all cells non-editable
+            }
+        };
+
         historyTable = new JTable(model);
         add(new JScrollPane(historyTable), BorderLayout.CENTER);
     }

@@ -59,7 +59,12 @@ public class AccountStatementView extends JPanel {
 
         // --- CENTER: transaction table ---
         String[] cols = { "Date", "Type", "Description", "Amount", "Balance" };
-        txnTable = new JTable(new DefaultTableModel(cols, 0));
+        txnTable = new JTable(new DefaultTableModel(cols, 0)) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;  // all cells non-editable
+            }
+        };
         add(new JScrollPane(txnTable), BorderLayout.CENTER);
     }
 

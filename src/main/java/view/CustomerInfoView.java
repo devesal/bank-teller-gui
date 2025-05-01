@@ -83,7 +83,12 @@ public class CustomerInfoView extends JPanel {
 
         // the table itself
         String[] cols = {"Account No", "Type", "Status", "Balance"};
-        DefaultTableModel model = new DefaultTableModel(cols, 0);
+        DefaultTableModel model = new DefaultTableModel(cols, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;  // all cells non-editable
+            }
+        };
         accountsTable = new JTable(model);
         accountsPanel.add(new JScrollPane(accountsTable), BorderLayout.CENTER);
 
