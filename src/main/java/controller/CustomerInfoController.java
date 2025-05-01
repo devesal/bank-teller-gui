@@ -1,11 +1,22 @@
 package controller;
 
+import model.BankAccount;
+import model.Customer;
+import model.Transaction;
+import util.Exceptions.AccountClosedException;
+import util.Exceptions.InsufficientFundsException;
+import util.Exceptions.TransactionLimitException;
+import util.TransactionLogger;
 import view.CustomerInfoView;
 import view.MainView;
+import view.TransactionHistoryView;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.util.List;
 
 public class CustomerInfoController {
     private final CustomerInfoView view;
@@ -99,5 +110,52 @@ public class CustomerInfoController {
             view.showRightCard(CustomerInfoView.BANK_ADD);
             mainView.getHeader().updateHeaderTitle("BANK ACCOUNTS");
         });
+    }
+
+    private void processTransaction (BankAccount account, Transaction transaction) throws AccountClosedException, TransactionLimitException, InsufficientFundsException {
+        switch (transaction.getType()){
+            case DEPOSIT ->     account.deposit(transaction.getAmount());
+            case WITHDRAWAL ->  account.withdraw(transaction.getAmount());
+            case TRANSFER -> account.withdraw(transaction.getAmount());
+            default -> throw new IllegalArgumentException("Unknown transaction type0");
+        }
+
+        String logFile = "logs/" + account.getAccountNo() + "_transactions.txt";
+        TransactionLogger logger = new TransactionLogger(logFile);
+        try {
+            logger.logTransaction(transaction, account.inquireBalance());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Customer getSelectedAccount(java.util.List<Customer> currentCustomer) {
+        int selectedRow = view.getAccountsTable().getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(view, "Please select an account.");
+            return null;
+        }
+
+        return currentCustomer.get(selectedRow); // row index matches list index
+    }
+
+    private void loadTransactionHistory(Customer customer) {
+        String logFile ="transactions.log";
+        TransactionLogger logger = new TransactionLogger(logFile);
+        List<String[]> transactions = logger.loadTransactions();
+
+        TransactionHistoryView tHistView = new TransactionHistoryView();
+        JTable tHistTable = tHistView.getHistoryTable();
+
+        DefaultTableModel tableModel = (DefaultTableModel) tHistTable.getModel();
+        tableModel.setRowCount(0); // Clear old rows
+
+        for (String[] row : transactions) {
+            String date = row[0].split("T")[0];
+            String type = row[2];
+            String amount = (type.equalsIgnoreCase("DEPOSIT") ? "+" : "-") + "₱" + row[3];
+            String balance = "₱" + row[5];
+            tableModel.addRow(new Object[]{date, type, amount, balance});
+        }
     }
 }
