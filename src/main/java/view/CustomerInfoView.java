@@ -98,22 +98,19 @@ public class CustomerInfoView extends JPanel {
         leftPanel.add(detailPanel, BorderLayout.NORTH);
 
         // Action buttons down the center
-        Dimension btnSize = new Dimension(120, 40);
-        for (JButton b : new JButton[]{ btnEdit, btnHistory, btnStatement, btnCloseAccount }) {
-            b.setPreferredSize(btnSize);
-            b.setMaximumSize(btnSize);
-            b.setAlignmentX(Component.CENTER_ALIGNMENT);
-        }
         JPanel actionPanel = new JPanel();
         actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.Y_AXIS));
         actionPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        actionPanel.add(btnEdit);
-        actionPanel.add(Box.createVerticalStrut(10));
-        actionPanel.add(btnHistory);
-        actionPanel.add(Box.createVerticalStrut(10));
-        actionPanel.add(btnStatement);
-        actionPanel.add(Box.createVerticalStrut(10));
-        actionPanel.add(btnCloseAccount);
+
+        Dimension btnSize = new Dimension(120, 40);
+        for (JButton btn : new JButton[]{ btnEdit, btnHistory, btnStatement, btnCloseAccount }) {
+            actionPanel.add(Box.createVerticalStrut(10));
+            actionPanel.add(btn);
+            btn.setPreferredSize(btnSize);
+            btn.setMaximumSize(btnSize);
+            btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        }
+
         leftPanel.add(actionPanel, BorderLayout.CENTER);
 
         // === RIGHT PANEL SETUP ===
