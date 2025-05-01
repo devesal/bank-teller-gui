@@ -4,6 +4,8 @@ import model.Transaction;
 
 import javax.swing.table.DefaultTableModel;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransactionLogger {
     private String fileLocation;
@@ -14,7 +16,7 @@ public class TransactionLogger {
         tableModel = null;
     }
 
-    public TransactionLogger (String fileLocation, DefaultTableModel tableModel){
+    public TransactionLogger (String fileLocation){
         this.fileLocation = fileLocation;
         this.tableModel = tableModel;
     }
@@ -29,26 +31,22 @@ public class TransactionLogger {
         addTransactionToTable(transaction, balance);
     }
 
-    public void loadTransactions (DefaultTableModel tTable, String fileLocation){
-        try (BufferedReader tReader = new BufferedReader(new FileReader(fileLocation))){
+    public List<String[]> loadTransactions() {
+        List<String[]> transactions = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(""))) {
             String line;
-            while ((line = tReader.readLine())!= null){
+            while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 5) {
-                    String date = parts[0].substring(0, 10);
-                    String type = parts[3];
-                    String amount = (type.equals("DEPOSIT") || type.equals("TRANSFER") ? "+" : "-") + "$" + parts[4];
-                    String balance = "";
-                    tTable.addRow(new Object[]{date, type, amount, balance});
+                if (parts.length >= 6) {
+                    transactions.add(parts);
                 }
             }
-        } catch (FileNotFoundException e) {
-            System.err.println("Cannot find report file");
         } catch (IOException e) {
-            System.err.println("Error writing to file");
+            System.err.println("Error reading transactions: " + e.getMessage());
         }
-
+        return transactions;
     }
+
 
     public void addTransactionToTable (Transaction transaction, double balance) {
         String date = transaction.getTimestamp()
@@ -62,4 +60,3 @@ public class TransactionLogger {
         tableModel.addRow(new Object[]{date, transactionType, amount, balance});
     }
 }
-
