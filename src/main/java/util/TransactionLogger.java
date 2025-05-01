@@ -7,13 +7,16 @@ import java.io.*;
 
 public class TransactionLogger {
     private String fileLocation;
+    private DefaultTableModel tableModel;
 
     public TransactionLogger (){
         fileLocation ="";
+        tableModel = null;
     }
 
-    public TransactionLogger (String fileLocation){
+    public TransactionLogger (String fileLocation, DefaultTableModel tableModel){
         this.fileLocation = fileLocation;
+        this.tableModel = tableModel;
     }
 
     public void logTransaction (Transaction transaction) throws IOException {
@@ -23,6 +26,7 @@ public class TransactionLogger {
         } catch (IOException e) {
             System.err.println("Failed to log transaction");
         }
+        addTransactionToTable(transaction);
     }
 
     public void loadTransactions (DefaultTableModel tTable, String fileLocation){
@@ -44,6 +48,18 @@ public class TransactionLogger {
             System.err.println("Error writing to file");
         }
 
+    }
+
+    public void addTransactionToTable (Transaction transaction) {
+        String date = transaction.getTimestamp()
+                .toLocalDate()
+                .toString();
+        String transactionType = String.valueOf(transaction.getType());
+        String amount = (transactionType.equals("Deposit")||transactionType.equals("Transfer")
+                || transactionType.equals("Add Investment") || transactionType.equals("Charge to Card") ? "+" : "-") + "₱" +
+                String.format("%.2f", transaction.getAmount());
+        String balance = "";
+        tableModel.addRow(new Object[]{date, transactionType, amount, balance});
     }
 }
 
