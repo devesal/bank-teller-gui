@@ -205,7 +205,7 @@
 
             for (String[] transaction : transactions) {
                 boolean matches = true;
-
+                if (!matchReportType(reportType, transaction)) matches = false;
                 if (!account.isEmpty() && !transaction[1].equals(account)) matches = false; // Account #
                 if (!name.isEmpty() && !transaction[2].equalsIgnoreCase(name)) matches = false; // Account Name
                 if (!txnType.equals("All") && !transaction[3].equalsIgnoreCase(txnType))
