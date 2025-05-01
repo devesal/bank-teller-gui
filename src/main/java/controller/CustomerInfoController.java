@@ -46,12 +46,21 @@ public class CustomerInfoController {
         view.getCloseAccountButton().addActionListener(e -> {
             int row = view.getAccountsTable().getSelectedRow();
 
+            if (row < 0) {
+                JOptionPane.showMessageDialog(
+                        view,
+                        "Please select a bank account to close.",
+                        "No Account Selected",
+                        JOptionPane.WARNING_MESSAGE
+                );
+                return;
+            }
+
             int choice = JOptionPane.showConfirmDialog(
-                    mainView.getFrame(),                    // <— the JFrame
+                    view,
                     "Are you sure you want to close this account?",
-                    "Confirm Close Account",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE
+                    "Confirm Close",
+                    JOptionPane.YES_NO_OPTION
             );
 
             if (choice == JOptionPane.YES_OPTION) {
