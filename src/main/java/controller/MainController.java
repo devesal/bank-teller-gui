@@ -144,7 +144,8 @@
                         String right = view.getCustomerInfoView().getCurrentRightCard();
                         if (CustomerInfoView.TRANSACTION_HISTORY.equals(right)
                                 || CustomerInfoView.BANK_ADD.equals(right)
-                                || CustomerInfoView.BANK_ACCOUNT.equals(right)) {
+                                || CustomerInfoView.BANK_ACCOUNT.equals(right)
+                                || CustomerInfoView.ACCOUNT_STATEMENT.equals(right)) {
                             // always go back to the accounts list
                             view.getCustomerInfoView().showRightCard(CustomerInfoView.BANK_ACCOUNTS);
                             view.getHeader().updateHeaderTitle("BANK ACCOUNTS");

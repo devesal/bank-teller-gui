@@ -10,6 +10,7 @@ public class CustomerInfoView extends JPanel {
     public static final String TRANSACTION_HISTORY = "TRANSACTION_HISTORY";
     public static final String BANK_ACCOUNT        = "BANK_ACCOUNT";
     public static final String BANK_ADD            = "BANK_ADD";
+    public static final String ACCOUNT_STATEMENT   = "ACCOUNT_STATEMENT";
 
     private final JLabel lblId   = new JLabel();
     private final JLabel lblName = new JLabel();
@@ -91,6 +92,7 @@ public class CustomerInfoView extends JPanel {
         rightPanel.add(accountsPanel, BANK_ACCOUNTS);
         rightPanel.add(new TransactionHistoryView(), TRANSACTION_HISTORY);
         rightPanel.add(new BankAccountView(), BANK_ACCOUNT);
+        rightPanel.add(new AccountStatementView(), ACCOUNT_STATEMENT);
         rightPanel.add(buildAccountAddPanel(), BANK_ADD);
 
         // assemble the two halves

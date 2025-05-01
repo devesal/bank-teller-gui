@@ -13,6 +13,12 @@ public class BankAccount {
     private double balance;
     private String status;
 
+    public BankAccount() {
+        this.accountNo = generateAccountNumber();
+        this.firstName = "";
+        this.lastName = "";
+    }
+
     /**
      * Constructs a new active BankAccount with a random 9-digit account number
      * and given first and last name.

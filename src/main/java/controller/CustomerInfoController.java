@@ -1,7 +1,5 @@
 package controller;
 
-import jdk.swing.interop.SwingInterOpUtils;
-import view.CustomerFormView;
 import view.CustomerInfoView;
 import view.MainView;
 
@@ -24,6 +22,13 @@ public class CustomerInfoController {
         view.getHistoryButton().addActionListener(
                 e -> {
                     view.showRightCard(CustomerInfoView.TRANSACTION_HISTORY);
+                    mainView.getHeader().showControls(false);
+                }
+        );
+
+        view.getStatementButton().addActionListener(
+                e -> {
+                    view.showRightCard(CustomerInfoView.ACCOUNT_STATEMENT);
                     mainView.getHeader().showControls(false);
                 }
         );

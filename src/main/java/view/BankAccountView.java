@@ -1,5 +1,6 @@
 package view;
 
+import com.sun.source.tree.NewArrayTree;
 import model.*;
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +10,9 @@ public class BankAccountView extends JPanel {
     private final JLabel lblId      = new JLabel();
     private final JLabel lblBalance = new JLabel();
     private final JLabel lblStatus  = new JLabel();
+    private BankAccount account     = new BankAccount();
 
-    public BankAccountView(BankAccount account) {
+    public BankAccountView() {
         setLayout(new BorderLayout(10,10));
 
         // — Header: title + basic info —
