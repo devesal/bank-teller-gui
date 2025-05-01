@@ -14,17 +14,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Handles appending transactions to a CSV file and loading them back into memory.
- * This class is UI-agnostic; the controller is responsible for driving table updates.
- */
+
 public class TransactionLogger {
     private final Path filePath;
 
-    /**
-     * Constructs a TransactionLogger pointing at the given CSV file.
-     * @param fileLocation path to the transaction log CSV file
-     */
+
     public TransactionLogger(String fileLocation) {
         this.filePath = Paths.get(fileLocation);
         createFileIfMissing();
@@ -40,14 +34,7 @@ public class TransactionLogger {
         }
     }
 
-    /**
-     * Appends a transaction to the CSV log.
-     * Format: timestamp,type,fromAccount,toAccount,amount
-     *
-     * @param tx the transaction to log
-     * @param v
-     * @throws IOException if writing to the file fails
-     */
+
     public void logTransaction(Transaction tx, double v) throws IOException {
         String line = formatCsvLine(tx);
         try (BufferedWriter writer = Files.newBufferedWriter(
@@ -57,11 +44,7 @@ public class TransactionLogger {
         }
     }
 
-    /**
-     * Reads all logged transactions back into a list.
-     * @return list of Transaction objects
-     * @throws IOException if reading the file fails
-     */
+
     public List<Transaction> loadAllTransactions() throws IOException {
         List<Transaction> list = new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(filePath)) {
@@ -73,12 +56,7 @@ public class TransactionLogger {
         return list;
     }
 
-    /**
-     * Converts a Transaction into a displayable row at the controller/UI level.
-     * @param tx the transaction
-     * @param balanceAfter the balance after applying the transaction
-     * @return array of Objects representing table columns
-     */
+
     public Object[] toRow(Transaction tx, double balanceAfter) {
         String date = tx.getTimestamp().toLocalDate().toString();
         String type = tx.getType().name();

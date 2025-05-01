@@ -1,4 +1,3 @@
-
 package controller;
 
 import model.Transaction;
@@ -21,35 +20,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.awt.*;
-/**
- * Controller class responsible for generating and managing transaction reports.
- * It interacts with the view and loads data using FileIO and TransactionLogger.
- * @author Aquino, Theo James Coroneza
- * @author Arellano, Clendrick Joshua Mangonon
- * @author Mangonon, John Cedrick Garcia
- * @author Ong, Ron Miguel Cau
- * @author Ramos, Ricky Marc Salazar
- * @author Rosana, Jeaven Vincent Yojan Operia
- * @version 2.1
- */
-public class ReportsController {
-    private final ReportsView view; // GUI component for the report
-    private final TransactionLogger transactionLogger; // Utility to read transactions
-    private final List<Customer> customers; // Loaded customer data
-    private final List<BankAccount> allAccounts; // Loaded bank account data
-    private TableRowSorter<DefaultTableModel> sorter; // Sorter for table rows
-    private JButton btnExport; // Export to CSV button
-    private JButton btnPrevPage; // Button for previous page
-    private JButton btnNextPage; // Button for next page
-    private JLabel lblPageInfo; // Page number display
-    private static final int PAGE_SIZE = 50; // Transactions per page
-    private int currentPage = 0; // Current page index
-    private List<Transaction> currentTransactions; // Currently filtered transactions
 
-    /**
-     * Constructor that initializes controller with view and loads required data.
-     * @param view the ReportsView associated with this controller
-     */
+public class ReportsController {
+    private final ReportsView view;
+    private final TransactionLogger transactionLogger;
+    private final List<Customer> customers;
+    private final List<BankAccount> allAccounts;
+    private TableRowSorter<DefaultTableModel> sorter;
+    private JButton btnExport;
+    private JButton btnPrevPage;
+    private JButton btnNextPage;
+    private JLabel lblPageInfo;
+    private static final int PAGE_SIZE = 50;
+    private int currentPage = 0;
+    private List<Transaction> currentTransactions;
+
     public ReportsController(ReportsView view) {
         this.view = view;
         this.transactionLogger = new TransactionLogger("transactions.csv");
@@ -58,19 +43,16 @@ public class ReportsController {
         initController();
     }
 
-    /**
-     * Initializes listeners, sorters, and view components.
-     */
     private void initController() {
-        // Add action listener to the generate button
-        view.getBtnGenerate().addActionListener(e -> generateReport());
 
-        // Initialize table sorter for dynamic sorting
+        view.getBtnGenerate().addActionListener(e -> generateReport());
+        
+
         DefaultTableModel model = (DefaultTableModel) view.getResultsTable().getModel();
         sorter = new TableRowSorter<>(model);
         view.getResultsTable().setRowSorter(sorter);
+        
 
-        // Add column sorting functionality to the table
         view.getResultsTable().getTableHeader().addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -81,23 +63,23 @@ public class ReportsController {
             }
         });
 
-        // Initialize export button
+
         btnExport = new JButton("Export to CSV");
         btnExport.setEnabled(false);
         btnExport.addActionListener(e -> exportToCSV());
 
-        // Initialize pagination controls
+
         btnPrevPage = new JButton("Previous");
         btnNextPage = new JButton("Next");
         lblPageInfo = new JLabel("Page 0 of 0");
-
+        
         btnPrevPage.setEnabled(false);
         btnNextPage.setEnabled(false);
-
+        
         btnPrevPage.addActionListener(e -> showPreviousPage());
         btnNextPage.addActionListener(e -> showNextPage());
+        
 
-        // Add controls to panel and to view
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(btnPrevPage);
         buttonPanel.add(lblPageInfo);
@@ -107,9 +89,6 @@ public class ReportsController {
         view.add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    /**
-     * Displays the previous page of transactions if available.
-     */
     private void showPreviousPage() {
         if (currentPage > 0) {
             currentPage--;
@@ -117,9 +96,6 @@ public class ReportsController {
         }
     }
 
-    /**
-     * Displays the next page of transactions if available.
-     */
     private void showNextPage() {
         int totalPages = (int) Math.ceil((double) currentTransactions.size() / PAGE_SIZE);
         if (currentPage < totalPages - 1) {
@@ -128,9 +104,6 @@ public class ReportsController {
         }
     }
 
-    /**
-     * Updates the table to show the current page of transactions.
-     */
     private void updateTableForCurrentPage() {
         if (currentTransactions == null || currentTransactions.isEmpty()) {
             return;
@@ -150,60 +123,56 @@ public class ReportsController {
             case "Account Statement" -> showAccountStatement(pageTransactions);
         }
 
+
         int totalPages = (int) Math.ceil((double) currentTransactions.size() / PAGE_SIZE);
         lblPageInfo.setText(String.format("Page %d of %d", currentPage + 1, totalPages));
         btnPrevPage.setEnabled(currentPage > 0);
         btnNextPage.setEnabled(currentPage < totalPages - 1);
     }
 
-    /**
-     * Sorts the table based on the clicked column.
-     * @param column the column index to sort by
-     */
     private void sortTable(int column) {
         List<RowSorter.SortKey> sortKeys = new ArrayList<>();
         sortKeys.add(new RowSorter.SortKey(column, SortOrder.ASCENDING));
         sorter.setSortKeys(sortKeys);
     }
 
-    /**
-     * Generates the report and applies filters.
-     */
     private void generateReport() {
         try {
             currentTransactions = transactionLogger.loadAllTransactions();
             currentPage = 0;
+            
 
-            // Apply filters based on user input
             currentTransactions = filterTransactions(currentTransactions);
+            
 
             int totalPages = (int) Math.ceil((double) currentTransactions.size() / PAGE_SIZE);
             lblPageInfo.setText(String.format("Page %d of %d", currentPage + 1, totalPages));
             btnPrevPage.setEnabled(false);
             btnNextPage.setEnabled(totalPages > 1);
+            
 
             updateTableForCurrentPage();
+            
+
             btnExport.setEnabled(true);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(view, "Error loading transactions: " + e.getMessage());
         }
     }
 
-    /**
-     * Exports the current report view to a CSV file.
-     */
     private void exportToCSV() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Export Report");
         fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("CSV Files", "csv"));
-
+        
         if (fileChooser.showSaveDialog(view) == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             if (!file.getName().toLowerCase().endsWith(".csv")) {
                 file = new File(file.getPath() + ".csv");
             }
-
+            
             try (PrintWriter writer = new PrintWriter(file)) {
+
                 DefaultTableModel model = (DefaultTableModel) view.getResultsTable().getModel();
                 for (int i = 0; i < model.getColumnCount(); i++) {
                     writer.print(model.getColumnName(i));
@@ -212,6 +181,7 @@ public class ReportsController {
                     }
                 }
                 writer.println();
+                
 
                 for (int row = 0; row < model.getRowCount(); row++) {
                     for (int col = 0; col < model.getColumnCount(); col++) {
@@ -225,7 +195,7 @@ public class ReportsController {
                     }
                     writer.println();
                 }
-
+                
                 JOptionPane.showMessageDialog(view, "Report exported successfully to: " + file.getPath());
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(view, "Error exporting report: " + e.getMessage());
@@ -233,13 +203,8 @@ public class ReportsController {
         }
     }
 
-    /**
-     * Applies various filters to the list of transactions based on the user's input.
-     * @param transactions the list of transactions to filter
-     * @return the filtered list of transactions
-     */
     private List<Transaction> filterTransactions(List<Transaction> transactions) {
-        // Filter logic for account number, name, type, and date range
+
         String accountFilter = view.getAccountField().getText().trim();
         if (!accountFilter.isEmpty()) {
             try {
@@ -253,17 +218,20 @@ public class ReportsController {
             }
         }
 
+
         String nameFilter = view.getNameField().getText().trim().toLowerCase();
         if (!nameFilter.isEmpty()) {
+
             Set<Integer> matchingAccountNos = allAccounts.stream()
                     .filter(acc -> (acc.getFirstName() + " " + acc.getLastName()).toLowerCase().contains(nameFilter))
                     .map(BankAccount::getAccountNo)
                     .collect(Collectors.toSet());
-
+            
             transactions = transactions.stream()
                     .filter(tx -> matchingAccountNos.contains(tx.getFromAccount()) || matchingAccountNos.contains(tx.getToAccount()))
                     .collect(Collectors.toList());
         }
+
 
         String txnType = (String) view.getTxnTypeCombo().getSelectedItem();
         if (!"All".equals(txnType)) {
@@ -271,6 +239,7 @@ public class ReportsController {
                     .filter(tx -> tx.getType().name().equals(txnType.toUpperCase()))
                     .collect(Collectors.toList());
         }
+
 
         Date fromDate = (Date) view.getFromDateSpinner().getValue();
         Date toDate = (Date) view.getToDateSpinner().getValue();
@@ -287,10 +256,6 @@ public class ReportsController {
         return transactions;
     }
 
-    /**
-     * Displays all transactions in the current page with running balance.
-     * @param transactions the transactions to display
-     */
     private void showAllTransactions(List<Transaction> transactions) {
         DefaultTableModel model = (DefaultTableModel) view.getResultsTable().getModel();
         model.setRowCount(0);
@@ -315,19 +280,17 @@ public class ReportsController {
         }
     }
 
-    /**
-     * Displays a summary of the total transaction amount by transaction type.
-     * @param transactions the list of transactions to summarize
-     */
     private void showSummaryByType(List<Transaction> transactions) {
         DefaultTableModel model = (DefaultTableModel) view.getResultsTable().getModel();
         model.setRowCount(0);
+
 
         Map<Transaction.Type, Double> summary = transactions.stream()
                 .collect(Collectors.groupingBy(
                         Transaction::getType,
                         Collectors.summingDouble(Transaction::getAmount)
                 ));
+
 
         for (Map.Entry<Transaction.Type, Double> entry : summary.entrySet()) {
             model.addRow(new Object[]{
@@ -336,18 +299,15 @@ public class ReportsController {
                     "", // Empty name
                     entry.getKey().name(),
                     String.format("₱%.2f", entry.getValue()),
-                    ""
+                    "" // Empty balance
             });
         }
     }
 
-    /**
-     * Displays account statements grouped by account.
-     * @param transactions the list of transactions to display
-     */
     private void showAccountStatement(List<Transaction> transactions) {
         DefaultTableModel model = (DefaultTableModel) view.getResultsTable().getModel();
         model.setRowCount(0);
+
 
         Map<Integer, List<Transaction>> byAccount = transactions.stream()
                 .collect(Collectors.groupingBy(Transaction::getFromAccount));
@@ -357,6 +317,7 @@ public class ReportsController {
             List<Transaction> accountTxns = entry.getValue();
             double runningBalance = 0.0;
 
+
             model.addRow(new Object[]{
                     "Account #" + accountNo,
                     "",
@@ -365,6 +326,7 @@ public class ReportsController {
                     "",
                     ""
             });
+
 
             for (Transaction tx : accountTxns) {
                 boolean isCredit = switch (tx.getType()) {
@@ -384,15 +346,11 @@ public class ReportsController {
                 });
             }
 
+
             model.addRow(new Object[]{"", "", "", "", "", ""});
         }
     }
 
-    /**
-     * Retrieves the full name of the account holder based on account number.
-     * @param accountNo the account number to search for
-     * @return the full name of the account holder or "Unknown Account"
-     */
     private String getAccountHolderName(int accountNo) {
         return allAccounts.stream()
                 .filter(acc -> acc.getAccountNo() == accountNo)
@@ -400,4 +358,4 @@ public class ReportsController {
                 .map(acc -> acc.getFirstName() + " " + acc.getLastName())
                 .orElse("Unknown Account");
     }
-}
+} 

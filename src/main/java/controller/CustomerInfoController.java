@@ -14,23 +14,6 @@ import java.util.stream.Collectors;
 import util.Exceptions.*;
 import util.FileIO;
 
-/**
- * Controller for managing a single customer's details, bank accounts, and transactions.
- * <p>
- * Provides functionality to display customer information, list and operate on bank accounts,
- * add new accounts, close accounts, and perform transactions including deposits,
- * withdrawals, transfers, checks encashment, interest operations, and card transactions.
- * All operations are logged via TransactionLogger and persisted with FileIO.
- * </p>
- *
- * @author Aquino, Theo James Coroneza
- * @author Arellano, Clendrick Joshua Mangonon
- * @author Mangonon, John Cedrick Garcia
- * @author Ong, Ron Miguel Cau
- * @author Ramos, Ricky Marc Salazar
- * @author Rosana, Jeaven Vincent Yojan Operia
- * @version 2.1
- */
 public class CustomerInfoController {
     private final CustomerInfoView view;
     private final MainView mainView;
@@ -40,12 +23,6 @@ public class CustomerInfoController {
     private Customer currentCustomer;
     private final TransactionLogger transactionLogger;
 
-    /**
-     * Constructs the controller with the main application view, loading persisted
-     * customers and accounts, and initializing the TransactionLogger.
-     *
-     * @param mainView the MainView containing the CustomerInfoView
-     */
     public CustomerInfoController(MainView mainView) {
         this.mainView = mainView;
         view = mainView.getCustomerInfoView();
@@ -56,12 +33,8 @@ public class CustomerInfoController {
         initController();
     }
 
-    /**
-     * Initializes event listeners for history viewing, account editing, closing,
-     * double-click account operations, and adding new accounts.
-     */
     private void initController() {
-        // 1) “Transaction History” button -> history card
+
         view.getHistoryButton().addActionListener(
                 e -> {
                     view.showRightCard(CustomerInfoView.TRANSACTION_HISTORY);
@@ -70,7 +43,6 @@ public class CustomerInfoController {
                 }
         );
 
-        // 2) Close account button -> confirmation dialog and close logic
         view.getCloseAccountButton().addActionListener(e -> {
             int row = view.getAccountsTable().getSelectedRow();
 
@@ -104,8 +76,9 @@ public class CustomerInfoController {
             }
         });
 
-        // 3) Edit customer button -> pop-up dialog for first and last name
+        // Pop up dialogue for editing account
         view.getEditButton().addActionListener(e -> {
+
             JTextField first = new JTextField(20);
             JTextField last  = new JTextField(20);
 
@@ -121,13 +94,14 @@ public class CustomerInfoController {
             if (opt == JOptionPane.OK_OPTION) {
                 String f = first.getText().trim();
                 String l = last .getText().trim();
+                // validate & apply...
                 currentCustomer.setFirstName(f);
                 currentCustomer.setLastName(l);
                 view.setCustomerName(f + " " + l);
             }
         });
 
-        // 4) Double-click on account row -> operations dialog
+
         view.getAccountsTable().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -141,6 +115,7 @@ public class CustomerInfoController {
                             .findFirst().orElse(null);
                     if (account == null) return;
 
+
                     if ("closed".equalsIgnoreCase(account.getStatus())) {
                         JOptionPane.showMessageDialog(
                                 view,
@@ -153,6 +128,7 @@ public class CustomerInfoController {
                         );
                         return;
                     }
+
 
                     String[] operations = buildOperations(account);
                     String choice = (String) JOptionPane.showInputDialog(
@@ -171,7 +147,7 @@ public class CustomerInfoController {
             }
         });
 
-        // 5) Add bank account button -> account creation flow
+
         view.getAddAccountButton().addActionListener(e -> {
             if (currentCustomer == null) {
                 JOptionPane.showMessageDialog(view,
@@ -181,6 +157,7 @@ public class CustomerInfoController {
                 return;
             }
 
+
             String[] options = {
                     "Savings Account",
                     "Checking Account (₱500 min)",
@@ -188,16 +165,20 @@ public class CustomerInfoController {
                     "Credit Card Account (₱25,000 limit)"
             };
 
+
             String choice = (String) JOptionPane.showInputDialog(
-                    view,
-                    "Select account type to add:",
-                    "Add Bank Account",
+                    view,                                // parent
+                    "Select account type to add:",      // message
+                    "Add Bank Account",                 // title
                     JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    options,
-                    options[0]
+                    null,                                // icon
+                    options,                             // choices
+                    options[0]                           // default
             );
+
+
             if (choice == null) return;
+
 
             BankAccount newAcc = switch (choice) {
                 case "Checking Account (₱500 min)" -> new CheckingAccount(
@@ -216,20 +197,22 @@ public class CustomerInfoController {
                         currentCustomer.getLastName(),
                         25000.0
                 );
-                default -> new BankAccount(
-                        currentCustomer.getFirstName(),
-                        currentCustomer.getLastName()
-                );
+                default ->  // "Savings Account"
+                        new BankAccount(
+                                currentCustomer.getFirstName(),
+                                currentCustomer.getLastName()
+                        );
             };
+
             newAcc.setCustomerId(currentCustomer.getId());
 
             List<BankAccount> all = FileIO.loadAllAccounts();
             currentCustomer.addAccount(newAcc);
             all.add(newAcc);
             FileIO.saveAllCustomers(customers);
-            FileIO.saveAllAccounts(new ArrayList<>(all));
+            FileIO.saveAllAccounts(new ArrayList<>(all));      // refresh the JTable
             populateAccountsTable();
-
+            // 6) Inform user
             JOptionPane.showMessageDialog(view,
                     String.format("%s added!\nAccount No: %d",
                             newAcc.displayAccountType(),
@@ -240,23 +223,15 @@ public class CustomerInfoController {
             if (onAccountAddedCallback != null) {
                 onAccountAddedCallback.run();
             }
+            System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
         });
+
     }
 
-    /**
-     * Formats and returns a JFormattedTextField for date input (yyyy-MM-dd).
-     *
-     * @return configured JFormattedTextField
-     */
     public static JFormattedTextField createDateField() {
         return getjFormattedTextField();
     }
 
-    /**
-     * Helper to configure a JFormattedTextField for strict date entry.
-     *
-     * @return JFormattedTextField with date formatter
-     */
     public static JFormattedTextField getjFormattedTextField() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         format.setLenient(false);
@@ -271,15 +246,11 @@ public class CustomerInfoController {
         return f;
     }
 
-    /**
-     * Displays the given customer's ID, name, DOB, and their accounts in the view.
-     *
-     * @param customer the Customer to display
-     */
     public void setCurrentCustomer(Customer customer) {
         this.currentCustomer = customer;
         if (customer == null) return;
 
+        // Use the real ID string:
         view.setCustomerId(customer.getId());
         view.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
         view.setCustomerDob(customer.getBirthDate());
@@ -287,9 +258,6 @@ public class CustomerInfoController {
         populateAccountsTable();
     }
 
-    /**
-     * Populates the accounts table with account number, type, status, and balance.
-     */
     private void populateAccountsTable() {
         DefaultTableModel model = (DefaultTableModel) view.getAccountsTable().getModel();
         model.setRowCount(0);
@@ -298,14 +266,12 @@ public class CustomerInfoController {
                     acc.getAccountNo(),
                     acc.displayAccountType(),
                     acc.getStatus(),
+
                     acc.inquireBalance()
             });
         }
     }
 
-    /**
-     * Persists all customer and account data to storage.
-     */
     private void saveAll() {
         FileIO.saveAllCustomers(customers);
 
@@ -313,27 +279,17 @@ public class CustomerInfoController {
                 .flatMap(c -> c.getAccounts().stream())
                 .collect(Collectors.toCollection(ArrayList::new));
 
+        // Update global accounts list to maintain consistency
         allAccounts.clear();
         allAccounts.addAll(all);
 
         FileIO.saveAllAccounts((ArrayList<BankAccount>) allAccounts);
     }
 
-    /**
-     * Registers a callback to run when a new account is added.
-     *
-     * @param cb Runnable callback
-     */
     public void setOnAccountAddedCallback(Runnable cb) {
         onAccountAddedCallback = cb;
     }
 
-    /**
-     * Builds the available operations menu for the specified account instance.
-     *
-     * @param account BankAccount instance
-     * @return array of operation names
-     */
     private String[] buildOperations(BankAccount account) {
         if (account instanceof CheckingAccount) {
             return new String[]{"Deposit", "Encash Check", "Close Account"};
@@ -346,14 +302,7 @@ public class CustomerInfoController {
         }
     }
 
-    /**
-     * Executes the chosen operation on the given account, logs the transaction,
-     * and refreshes the view.
-     *
-     * @param choice operation name
-     * @param acc    target BankAccount
-     */
-            private void executeOperation(String choice, BankAccount acc) {
+    private void executeOperation(String choice, BankAccount acc) {
         try {
             switch (choice) {
                 case "Deposit" -> dialogDeposit(acc);
