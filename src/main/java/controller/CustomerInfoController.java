@@ -286,7 +286,7 @@ public class CustomerInfoController {
      */
     private String[] buildOperations(BankAccount account) {
         if (account instanceof CheckingAccount) {
-            return new String[]{"Deposit", "Withdraw", "Transfer", "Encash Check", "Close Account"};
+            return new String[]{"Deposit", "Transfer", "Encash Check", "Close Account"};
         } else if (account instanceof InvestmentAccount) {
             return new String[]{"Deposit", "Compute Interest", "Close Account"};
         } else if (account instanceof CreditCardAccount) {
