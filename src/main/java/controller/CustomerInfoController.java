@@ -21,7 +21,7 @@ public class CustomerInfoController {
     private final List<BankAccount> allAccounts;
     private Runnable onAccountAddedCallback;
     private Customer currentCustomer;
-    private TransactionLogger transactionLogger;
+    private final TransactionLogger transactionLogger;
 
     public CustomerInfoController(MainView mainView) {
         this.mainView = mainView;
@@ -40,13 +40,6 @@ public class CustomerInfoController {
                     view.showRightCard(CustomerInfoView.TRANSACTION_HISTORY);
                     mainView.getHeader().showControls(false);
                     view.getHistoryView().refreshHistory();
-                }
-        );
-
-        view.getStatementButton().addActionListener(
-                e -> {
-                    view.showRightCard(CustomerInfoView.ACCOUNT_STATEMENT);
-                    mainView.getHeader().showControls(false);
                 }
         );
 
@@ -85,7 +78,6 @@ public class CustomerInfoController {
 
         // Pop up dialogue for editing account
         view.getEditButton().addActionListener(e -> {
-            JFormattedTextField dob = createDateField();
 
             JTextField first = new JTextField(20);
             JTextField last  = new JTextField(20);
@@ -102,11 +94,9 @@ public class CustomerInfoController {
             if (opt == JOptionPane.OK_OPTION) {
                 String f = first.getText().trim();
                 String l = last .getText().trim();
-                String d = dob  .getText().trim();
                 // validate & apply...
                 currentCustomer.setFirstName(f);
                 currentCustomer.setLastName(l);
-//                currentCustomer.getBirthDate();
                 view.setCustomerName(f + " " + l);
             }
         });
@@ -257,16 +247,6 @@ public class CustomerInfoController {
         return f;
     }
 
-    public void setCustomerIndex(int index) {
-        view.setCustomerId(String.valueOf(index + 1));
-        view.setCustomerName(currentCustomer.getFirstName() + " " + currentCustomer.getLastName());
-        view.setCustomerDob(currentCustomer.getBirthDate());
-        populateAccountsTable();
-    }
-
-    /**
-     * Populate view with most recently added customer.
-     */
     /**
      +     * Show a given customer’s info (ID, name, DOB) and their accounts.
      +     */
@@ -298,11 +278,18 @@ public class CustomerInfoController {
 
     private void saveAll() {
         FileIO.saveAllCustomers(customers);
+
         ArrayList<BankAccount> all = customers.stream()
                 .flatMap(c -> c.getAccounts().stream())
                 .collect(Collectors.toCollection(ArrayList::new));
-        FileIO.saveAllAccounts(all);
+
+        // Update global accounts list to maintain consistency
+        allAccounts.clear();
+        allAccounts.addAll(all);
+
+        FileIO.saveAllAccounts((ArrayList<BankAccount>) allAccounts);
     }
+
     public void setOnAccountAddedCallback(Runnable cb) {
         onAccountAddedCallback = cb;
     }
@@ -353,6 +340,7 @@ public class CustomerInfoController {
         double amt = Double.parseDouble(s);
         acc.deposit(amt);
         recordTransaction(acc.getAccountNo(), amt, Transaction.Type.DEPOSIT);
+        saveAll();
         JOptionPane.showMessageDialog(view, String.format("Deposited ₱%.2f", amt));
     }
 
@@ -361,6 +349,7 @@ public class CustomerInfoController {
         double amt = Double.parseDouble(s);
         recordTransaction(acc.getAccountNo(), amt, Transaction.Type.WITHDRAWAL);
         acc.withdraw(amt);
+        saveAll();
         JOptionPane.showMessageDialog(view, String.format("Withdrew ₱%.2f", amt));
     }
 
@@ -368,17 +357,23 @@ public class CustomerInfoController {
         JTextField to = new JTextField(8);
         JTextField amt = new JTextField(8);
         JPanel p = new JPanel();
+
         p.add(new JLabel("To Acc #:")); p.add(to);
         p.add(new JLabel("Amt:")); p.add(amt);
+
         int r = JOptionPane.showConfirmDialog(view, p, "Transfer", JOptionPane.OK_CANCEL_OPTION);
         if (r!=JOptionPane.OK_OPTION) return;
         int toNo = Integer.parseInt(to.getText().trim());
+
         BankAccount dest = allAccounts.stream().filter(a->a.getAccountNo()==toNo).findFirst().orElse(null);
+
         if (dest==null) throw new InvalidAmountException("Destination not found");
+
         if (dest instanceof CreditCardAccount) throw new InvalidAmountException("Cannot transfer to credit card");
+
         double amount = Double.parseDouble(amt.getText().trim());
         acc.transferMoney(toNo, amount, new ArrayList<>(allAccounts));
-        recordTransaction(acc.getAccountNo(), toAcc, amount, Transaction.Type.TRANSFER);
+        recordTransaction(acc.getAccountNo(), toNo, amount, Transaction.Type.TRANSFER);
         JOptionPane.showMessageDialog(view, String.format("Transferred ₱%.2f to #%d", amount,toNo));
     }
 
@@ -386,6 +381,7 @@ public class CustomerInfoController {
         String s = JOptionPane.showInputDialog(view, "Encash amount:");
         double amt = Double.parseDouble(s);
         acc.encashCheck(amt);
+        saveAll();
         recordTransaction(acc.getAccountNo(), amt, Transaction.Type.ENCASH);
         JOptionPane.showMessageDialog(view, String.format("Encashed ₱%.2f", amt));
     }
@@ -397,15 +393,17 @@ public class CustomerInfoController {
 
     private void dialogApplyInterest(InvestmentAccount acc) throws AccountClosedException {
         acc.applyMonthlyInterest();
-        recordTransaction(acc.getAccountNo(), earned, Transaction.Type.ADD_INVESTMENT);
+        recordTransaction(acc.getAccountNo(), acc.calculateEarnedInterest(), Transaction.Type.ADD_INVESTMENT);
+        saveAll();
         JOptionPane.showMessageDialog(view, "Monthly interest applied.");
     }
 
     private void dialogCharge(CreditCardAccount acc) throws Exception {
         String s = JOptionPane.showInputDialog(view, "Charge amount:");
         double amt = Double.parseDouble(s);
-        recordTransaction(acc.getAccountNo(), amount, Transaction.Type.CHARGE_TO_CARD);
+        recordTransaction(acc.getAccountNo(), amt, Transaction.Type.CHARGE_TO_CARD);
         acc.chargeToCard(amt);
+        saveAll();
         JOptionPane.showMessageDialog(view, String.format("Charged ₱%.2f", amt));
     }
 
@@ -413,6 +411,7 @@ public class CustomerInfoController {
         String s = JOptionPane.showInputDialog(view, "Payment amount:");
         double amt = Double.parseDouble(s);
         acc.payCard(amt);
+        saveAll();
         JOptionPane.showMessageDialog(view, String.format("Paid ₱%.2f", amt));
     }
 
@@ -421,6 +420,7 @@ public class CustomerInfoController {
         double amt = Double.parseDouble(s);
         acc.getCashAdvance(amt);
         recordTransaction(acc.getAccountNo(), amt, Transaction.Type.PAY_CARD);
+        saveAll();
         JOptionPane.showMessageDialog(view, String.format("Advanced ₱%.2f", amt));
     }
 

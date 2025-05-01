@@ -26,12 +26,11 @@ public class CustomerInfoView extends JPanel {
 
     private final JButton btnEdit         = new JButton("Edit Customer Info");
     private final JButton btnHistory      = new JButton("Transaction History");
-    private final JButton btnStatement    = new JButton("Account Statement");
     private final JButton btnCloseAccount = new JButton("Close Account");
     private final JButton btnAddAccount   = new JButton("Add Bank Account");
     private final JTable accountsTable;
 
-    private TransactionHistoryView transactionHistoryView;
+    private final TransactionHistoryView transactionHistoryView;
 
     private String currentRightCard = BANK_ACCOUNTS;
 
@@ -102,7 +101,7 @@ public class CustomerInfoView extends JPanel {
         actionPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
         Dimension btnSize = new Dimension(120, 40);
-        for (JButton btn : new JButton[]{ btnEdit, btnHistory, btnStatement, btnCloseAccount }) {
+        for (JButton btn : new JButton[]{ btnEdit, btnHistory, btnCloseAccount }) {
             actionPanel.add(Box.createVerticalStrut(10));
             actionPanel.add(btn);
             btn.setPreferredSize(btnSize);
@@ -138,7 +137,6 @@ public class CustomerInfoView extends JPanel {
         rightPanel.add(accountsPanel, BANK_ACCOUNTS);
         rightPanel.add(transactionHistoryView, TRANSACTION_HISTORY);
         rightPanel.add(new BankAccountView(), BANK_ACCOUNT);
-        rightPanel.add(new AccountStatementView(), ACCOUNT_STATEMENT);
         rightPanel.add(buildAccountAddPanel(), BANK_ADD);
 
         // assemble the two halves
@@ -195,7 +193,6 @@ public class CustomerInfoView extends JPanel {
     public JButton getHistoryButton()        { return btnHistory;       }
     public JButton getAddAccountButton()     { return btnAddAccount;    }
     public JButton getCloseAccountButton()   { return btnCloseAccount;  }
-    public JButton getStatementButton()      { return btnStatement;     }
     public String getCurrentRightCard()      { return currentRightCard; }
     public JButton getEditButton()           { return btnEdit;          }
     public TransactionHistoryView getHistoryView() { return transactionHistoryView; }

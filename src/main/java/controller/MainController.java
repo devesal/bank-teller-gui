@@ -18,13 +18,14 @@ public class MainController {
     private final List<BankAccount> allAccounts;
     private final CustomerInfoController customerInfoController;
     private final CustomerFormController customerFormController;
-
+    private final ReportsController reportsController;
 
     public MainController() {
         view = new MainView();
         customerInfoView = view.getCustomerInfoView();
         customerFormController = new CustomerFormController(view);
         customerInfoController = new CustomerInfoController(view);
+        reportsController = new ReportsController(view.getReportsView());
         customerFormController.setOnCustomerCreatedCallback(this::refreshCustomerTable);
         customerInfoController.setOnAccountAddedCallback(this::refreshCustomerTable);
         customerList = FileIO.loadAllCustomers();       // load customers from database
