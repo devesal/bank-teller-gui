@@ -2,21 +2,24 @@ package util;
 
 import model.Transaction;
 
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.*;
 
 public class TransactionLogger {
     private String fileLocation;
     private DefaultTableModel tableModel;
+    private JTable table;
 
     public TransactionLogger (){
         fileLocation ="";
         tableModel = null;
     }
 
-    public TransactionLogger (String fileLocation, DefaultTableModel tableModel){
+    public TransactionLogger (String fileLocation, JTable table){
         this.fileLocation = fileLocation;
         this.tableModel = tableModel;
+        this.table = new JTable(tableModel);
     }
 
     public void logTransaction (Transaction transaction, double balance) throws IOException {
