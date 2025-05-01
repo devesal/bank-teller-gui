@@ -1,6 +1,9 @@
 package model;
 
 import model.BankAccount;
+import util.Exceptions.AccountClosedException;
+import util.Exceptions.InsufficientFundsException;
+import util.Exceptions.TransactionLimitException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -60,17 +63,16 @@ public class CreditCardAccount extends BankAccount implements Serializable {
      *
      * @param amount The amount to charge
      */
-    public void chargeToCard(double amount) {
+    public void chargeToCard(double amount) throws AccountClosedException, TransactionLimitException {
         if (!"Active".equals(getStatus())) {
-            System.out.println("❌ Cannot charge a closed account.");
-            return;
+            throw new AccountClosedException("❌ Cannot charge to a closed account.");
         }
         double available = creditLimit - charges;
         if (available >= amount) {
             charges += amount;
             System.out.println("Charge successful! New balance: ₱" + charges);
         } else {
-            System.out.println("❌ Not enough credit. Available: ₱" + available);
+            throw new TransactionLimitException("❌ Not enough credit. Available: ₱" + available);
         }
     }
 
@@ -80,13 +82,12 @@ public class CreditCardAccount extends BankAccount implements Serializable {
      *
      * @param amount The amount to pay
      */
-    public void payCard(double amount) {
+    public void payCard(double amount) throws AccountClosedException, TransactionLimitException {
         if (!"Active".equals(getStatus())) {
-            System.out.println("❌ Cannot pay a closed account.");
-            return;
+            throw new AccountClosedException("❌ Cannot pay to a closed account.");
         }
         if (amount > charges) {
-            System.out.println("❌ Payment exceeds total charges");
+            throw new TransactionLimitException("❌ Payment exceeds total charges");
         } else {
             charges -= amount;
             System.out.println("Payment successful! Remaining balance: ₱" + charges);
@@ -111,17 +112,16 @@ public class CreditCardAccount extends BankAccount implements Serializable {
      *
      * @param amount The amount of cash advance requested
      */
-    public void getCashAdvance(double amount) {
+    public void getCashAdvance(double amount) throws AccountClosedException, TransactionLimitException {
         if (!"Active".equals(getStatus())) {
-            System.out.println("❌ Cannot advance from a closed account.");
-            return;
+            throw new AccountClosedException("❌ Cannot advance to a closed account.");
         }
         double available = (creditLimit - charges) * 0.5;
         if (amount <= available) {
             charges += amount;
             System.out.println("Cash advance approved! Charged: ₱" + amount);
         } else {
-            System.out.println("❌ Transaction declined: Requested advance exceeds ₱" + available);
+            throw new TransactionLimitException("❌ Transaction declined: Requested advance exceeds ₱" + available);
         }
     }
 
@@ -130,7 +130,7 @@ public class CreditCardAccount extends BankAccount implements Serializable {
      * Account remains in list but becomes inactive.
      */
     @Override
-    public void closeAccount() {
+    public void closeAccount() throws InsufficientFundsException, AccountClosedException, TransactionLimitException {
         if (!"Active".equals(getStatus())) {
             System.out.println("❌ Account is already closed.");
             return;
