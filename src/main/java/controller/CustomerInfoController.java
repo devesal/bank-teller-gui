@@ -9,7 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
-
+import util.Exceptions.*;
 import util.FileIO;
 
 public class CustomerInfoController {
@@ -100,12 +100,201 @@ public class CustomerInfoController {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    view.showRightCard(CustomerInfoView.BANK_ACCOUNT);
-                    mainView.getHeader().updateHeaderTitle("ACCOUNT DETAILS");
-                    mainView.getHeader().showControls(false);
+                    int row = view.getAccountsTable().getSelectedRow();
+                    if (row < 0 || currentCustomer == null) return;
+                    int accNo = (int) view.getAccountsTable().getValueAt(row, 0);
+                    BankAccount account = currentCustomer.getAccounts().stream()
+                            .filter(a -> a.getAccountNo() == accNo)
+                            .findFirst().orElse(null);
+                    if (account == null) return;
+
+                    // Build operations list
+                    String[] operations = buildOperations(account);
+                    // Prompt operation selection with HTML list for clarity
+                    String choice = (String) JOptionPane.showInputDialog(
+                            view,
+                            String.format("<html><b>Select operation for account %d</b></html>", accNo),
+                            "Account Operations",
+                            JOptionPane.PLAIN_MESSAGE,
+                            null,
+                            operations,
+                            operations[0]
+                    );
+                    if (choice == null) return;
+
+                    // Execute and handle
+                    executeOperation(choice, account);
                 }
             }
         });
+    }
+
+    private String[] buildOperations(BankAccount account) {
+        if (account instanceof CheckingAccount) {
+            return new String[]{"Deposit", "Withdraw", "Transfer", "Encash Check", "Close Account"};
+        } else if (account instanceof InvestmentAccount) {
+            return new String[]{"Deposit", "Compute Interest", "Close Account"};
+        } else if (account instanceof CreditCardAccount) {
+            return new String[]{"Charge Card", "Pay Card", "Cash Advance", "Close Account"};
+        } else {
+            return new String[]{"Deposit", "Withdraw", "Transfer", "Close Account"};
+        }
+    }
+
+    private void executeOperation(String choice, BankAccount account) {
+        try {
+            switch (choice) {
+                case "Deposit" -> dialogDeposit(account);
+                case "Withdraw" -> dialogWithdraw(account);
+                case "Transfer" -> dialogTransfer(account);
+                case "Encash Check" -> dialogEncash(account);
+                case "Compute Interest" -> dialogInterest((InvestmentAccount) account);
+                case "Charge Card" -> dialogCharge((CreditCardAccount) account);
+                case "Pay Card" -> dialogPay((CreditCardAccount) account);
+                case "Cash Advance" -> dialogAdvance((CreditCardAccount) account);
+                case "Close Account" -> dialogClose(account);
+            }
+        } catch (AccountClosedException | InsufficientFundsException | TransactionLimitException | InvalidAmountException ex) {
+            JOptionPane.showMessageDialog(
+                    view,
+                    String.format("<html><font color='red'><b>Error:</b> %s</font></html>", ex.getMessage()),
+                    "Transaction Failed",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } catch (NumberFormatException nfe) {
+            JOptionPane.showMessageDialog(
+                    view,
+                    "<html><font color='red'>Invalid number format. Please enter a valid amount.</font></html>",
+                    "Input Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+        // Persist and refresh
+        FileIO.saveAllCustomers(customers);
+        FileIO.saveAllAccounts(new ArrayList<>(allAccounts));
+        populateAccountsTable();
+    }
+
+    private void dialogDeposit(BankAccount acc) throws AccountClosedException {
+        String amt = JOptionPane.showInputDialog(view, "Enter deposit amount:");
+        double amount = Double.parseDouble(amt);
+        acc.deposit(amount);
+        JOptionPane.showMessageDialog(
+                view,
+                String.format("<html><b>Success:</b> Deposited ₱%.2f</html>", amount),
+                "Deposit Complete",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void dialogWithdraw(BankAccount acc) throws AccountClosedException, InsufficientFundsException, TransactionLimitException {
+        String amt = JOptionPane.showInputDialog(view, "Enter withdrawal amount:");
+        double amount = Double.parseDouble(amt);
+        acc.withdraw(amount);
+        JOptionPane.showMessageDialog(
+                view,
+                String.format("<html><b>Success:</b> Withdrew ₱%.2f</html>", amount),
+                "Withdrawal Complete",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void dialogTransfer(BankAccount acc) throws AccountClosedException, InvalidAmountException {
+        JTextField to = new JTextField(5);
+        JTextField amt = new JTextField(5);
+        JPanel p = new JPanel();
+        p.add(new JLabel("To Account:")); p.add(to);
+        p.add(new JLabel("Amount:")); p.add(amt);
+        int res = JOptionPane.showConfirmDialog(view, p, "Transfer Funds", JOptionPane.OK_CANCEL_OPTION);
+        if (res != JOptionPane.OK_OPTION) return;
+        int toAcc = Integer.parseInt(to.getText().trim());
+        double amount = Double.parseDouble(amt.getText().trim());
+        acc.transferMoney(toAcc, amount, new ArrayList<>(allAccounts));
+        JOptionPane.showMessageDialog(
+                view,
+                String.format("<html><b>Success:</b> Transferred ₱%.2f to account %d</html>", amount, toAcc),
+                "Transfer Complete",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void dialogEncash(BankAccount acc) throws InsufficientFundsException, AccountClosedException, TransactionLimitException {
+        String amt = JOptionPane.showInputDialog(view, "Enter check encash amount:");
+        double amount = Double.parseDouble(amt);
+        ((CheckingAccount) acc).encashCheck(amount);
+        JOptionPane.showMessageDialog(
+                view,
+                String.format("<html><b>Success:</b> En cashed ₱%.2f</html>", amount),
+                "Encashment Complete",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void dialogInterest(InvestmentAccount acc) throws AccountClosedException {
+        acc.applyMonthlyInterest();
+        double earned = acc.calculateEarnedInterest();
+        JOptionPane.showMessageDialog(
+                view,
+                String.format("<html><b>Success:</b> Interest applied. Earned ₱%.2f</html>", earned),
+                "Interest Applied",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void dialogCharge(CreditCardAccount acc) throws AccountClosedException, TransactionLimitException {
+        String amt = JOptionPane.showInputDialog(view, "Enter charge amount:");
+        double amount = Double.parseDouble(amt);
+        acc.chargeToCard(amount);
+        JOptionPane.showMessageDialog(
+                view,
+                String.format("<html><b>Success:</b> Charged ₱%.2f</html>", amount),
+                "Charge Complete",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void dialogPay(CreditCardAccount acc) throws AccountClosedException, TransactionLimitException {
+        String amt = JOptionPane.showInputDialog(view, "Enter payment amount:");
+        double amount = Double.parseDouble(amt);
+        acc.payCard(amount);
+        JOptionPane.showMessageDialog(
+                view,
+                String.format("<html><b>Success:</b> Paid ₱%.2f</html>", amount),
+                "Payment Complete",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void dialogAdvance(CreditCardAccount acc) throws AccountClosedException, TransactionLimitException {
+        String amt = JOptionPane.showInputDialog(view, "Enter cash advance amount:");
+        double amount = Double.parseDouble(amt);
+        acc.getCashAdvance(amount);
+        JOptionPane.showMessageDialog(
+                view,
+                String.format("<html><b>Success:</b> Advanced ₱%.2f</html>", amount),
+                "Cash Advance Complete",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    private void dialogClose(BankAccount acc) throws AccountClosedException, InsufficientFundsException, TransactionLimitException {
+        int confirm = JOptionPane.showConfirmDialog(
+                view,
+                String.format("<html>Are you sure you want to close account %d?</html>", acc.getAccountNo()),
+                "Confirm Close",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+        if (confirm != JOptionPane.YES_OPTION) return;
+        acc.closeAccount();
+        JOptionPane.showMessageDialog(
+                view,
+                String.format("<html><b>Success:</b> Account %d closed.</html>", acc.getAccountNo()),
+                "Account Closed",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+
+
 
         // 3) “Add Bank Account” -> flip back to accounts list (or launch wizard)
         view.getAddAccountButton().addActionListener(e -> {
