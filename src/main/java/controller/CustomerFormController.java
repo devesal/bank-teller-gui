@@ -14,6 +14,7 @@ public class CustomerFormController {
     private final List<BankAccount> allAccounts;
     private final CustomerInfoView infoView;
     private Customer currentCustomer;
+    private Runnable onCustomerCreated;
 
     public CustomerFormController(MainView mainView) {
         this.formView = mainView.getCustomerFormView();
@@ -23,6 +24,10 @@ public class CustomerFormController {
         this.customers = FileIO.loadAllCustomers();
         this.allAccounts = FileIO.loadAllAccounts();
         initController();
+    }
+
+    public void setOnCustomerCreatedCallback(Runnable cb) {
+        this.onCustomerCreated = cb;
     }
 
     private void initController() {
@@ -50,6 +55,10 @@ public class CustomerFormController {
             mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
             mainView.getHeader().showControls(false);
             formView.showStep(MainView.STEP_SUCCESS);
+
+                    if (onCustomerCreated != null) {
+                        onCustomerCreated.run();
+                    }
         });
 
         setupUntoggleBehavior(formView.getSavingsToggleButton());
@@ -109,6 +118,10 @@ public class CustomerFormController {
         formView.getSuccessAccountsLabel().setText(
                 created.isEmpty() ? "None" : String.join("\n", created)
         );
+        if (onCustomerCreated != null) {
+            onCustomerCreated.run();
+        }
+
         // Clear the “editing” flag so next time it’s a fresh form:
         System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
         return customer;

@@ -163,6 +163,8 @@ public class CustomerInfoController {
                                 currentCustomer.getLastName()
                         );
             };
+            // —— TAG THE NEW ACCOUNT WITH ITS OWNER’S ID ——
+            newAcc.setCustomerId(currentCustomer.getId());
 
             // 5) Attach to customer and global list, persist & refresh
             List<BankAccount> all = FileIO.loadAllAccounts();
@@ -215,10 +217,19 @@ public class CustomerInfoController {
     /**
      * Populate view with most recently added customer.
      */
+    /**
+     +     * Show a given customer’s info (ID, name, DOB) and their accounts.
+     +     */
     public void setCurrentCustomer(Customer customer) {
-        currentCustomer = customer;
-        if (customers.isEmpty()) return;
-        setCustomerIndex(customers.size() - 1);
+        this.currentCustomer = customer;
+        if (customer == null) return;
+
+        // Use the real ID string:
+        view.setCustomerId(customer.getId());
+        view.setCustomerName(customer.getFirstName() + " " + customer.getLastName());
+        view.setCustomerDob(customer.getBirthDate());
+
+        populateAccountsTable();
     }
 
     private void populateAccountsTable() {

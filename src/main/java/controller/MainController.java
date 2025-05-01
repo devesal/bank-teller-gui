@@ -25,6 +25,7 @@ public class MainController {
         customerInfoView = view.getCustomerInfoView();
         customerFormController = new CustomerFormController(view);
         customerInfoController = new CustomerInfoController(view);
+        customerFormController.setOnCustomerCreatedCallback(this::refreshCustomerTable);
         customerInfoController.setOnAccountAddedCallback(this::refreshCustomerTable);
         customerList = FileIO.loadAllCustomers();       // load customers from database
         allAccounts = FileIO.loadAllAccounts();
@@ -143,25 +144,31 @@ public class MainController {
     public void refreshCustomerTable() {
         // 1) Reload customers and accounts from DB
         customerList.clear();
-        List<Customer> allCustomers = FileIO.loadAllCustomers();
-        customerList.addAll(allCustomers);
-        List<BankAccount> allAccounts = FileIO.loadAllAccounts();
-        allAccounts.addAll(allAccounts);
-        // 2) Group accounts by customerId
-        Map<String, List<BankAccount>> accountsByCust = customerList.stream()
-                .collect(Collectors.toMap(
-                        Customer::getId,
-                        Customer::getAccounts
-                ));
+        List<Customer> reloadedCusts = FileIO.loadAllCustomers();
+        customerList.addAll(reloadedCusts);
+
+        // Now reload the master account list
+        List<BankAccount> reloadedAccts = FileIO.loadAllAccounts();
+        this.allAccounts.clear();
+        this.allAccounts.addAll(reloadedAccts);
+
+        // 2) Attach accounts to each customer (so getAccounts() is up-to-date)
+        Map<String,List<BankAccount>> accountsByCust =
+                customerList.stream()
+                        .collect(Collectors.toMap(
+                                Customer::getId,
+                                Customer::getAccounts  // each Customer already knows its own accounts
+                        ));
 
         DefaultTableModel model = (DefaultTableModel) view
                 .getCustomersView().getTable().getModel();
         model.setRowCount(0);
         for (Customer cust : customerList) {
+            int count = accountsByCust.getOrDefault(cust.getId(), List.of()).size();
             model.addRow(new Object[]{
                     cust.getId(),
                     cust.getFirstName() + " " + cust.getLastName(),
-                    accountsByCust.getOrDefault(cust.getId(), List.of()).size()
+                    count
             });
         }
 

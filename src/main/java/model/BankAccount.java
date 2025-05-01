@@ -153,6 +153,9 @@ public class BankAccount implements Serializable {
     public String displayAccountType() {
         return "Savings Account";
     }
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
     public String getCustomerId() { return customerId; }
     @Override
     public String toString() {
