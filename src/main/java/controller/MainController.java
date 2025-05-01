@@ -4,7 +4,6 @@
     import util.FileIO;
     import view.*;
 
-
     import javax.swing.*;
     import java.awt.event.*;
     import java.util.*;
@@ -12,15 +11,15 @@
 
     public class MainController {
         private final MainView view;
-        private final CustomerFormController customerFormController;
-        private final CustomerInfoController infoController;
         private final List<Customer> customerList;
         private final List<BankAccount> allAccounts;
+        private final CustomerInfoController customerInfoController;
+        private final CustomerFormController customerFormController;
 
         public MainController() {
             view = new MainView();
             customerFormController = new CustomerFormController(view);
-            infoController = new CustomerInfoController(view);
+            customerInfoController = new CustomerInfoController(view);
             customerList = FileIO.loadAllCustomers();
             allAccounts = FileIO.loadAllAccounts();
             initController();
@@ -111,7 +110,6 @@
 
             view.getHeader().getAddButton().addActionListener(
                     e -> {
-                        new CustomerFormController(view);
                         view.setCurrentPage(MainView.ADD_CUSTOMER);
                         view.showPage(MainView.ADD_CUSTOMER);
                         view.getHeader().updateHeaderTitle("CUSTOMER CREATION");
@@ -124,6 +122,15 @@
             view.getHeader().getBtnSearch().addActionListener(
                     e -> searchCustomer()
             );
+
+            view.getCustomerFormView().getViewButton().addActionListener(e -> {
+                Customer justCreated = customerFormController.getCurrentCustomer();
+                if (justCreated != null) {
+                    customerInfoController.setCurrentCustomer(justCreated);
+                    view.showPage(MainView.CUSTOMER_INFO);
+                    view.setCurrentPage(MainView.CUSTOMER_INFO);
+                }
+            });
         }
 
         private void setBackButtonAction() {

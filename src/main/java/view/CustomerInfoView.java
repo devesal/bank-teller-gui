@@ -1,5 +1,7 @@
 package view;
 
+import model.Customer;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -19,6 +21,7 @@ public class CustomerInfoView extends JPanel {
     private final JToggleButton tglSavings    = new JToggleButton("Savings Account");
     private final JToggleButton tglChecking   = new JToggleButton("Checking Account");
     private final JToggleButton tglInvestment = new JToggleButton("Investment Account");
+
     private final JToggleButton tglCreditCard = new JToggleButton("Credit Card Account");
     private final JButton btnCreate           = new JButton("Create");
 
@@ -28,6 +31,8 @@ public class CustomerInfoView extends JPanel {
     private final JButton btnCloseAccount = new JButton("Close Account");
     private final JButton btnAddAccount   = new JButton("Add Bank Account");
     private final JTable accountsTable;
+
+    private Customer currentCustomer;
 
     private String currentRightCard = BANK_ACCOUNTS;
 
@@ -195,9 +200,11 @@ public class CustomerInfoView extends JPanel {
     public JButton getStatementButton()      { return btnStatement;     }
     public String getCurrentRightCard()      { return currentRightCard; }
     public JButton getEditButton()           { return btnEdit;          }
+    public Customer getCurrentCustomer()     { return currentCustomer;  }
 
     // setters for labels
     public void setCustomerId(String id)     { lblId.setText(id);       }
     public void setCustomerName(String name) { lblName.setText(name);   }
     public void setCustomerDob(String dob)   { lblDob.setText(dob);     }
+    public void setCurrentCustomer(Customer currentCustomer) { this.currentCustomer = currentCustomer; }
 }

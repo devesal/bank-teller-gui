@@ -7,7 +7,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,14 +18,16 @@ import util.FileIO;
 public class CustomerInfoController {
     private final CustomerInfoView view;
     private final MainView mainView;
-    private final java.util.List<Customer> customers;
+    private final List<Customer> customers;
     private final List<BankAccount> allAccounts = FileIO.loadAllAccounts();
+
     private Customer currentCustomer;
 
     public CustomerInfoController(MainView mainView) {
-        this.view = mainView.getCustomerInfoView();
         this.mainView = mainView;
-        this.customers = FileIO.loadAllCustomers();
+        view = mainView.getCustomerInfoView();
+        customers = FileIO.loadAllCustomers();
+        currentCustomer = view.getCurrentCustomer();
         initController();
     }
 
@@ -44,74 +48,55 @@ public class CustomerInfoController {
         );
 
         view.getCloseAccountButton().addActionListener(e -> {
-            if (currentCustomer == null) {
-                JOptionPane.showMessageDialog(view,
-                        "No customer selected!",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            int row = view.getAccountsTable().getSelectedRow();
 
             int choice = JOptionPane.showConfirmDialog(
-                    view,
-                    "Are you sure you want to permanently close this customer's account and delete all their data?",
+                    mainView.getFrame(),                    // <— the JFrame
+                    "Are you sure you want to close this account?",
                     "Confirm Close Account",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE
             );
 
             if (choice == JOptionPane.YES_OPTION) {
-                customers.remove(currentCustomer);
-                allAccounts.removeIf(acc -> currentCustomer.getAccounts().contains(acc));
-
+                int accNo = (int) view.getAccountsTable().getValueAt(row, 0);
+                for (BankAccount acc : currentCustomer.getAccounts()) {
+                    if (acc.getAccountNo() == accNo) {
+                        acc.setStatus("Closed");
+                        break;
+                    }
+                }
                 saveAll();
-
-                JOptionPane.showMessageDialog(view,
-                        "Customer and all associated accounts have been removed.",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                mainView.showPage(MainView.CUSTOMERS);
-                mainView.getHeader().updateHeaderTitle("CUSTOMERS");
-                mainView.getHeader().showControls(true);
+                populateAccountsTable();
             }
         });
 
         // Pop up dialogue for editing account
-        view.getCloseAccountButton().addActionListener(e -> {
-            if (currentCustomer == null) {
-                JOptionPane.showMessageDialog(view,
-                        "No customer selected!",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        view.getEditButton().addActionListener(e -> {
+            System.out.println("test");
+            JFormattedTextField dob = createDateField();
 
-            int choice = JOptionPane.showConfirmDialog(
-                    view,
-                    "Are you sure you want to permanently close this customer's account and delete all their data?",
-                    "Confirm Close Account",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE
+            JTextField first = new JTextField(20);
+            JTextField last  = new JTextField(20);
+
+            Object[] msg = {
+                    "First Name:", first,
+                    "Last Name:",  last,
+                    "Date of Birth:", dob
+            };
+
+            int opt = JOptionPane.showConfirmDialog(
+                    view, msg, "Edit Customer", JOptionPane.OK_CANCEL_OPTION
             );
-
-            if (choice == JOptionPane.YES_OPTION) {
-                customers.remove(currentCustomer);
-                allAccounts.removeIf(acc -> currentCustomer.getAccounts().contains(acc));
-                currentCustomer = null;
-
-                saveAll();
-
-                JOptionPane.showMessageDialog(view,
-                        "Customer and all associated accounts have been removed.",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-
-                // Navigate back and refresh
-                mainView.showPage(MainView.CUSTOMERS);
-                mainView.getHeader().updateHeaderTitle("CUSTOMERS");
-                mainView.getHeader().showControls(true);
-
+            if (opt == JOptionPane.OK_OPTION) {
+                String f = first.getText().trim();
+                String l = last .getText().trim();
+                String d = dob  .getText().trim();
+                // validate & apply...
+                currentCustomer.setFirstName(f);
+                currentCustomer.setLastName(l);
+                currentCustomer.setBirthDate(d);
+                view.setCustomerName(f + " " + l);
             }
         });
 
@@ -160,36 +145,29 @@ public class CustomerInfoController {
             if (choice == null) return;
 
             // 4) Instantiate the right BankAccount subclass
-            BankAccount newAcc;
-            switch (choice) {
-                case "Checking Account (₱500 min)":
-                    newAcc = new CheckingAccount(
-                            currentCustomer.getFirstName(),
-                            currentCustomer.getLastName(),
-                            500.0
-                    );
-                    break;
-                case "Investment Account (₱5,000, 35% rate)":
-                    newAcc = new InvestmentAccount(
-                            currentCustomer.getFirstName(),
-                            currentCustomer.getLastName(),
-                            5000.0,
-                            0.35
-                    );
-                    break;
-                case "Credit Card Account (₱25,000 limit)":
-                    newAcc = new CreditCardAccount(
-                            currentCustomer.getFirstName(),
-                            currentCustomer.getLastName(),
-                            25000.0
-                    );
-                    break;
-                default:  // "Savings Account"
-                    newAcc = new BankAccount(
-                            currentCustomer.getFirstName(),
-                            currentCustomer.getLastName()
-                    );
-            }
+            BankAccount newAcc = switch (choice) {
+                case "Checking Account (₱500 min)" -> new CheckingAccount(
+                        currentCustomer.getFirstName(),
+                        currentCustomer.getLastName(),
+                        500.0
+                );
+                case "Investment Account (₱5,000, 35% rate)" -> new InvestmentAccount(
+                        currentCustomer.getFirstName(),
+                        currentCustomer.getLastName(),
+                        5000.0,
+                        0.35
+                );
+                case "Credit Card Account (₱25,000 limit)" -> new CreditCardAccount(
+                        currentCustomer.getFirstName(),
+                        currentCustomer.getLastName(),
+                        25000.0
+                );
+                default ->  // "Savings Account"
+                        new BankAccount(
+                                currentCustomer.getFirstName(),
+                                currentCustomer.getLastName()
+                        );
+            };
 
             // 5) Attach to customer and global list, persist & refresh
             currentCustomer.addAccount(newAcc);
@@ -209,8 +187,22 @@ public class CustomerInfoController {
         });
 
     }
+
+    private JFormattedTextField createDateField() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        format.setLenient(false);
+        DateFormatter df = new DateFormatter(format);
+        df.setAllowsInvalid(false);
+        df.setOverwriteMode(true);
+
+        JFormattedTextField f = new JFormattedTextField(df);
+        f.setValue(new Date());
+        f.setColumns(10);
+        f.setToolTipText("Enter date as YYYY-MM-DD");
+        return f;
+    }
+
     public void setCustomerIndex(int index) {
-        this.currentCustomer = customers.get(index);
         view.setCustomerId(String.valueOf(index + 1));
         view.setCustomerName(currentCustomer.getFirstName() + " " + currentCustomer.getLastName());
         view.setCustomerDob(currentCustomer.getBirthDate());
@@ -220,7 +212,8 @@ public class CustomerInfoController {
     /**
      * Populate view with most recently added customer.
      */
-    public void setLatestCustomer() {
+    public void setCurrentCustomer(Customer customer) {
+        currentCustomer = customer;
         if (customers.isEmpty()) return;
         setCustomerIndex(customers.size() - 1);
     }
