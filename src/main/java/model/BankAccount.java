@@ -1,23 +1,26 @@
 package model;
 
+import util.Exceptions.*;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class BankAccount {
+public class BankAccount implements Serializable {
 
+    /** Random generator for account numbers */
     private static final Random RANDOM = new Random();
+    /** Unique 9-digit account identifier */
     private final int accountNo;
+    /** First name of the account holder */
     private String firstName;
+    /** Last name of the account holder */
     private String lastName;
+    /** Current balance in the account */
     private double balance;
+    /** Current status of the account (Active/Closed) */
     private String status;
-
-    public BankAccount() {
-        this.accountNo = generateAccountNumber();
-        this.firstName = "";
-        this.lastName = "";
-    }
 
     /**
      * Constructs a new active BankAccount with a random 9-digit account number
@@ -69,25 +72,26 @@ public class BankAccount {
         this.status = status;
     }
 
-    public void deposit(double amount) {
+    public void deposit(double amount) throws AccountClosedException {
         if (!"Active".equals(status)) {
             //System.out.println("❌ Cannot deposit to a closed account.");
-            return;
+            throw new AccountClosedException("❌ Cannot deposit to a closed account.");
         }
         this.balance += amount;
         //System.out.println("Money has been deposited to your account");
         //System.out.println("Please check your account for safety measures");
     }
 
-    public void withdraw(double amount) {
+    public void withdraw(double amount) throws AccountClosedException, InsufficientFundsException, TransactionLimitException {
         if (!"Active".equals(status)) {
             //System.out.println("❌ Cannot withdraw from a closed account.");
-            return;
+            throw new AccountClosedException("❌ Cannot withdraw to a closed account.");
         }
         if (balance >= amount) {
             this.balance -= amount;
             //System.out.println("Money withdrawn: ₱" + amount);
         } else {
+            throw new InsufficientFundsException("❌ Insufficient balance. Transaction terminated");
             //System.out.println("❌ Insufficient balance. Transaction terminated");
         }
     }
@@ -96,14 +100,14 @@ public class BankAccount {
         return balance;
     }
 
-    public void transferMoney(int AccountNo, double amount, ArrayList<BankAccount> bankAccounts) {
+    public void transferMoney(int AccountNo, double amount, ArrayList<BankAccount> bankAccounts) throws AccountClosedException, InvalidAmountException {
         if (!"Active".equals(status)) {
             //System.out.println("❌ Cannot transfer from a closed account.");
-            return;
+            throw new AccountClosedException("❌ Cannot transfer to a closed account.");
         }
         if (amount > balance) {
             //System.out.println("❌ Invalid amount. Transaction terminated");
-            return;
+            throw new InvalidAmountException("❌ Invalid amount. Transaction terminated");
         }
         for (BankAccount recipient : bankAccounts) {
             if (recipient.getAccountNo() == AccountNo) {
@@ -120,10 +124,9 @@ public class BankAccount {
      * Closes the account by setting its status to Closed. Balance is withdrawn if positive.
      * The account remains in the list for potential reopening.
      */
-    public void closeAccount() {
+    public void closeAccount() throws AccountClosedException, InsufficientFundsException, TransactionLimitException {
         if (!"Active".equals(status)) {
-            System.out.println("❌ Account is already closed.");
-            return;
+            throw new AccountClosedException("❌ Account is already closed.");
         }
         if (balance > 0) {
             withdraw(balance);

@@ -1,6 +1,7 @@
     package controller;
 
     import model.*;
+    import util.FileIO;
     import view.*;
 
 
@@ -11,11 +12,17 @@
 
     public class MainController {
         private final MainView view;
+        private final CustomerFormController customerFormController;
+        private final CustomerInfoController infoController;
         private final List<Customer> customerList;
+        private final List<BankAccount> allAccounts;
 
         public MainController() {
             view = new MainView();
-            customerList = new ArrayList<>();
+            customerFormController = new CustomerFormController(view);
+            infoController = new CustomerInfoController(view);
+            customerList = FileIO.loadAllCustomers();
+            allAccounts = FileIO.loadAllAccounts();
             initController();
         }
 

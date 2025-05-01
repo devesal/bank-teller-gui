@@ -14,8 +14,11 @@ package model;
  * @author Rosana, Jeaven Vincent Yojan Operia
  * @version 1.1
  */
-public class CheckingAccount extends BankAccount {
+import util.Exceptions.*;
 
+
+import java.io.Serializable;
+public class CheckingAccount extends BankAccount implements Serializable{
     /** The minimum balance that must be maintained in the account */
     private final double minimumBalance;
 
@@ -48,8 +51,8 @@ public class CheckingAccount extends BankAccount {
      *
      * @return The minimum balance that must be maintained
      */
-    public double getMinimumBalance() {
-        return minimumBalance;
+    public double inquireBalance() {
+        return super.inquireBalance() + minimumBalance;
     }
 
     /**
@@ -58,19 +61,16 @@ public class CheckingAccount extends BankAccount {
      * @param amount the amount to withdraw
      */
     @Override
-    public void withdraw(double amount) {
+    public void withdraw(double amount) throws InsufficientFundsException, AccountClosedException, TransactionLimitException {
         if (!"Active".equals(getStatus())) {
-            System.out.println("❌ Cannot withdraw from a closed account.");
-            return;
+            throw new AccountClosedException("❌ Cannot withdraw to a closed account.");
         }
         double currentBalance = inquireBalance();
         if (amount > currentBalance) {
-            System.out.println("❌ Insufficient balance. Transaction terminated");
-            return;
+            throw new InsufficientFundsException("❌ Insufficient balance. Transaction terminated");
         }
         if ((currentBalance - amount) < minimumBalance) {
-            System.out.println("❌ Withdrawal denied: Balance cannot go below ₱" + minimumBalance);
-            return;
+            throw new TransactionLimitException("❌ Withdrawal denied: Balance cannot go below ₱" + minimumBalance);
         }
         super.withdraw(amount);
     }
@@ -80,18 +80,17 @@ public class CheckingAccount extends BankAccount {
      *
      * @param amount The amount to be encashed from the check
      */
-    public void encashCheck(double amount) {
+    public void encashCheck(double amount) throws InsufficientFundsException, AccountClosedException, TransactionLimitException {
         // encashCheck follows same rules as withdraw but with its own messaging
         double currentBalance = inquireBalance();
         if (amount > currentBalance) {
-            System.out.println("❌ Insufficient funds to encash ₱" + amount);
-            return;
+            throw new InsufficientFundsException("❌ Insufficient funds to encash ₱" + amount);
         }
         if ((currentBalance - amount) >= minimumBalance) {
             System.out.println("Encashing ₱" + amount + " successful");
             super.withdraw(amount);
         } else {
-            System.out.println("❌ Encashment denied: Balance cannot go below ₱" + minimumBalance);
+            throw new TransactionLimitException("❌ Encashment denied: Balance cannot go below ₱" + minimumBalance);
         }
     }
 

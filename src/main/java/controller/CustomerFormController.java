@@ -1,106 +1,150 @@
 package controller;
 
-import model.Customer;
-import model.BankAccount;
-import model.CheckingAccount;
-import model.CreditCardAccount;
-import model.InvestmentAccount;
-import view.CustomerFormView;
-import view.MainView;
-
+import model.*;
+import util.FileIO;
+import view.*;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerFormController {
-    private final CustomerFormView view;
+    private final CustomerFormView formView;
     private final MainView mainView;
     private final List<Customer> customers;
+    private final List<BankAccount> allAccounts;
+    private Customer existingCustomer = null;
 
     public CustomerFormController(MainView mainView) {
-        this.view = mainView.getCustomerFormView();
+        this.formView = mainView.getCustomerFormView();
         this.mainView = mainView;
-        this.customers = new ArrayList<>();
+        // Load persisted data
+        this.customers = FileIO.loadAllCustomers();
+        this.allAccounts = FileIO.loadAllAccounts();
         initController();
     }
 
     private void initController() {
-        view.getNextButtonStep1().addActionListener(
+        formView.getNextButtonStep1().addActionListener(
                 e -> {
-                    view.showStep(MainView.STEP_ACCOUNTS);
+                    formView.showStep(MainView.STEP_ACCOUNTS);
                     mainView.setCurrentPage(MainView.STEP_ACCOUNTS);
                 }
         );
 
         // create and persist customer + accounts
-        view.getCreateButton().addActionListener(
-                e -> {
-                    try {
-                        Customer customer = accountCreation();
-                        // populate success view
-                        view.getSuccessNameLabel().setText(
-                                customer.getFirstName() + " " + customer.getLastName());
-                        view.getSuccessDobLabel().setText(customer.getBirthDate());
-                    } catch (IllegalArgumentException ex) {
-                        JOptionPane.showMessageDialog(view, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    }
+        formView.getCreateButton().addActionListener(e -> {
+            try {
+                Customer customer = accountCreation();
+                // Save to file
+                FileIO.saveAllCustomers(customers);
+                FileIO.saveAllAccounts(new ArrayList<>(allAccounts));
 
-                    mainView.getHeader().showControls(false);
-                    view.showStep(MainView.STEP_SUCCESS);
-                    mainView.setCurrentPage(MainView.STEP_SUCCESS);
-                }
-        );
+                // populate success view
+                formView.getSuccessNameLabel().setText(
+                        customer.getFirstName() + " " + customer.getLastName());
+                formView.getSuccessDobLabel().setText(customer.getBirthDate());
 
-        view.getViewButton().addActionListener(
-                e -> {
-                    new CustomerInfoController(mainView);
-                    mainView.showPage(MainView.CUSTOMER_INFO);
-                    mainView.setCurrentPage(MainView.CUSTOMER_INFO);
-                    mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
-                }
-        );
+                mainView.getHeader().updateHeaderTitle("ACCOUNT MANAGEMENT");
+                mainView.getHeader().showControls(false);
+                formView.showStep(MainView.STEP_SUCCESS);
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(formView, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        formView.getViewButton().addActionListener(e -> {
+            CustomerInfoController controller = new CustomerInfoController(mainView);
+            controller.setLatestCustomer();
+            mainView.showPage(MainView.CUSTOMER_INFO);
+        });
+        setupUntoggleBehavior(formView.getSavingsToggleButton());
+        setupUntoggleBehavior(formView.getCheckingToggleButton());
+        setupUntoggleBehavior(formView.getInvestmentToggleButton());
+        setupUntoggleBehavior(formView.getCreditCardToggleButton());
     }
 
     /**
-     * Builds a new Customer using the view inputs and adds toggled accounts.
+     * Builds a new Customer using the formView inputs and adds toggled accounts.
      * @return the created Customer
      */
     private Customer accountCreation() {
-        String first = view.getFirstNameField().getText().trim();
-        String last  = view.getLastNameField().getText().trim();
-        String dob   = view.getDobField().getText().trim();
+        String first = formView.getFirstNameField().getText().trim();
+        String last  = formView.getLastNameField().getText().trim();
+        String dob   = formView.getDobField().getText().trim();
 
-        // create and store customer
-        Customer customer = new Customer(first, last, dob);
-        customers.add(customer);
+        Customer customer;
+        if (existingCustomer == null) {
+            // new customer
+            customer = new Customer(first, last, dob);
+            customers.add(customer);
+        } else {
+            // editing an existing one
+            customer = existingCustomer;
+        }
 
-        // create accounts
+        // create accounts for customer
         List<String> created = new ArrayList<>();
-        if (view.getSavingsToggleButton().isSelected()) {
+        if (formView.getSavingsToggleButton().isSelected()) {
             BankAccount acc = new BankAccount(first, last);
             customer.addAccount(acc);
+            allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
         }
-        if (view.getCheckingToggleButton().isSelected()) {
+        if (formView.getCheckingToggleButton().isSelected()) {
             BankAccount acc = new CheckingAccount(first, last, 500.0);
             customer.addAccount(acc);
+            allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
         }
-        if (view.getInvestmentToggleButton().isSelected()) {
+        if (formView.getInvestmentToggleButton().isSelected()) {
             BankAccount acc = new InvestmentAccount(first, last, 5000, 0.35);
             customer.addAccount(acc);
+            allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
         }
-        if (view.getCreditCardToggleButton().isSelected()) {
+        if (formView.getCreditCardToggleButton().isSelected()) {
             BankAccount acc = new CreditCardAccount(first, last, 25000);
             customer.addAccount(acc);
+            allAccounts.add(acc);
             created.add(acc.displayAccountType() + " (#" + acc.getAccountNo() + ")");
         }
 
-        view.getSuccessAccountsLabel().setText(
-                created.isEmpty() ? "None" : String.join(", ", created)
+        formView.getSuccessNameLabel().setText(customer.getFirstName() + " " + customer.getLastName());
+        formView.getSuccessDobLabel().setText(customer.getBirthDate());
+        formView.getSuccessAccountsLabel().setText(
+                created.isEmpty() ? "None" : String.join("\n", created)
         );
-
+        // Clear the “editing” flag so next time it’s a fresh form:
+        existingCustomer = null;
+        System.out.println("Saved " + customers.size() + " customers and " + allAccounts.size() + " accounts.");
         return customer;
     }
+
+    private void setupUntoggleBehavior(JToggleButton button) {
+        button.addActionListener(e -> {
+            if (button.isSelected()) {
+                // Mark this click as a possible un-toggle candidate
+                button.putClientProperty("wasSelected", true);
+            } else {
+                // Check if it was already selected before this click
+                Object wasSelected = button.getClientProperty("wasSelected");
+                if (Boolean.TRUE.equals(wasSelected)) {
+                    button.setSelected(false); // Un-toggle
+                    button.putClientProperty("wasSelected", false);
+                }
+            }
+        });
+    }
+    public void setExistingCustomer(Customer customer) {
+        this.existingCustomer = customer;
+
+        // Pre-fill customer data
+        formView.getFirstNameField().setText(customer.getFirstName());
+        formView.getLastNameField().setText(customer.getLastName());
+        formView.getDobField().setText(customer.getBirthDate());
+
+        // Jump directly to account selection step
+        formView.showStep(MainView.STEP_ACCOUNTS);
+    }
+
 }
